@@ -1,0 +1,7 @@
+{
+  "cli/**/*.{js,jsx,ts,tsx}": [
+    "biome check --write --config cli/biome.json",
+    "biome format --write --config cli/biome.json"
+  ],
+  "cli/**/*.{json,md}": ["biome format --write --config cli/biome.json"]
+}
