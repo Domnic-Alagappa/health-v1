@@ -1,0 +1,97 @@
+[package]
+name = "auth-service"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.77"
+
+[lints.rust]
+# Deny unwrap and expect in production code
+unwrap_used = "deny"
+expect_used = "deny"
+panic = "deny"
+unconditional_recursion = "deny"
+arithmetic_overflow = "deny"
+unused_must_use = "warn"
+
+[lints.clippy]
+# Production-ready clippy rules
+unwrap_used = "deny"
+expect_used = "deny"
+panic = "deny"
+unnecessary_unwrap = "deny"
+option_unwrap_used = "deny"
+result_unwrap_used = "deny"
+unused_async = "warn"
+unused_must_use = "warn"
+cognitive_complexity = "warn"
+too_many_arguments = "warn"
+too_many_lines = "warn"
+type_complexity = "warn"
+
+[dependencies]
+# Web framework
+axum = "0.7"
+tower = "0.4"
+tower-http = { version = "0.5", features = ["cors", "trace"] }
+
+# Database
+sqlx = { version = "0.7", features = ["runtime-tokio-native-tls", "postgres", "sqlite", "uuid", "chrono"] }
+
+# Encryption
+aes-gcm = "0.10"
+ring = "0.17"
+pbkdf2 = "0.12"
+base64 = "0.21"
+hex = "0.4"
+
+# OIDC/JWT
+jsonwebtoken = "9.3"
+oauth2 = "4.4"
+josekit = "0.8"
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Async
+tokio = { version = "1.35", features = ["full"] }
+async-trait = "0.1"
+
+# Configuration
+config = "0.14"
+dotenv = "0.15"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = "0.3"
+
+# Error handling
+anyhow = "1.0"
+thiserror = "1.0"
+
+# UUID
+uuid = { version = "1.6", features = ["v4", "serde"] }
+
+# Time
+chrono = { version = "0.4", features = ["serde"] }
+
+# Password hashing
+bcrypt = "0.15"
+
+# HTTP client (for vault/storage providers)
+reqwest = { version = "0.11", features = ["json"] }
+
+# AWS SDK (for AWS providers)
+aws-sdk-s3 = "1.0"
+aws-sdk-kms = "1.0"
+aws-config = "1.0"
+
+# GCP SDK (for GCP providers) - using generic HTTP client for now
+# google-cloud-storage = "0.1"
+# google-cloud-kms = "0.1"
+
+# Azure SDK (for Azure providers) - using generic HTTP client for now
+# azure_storage_blobs = "0.19"
+# azure_keyvault = "0.19"
+
+# HashiCorp Vault client - using reqwest for HTTP requests
