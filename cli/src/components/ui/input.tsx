@@ -1,5 +1,5 @@
 import * as React from "react"
-import { HelpHint } from "./component-registry"
+import { HoverHelp } from "./hover-help"
 import { cn } from "@/lib/utils"
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -10,27 +10,29 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, help, ...props }, ref) => {
+  ({ className, type, help, "aria-label": ariaLabel, "aria-describedby": ariaDescribedBy, ...props }, ref) => {
+    const helpId = help ? `help-${Math.random().toString(36).substring(2, 9)}` : undefined
+    
     return (
-      <div className="relative w-full">
+      <div className="relative w-full group">
         <input
           type={type}
           className={cn(
-            "flex h-11 w-full rounded-xs border border-[#E1E4E8] bg-background px-4 py-2.5 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:border-primary hover:border-[#D0D6DB] transition-fluent disabled:cursor-not-allowed disabled:opacity-50",
-            help && "pr-8",
+            "flex h-11 w-full rounded-xs border border-[#E1E4E8] bg-background px-4 py-2.5 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:border-primary hover:border-[#D0D6DB] transition-fluent disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive",
             className
           )}
           ref={ref}
+          aria-label={ariaLabel}
+          aria-describedby={helpId || ariaDescribedBy}
+          aria-required={props.required}
           {...props}
         />
         {help && (
-          <HelpHint
+          <HoverHelp
             content={help.content}
             title={help.title}
-            variant="subtle"
-            size="sm"
             position="top-right"
-            className="absolute right-2 top-1/2 -translate-y-1/2"
+            className="mt-1.5"
           />
         )}
       </div>

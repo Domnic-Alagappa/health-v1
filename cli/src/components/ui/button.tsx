@@ -1,11 +1,11 @@
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
 import * as React from "react"
-
+import { HoverHelp } from "./hover-help"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-sm text-button font-semibold ring-offset-background transition-fluent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98]",
+  "inline-flex items-center justify-center whitespace-nowrap rounded-sm text-button font-semibold ring-offset-background transition-fluent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] aria-disabled:opacity-50 aria-disabled:cursor-not-allowed",
   {
     variants: {
       variant: {
@@ -46,10 +46,19 @@ export interface ButtonProps
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
+  ({ className, variant, size, asChild = false, help, ...props }, ref) => {
     const Comp = asChild ? Slot : "button"
     return (
-      <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />
+      <div className="relative inline-flex group">
+        <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />
+        {help && (
+          <HoverHelp
+            content={help.content}
+            title={help.title}
+            position="top-right"
+          />
+        )}
+      </div>
     )
   }
 )

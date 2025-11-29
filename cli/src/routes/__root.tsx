@@ -16,6 +16,7 @@ import { ActionRibbon } from "@/components/ActionRibbon"
 import { Sidebar } from "@/components/Sidebar"
 import { TabBar } from "@/components/TabBar"
 import { TabProvider, useTabs } from "@/contexts/TabContext"
+import { SkipToMainContent } from "@/lib/accessibility"
 
 export const Route = createRootRoute({
   component: RootComponent,
@@ -261,8 +262,9 @@ function RootComponentInner() {
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
+      <SkipToMainContent />
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:block">
+      <aside className="hidden lg:block" aria-label="Main navigation">
         <Sidebar
           isCollapsed={isSidebarCollapsed}
           onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
@@ -304,7 +306,7 @@ function RootComponentInner() {
         <ActionRibbon onAction={handleTabAction} />
 
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto">
+        <main id="main-content" className="flex-1 overflow-y-auto" role="main" aria-label="Main content">
           <div className="container mx-auto px-4 py-6">
             <Outlet />
           </div>

@@ -29,9 +29,9 @@ export const ActionRibbon = memo(function ActionRibbon({ onAction }: ActionRibbo
   }
 
   return (
-    <div className="border-b bg-card">
+    <div className="border-b bg-card" role="toolbar" aria-label="Page actions">
       <div className="px-4 py-2">
-        <div className="flex items-center gap-1 flex-wrap">
+        <div className="flex items-center gap-1 flex-wrap" role="group">
           {allActions.map((action, index) => (
             <div key={action.id} className="flex items-center gap-1">
               <Button
@@ -40,8 +40,9 @@ export const ActionRibbon = memo(function ActionRibbon({ onAction }: ActionRibbo
                 onClick={() => action.onClick()}
                 disabled={action.disabled}
                 className="h-8 text-xs"
+                aria-label={action.label}
               >
-                {action.icon && <span className="mr-1.5 h-3.5 w-3.5 shrink-0">{action.icon}</span>}
+                {action.icon && <span className="mr-1.5 h-3.5 w-3.5 shrink-0" aria-hidden="true">{action.icon}</span>}
                 <span>{action.label}</span>
               </Button>
               {index < allActions.length - 1 && (

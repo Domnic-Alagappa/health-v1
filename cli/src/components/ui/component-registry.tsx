@@ -70,6 +70,8 @@ export interface HelpHintProps {
   readonly size?: HelpButtonProps["size"]
   readonly position?: HelpHintPosition
   readonly className?: string
+  readonly id?: string
+  readonly "aria-label"?: string
 }
 
 /**
@@ -82,6 +84,8 @@ export function HelpHint({
   size = "md",
   position = "top-right",
   className,
+  id,
+  "aria-label": ariaLabel,
 }: HelpHintProps) {
   const positionClasses = {
     "top-right": "absolute top-0 right-0 -mt-1 -mr-1",
@@ -93,7 +97,14 @@ export function HelpHint({
 
   return (
     <span className={cn(positionClasses[position], className)}>
-      <HelpButton content={content} title={title} variant={variant} size={size} />
+      <HelpButton
+        content={content}
+        title={title}
+        variant={variant}
+        size={size}
+        id={id}
+        aria-label={ariaLabel}
+      />
     </span>
   )
 }

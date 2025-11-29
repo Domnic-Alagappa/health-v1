@@ -113,8 +113,11 @@ const TabItem = memo(function TabItem({
   return (
     <div
       ref={tabRef}
-      role="button"
-      tabIndex={0}
+      role="tab"
+      aria-selected={isActive}
+      aria-controls={`tabpanel-${tab.id}`}
+      aria-label={tab.label}
+      tabIndex={isActive ? 0 : -1}
       className={cn(
         "flex items-center gap-1 shrink-0 relative transition-all duration-200",
         isDragging && "opacity-30 scale-95 transform-gpu",
@@ -130,6 +133,17 @@ const TabItem = memo(function TabItem({
             onSelect()
           }
         }
+        // Arrow key navigation for tabs
+        if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+          e.preventDefault()
+          const tabs = Array.from(
+            document.querySelectorAll<HTMLElement>('[role="tab"]')
+          )
+          const currentIndex = tabs.findIndex((t) => t === e.currentTarget)
+          const direction = e.key === "ArrowLeft" ? -1 : 1
+          const nextIndex = (currentIndex + direction + tabs.length) % tabs.length
+          tabs[nextIndex]?.focus()
+        }
       }}
     >
       {isDraggable && (
@@ -143,8 +157,11 @@ const TabItem = memo(function TabItem({
       <Tooltip>
         <TooltipTrigger asChild>
           <div
-            role="button"
-            tabIndex={0}
+            role="tab"
+            aria-selected={isActive}
+            aria-controls={`tabpanel-${tab.id}`}
+            aria-label={`${tab.label}${tab.closable ? ". Press Delete to close" : ""}`}
+            tabIndex={isActive ? 0 : -1}
             className={cn(
               // Base styles - Microsoft Fluent UI tab design
               "group flex items-center gap-1.5 h-[42px] px-4 py-2 border-b-4 transition-fluent w-[180px] shrink-0",
@@ -281,6 +298,7 @@ export const TabBar = memo(function TabBar({ onMobileMenuClick }: TabBarProps) {
 
     for (let i = 0; i < tabs.length; i++) {
       const tab = tabs[i]
+      if (!tab) continue
       if (tab.path === "/" || tab.id === DASHBOARD_ID) {
         dashboard = tab
       } else {
@@ -291,8 +309,10 @@ export const TabBar = memo(function TabBar({ onMobileMenuClick }: TabBarProps) {
     // Reverse other tabs in-place for efficiency (newest first)
     for (let i = 0, j = otherTabs.length - 1; i < j; i++, j--) {
       const temp = otherTabs[i]
-      otherTabs[i] = otherTabs[j]
-      otherTabs[j] = temp
+      if (temp && otherTabs[j]) {
+        otherTabs[i] = otherTabs[j]!
+        otherTabs[j] = temp
+      }
     }
 
     const sorted = dashboard ? [dashboard, ...otherTabs] : otherTabs
@@ -441,6 +461,7 @@ export const TabBar = memo(function TabBar({ onMobileMenuClick }: TabBarProps) {
       // Find which tab the mouse is over or between
       for (let i = 0; i < nonDashboardElements.length; i++) {
         const element = nonDashboardElements[i]
+        if (!element) continue
         const rect = element.getBoundingClientRect()
         const relativeLeft = rect.left - containerRect.left + container.scrollLeft - dashboardWidth
         const relativeRight =
@@ -470,16 +491,18 @@ export const TabBar = memo(function TabBar({ onMobileMenuClick }: TabBarProps) {
         } else if (i < nonDashboardElements.length - 1) {
           // Check if mouse is between this tab and the next
           const nextElement = nonDashboardElements[i + 1]
-          const nextRect = nextElement.getBoundingClientRect()
-          const nextRelativeLeft =
-            nextRect.left - containerRect.left + container.scrollLeft - dashboardWidth
+          if (nextElement) {
+            const nextRect = nextElement.getBoundingClientRect()
+            const nextRelativeLeft =
+              nextRect.left - containerRect.left + container.scrollLeft - dashboardWidth
 
-          if (adjustedMouseX > relativeRight && adjustedMouseX < nextRelativeLeft) {
-            // Insert between current and next tab
-            const nextActualIndex = elementToTabIndexMap.get(nextElement) ?? i + 1
-            // Use the next tab's index as the insertion point
-            targetIndex = nextActualIndex
-            break
+            if (adjustedMouseX > relativeRight && adjustedMouseX < nextRelativeLeft) {
+              // Insert between current and next tab
+              const nextActualIndex = elementToTabIndexMap.get(nextElement) ?? i + 1
+              // Use the next tab's index as the insertion point
+              targetIndex = nextActualIndex
+              break
+            }
           }
         }
       }
@@ -629,14 +652,15 @@ export const TabBar = memo(function TabBar({ onMobileMenuClick }: TabBarProps) {
           className="flex items-center gap-1 px-2 py-1 overflow-x-auto scrollbar-hide flex-1 min-w-0"
         >
           {sortedTabs.map((tab) => {
+            if (!tab) return null
             const isDashboard = tab.id === DASHBOARD_ID || tab.path === "/"
             const isDragging = draggedTabId === tab.id
 
             // Calculate actual non-dashboard index for this tab
             let nonDashboardIndex = -1
             if (!isDashboard) {
-              const nonDashboardTabs = sortedTabs.filter((t) => t.id !== DASHBOARD_ID)
-              nonDashboardIndex = nonDashboardTabs.findIndex((t) => t.id === tab.id)
+              const nonDashboardTabs = sortedTabs.filter((t) => t && t.id !== DASHBOARD_ID)
+              nonDashboardIndex = nonDashboardTabs.findIndex((t) => t && t.id === tab.id)
             }
 
             // Show placeholder space before this tab if dragOverIndex matches
@@ -700,7 +724,7 @@ export const TabBar = memo(function TabBar({ onMobileMenuClick }: TabBarProps) {
         {draggedTabId &&
           dragPosition &&
           (() => {
-            const draggedTab = sortedTabs.find((t) => t.id === draggedTabId)
+            const draggedTab = sortedTabs.find((t) => t && t.id === draggedTabId)
             if (!draggedTab) return null
 
             return (

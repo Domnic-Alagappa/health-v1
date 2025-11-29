@@ -8,10 +8,11 @@ export interface HelpButtonProps extends React.ButtonHTMLAttributes<HTMLButtonEl
   title?: string
   variant?: "default" | "subtle" | "icon-only"
   size?: "sm" | "md" | "lg"
+  id?: string
 }
 
 const HelpButton = React.forwardRef<HTMLButtonElement, HelpButtonProps>(
-  ({ className, content, title, variant = "default", size = "md", ...props }, ref) => {
+  ({ className, content, title, variant = "default", size = "md", id, ...props }, ref) => {
     const sizeClasses = {
       sm: "h-4 w-4",
       md: "h-[18px] w-[18px]",
@@ -38,6 +39,8 @@ const HelpButton = React.forwardRef<HTMLButtonElement, HelpButtonProps>(
                 className
               )}
               aria-label={title || "Help"}
+              aria-describedby={id}
+              id={id}
               {...props}
             >
               <HelpCircle className="h-full w-full" strokeWidth={2} />
