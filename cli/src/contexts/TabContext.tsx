@@ -77,7 +77,7 @@ export function TabProvider({ children }: { children: ReactNode }) {
         if (existing) {
           // Tab exists and duplicates not allowed - switch to existing tab
           setActiveTabId(existing.id)
-          navigateRef.current({ to: tab.path as any })
+          navigateRef.current({ to: tab.path as "/" | (string & {}) })
           return prev
         }
       }
@@ -126,7 +126,7 @@ export function TabProvider({ children }: { children: ReactNode }) {
       }
 
       setActiveTabId(id)
-      navigateRef.current({ to: tab.path as any })
+      navigateRef.current({ to: tab.path as "/" | (string & {}) })
 
       // Efficient array construction - single pass
       const dashboard = prev[0]?.id === DASHBOARD_ID ? prev[0] : null
@@ -173,8 +173,10 @@ export function TabProvider({ children }: { children: ReactNode }) {
         // If closing active tab, switch to previous or first tab
         if (activeTabId === tabId && removedIndex >= 0) {
           const newActiveTab = prev[removedIndex - 1] || prev[removedIndex + 1] || newTabs[0]
-          setActiveTabId(newActiveTab.id)
-          navigateRef.current({ to: newActiveTab.path as any })
+          if (newActiveTab) {
+            setActiveTabId(newActiveTab.id)
+            navigateRef.current({ to: newActiveTab.path as "/" | (string & {}) })
+          }
         }
 
         return newTabs
@@ -189,7 +191,7 @@ export function TabProvider({ children }: { children: ReactNode }) {
       const tab = tabsMap.get(tabId)
       if (tab && tab.id !== activeTabId) {
         setActiveTabId(tabId)
-        navigateRef.current({ to: tab.path as any })
+        navigateRef.current({ to: tab.path as "/" | (string & {}) })
       }
     },
     [activeTabId, tabsMap]

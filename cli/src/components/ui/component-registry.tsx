@@ -7,13 +7,13 @@ import { HelpButton, HelpButtonProps } from "./help-button"
  */
 
 export interface ComponentConfig {
-  showHelp?: boolean
-  helpContent?: string | React.ReactNode
-  helpTitle?: string
-  helpVariant?: HelpButtonProps["variant"]
-  helpSize?: HelpButtonProps["size"]
-  className?: string
-  customizations?: Record<string, unknown>
+  readonly showHelp?: boolean
+  readonly helpContent?: string | React.ReactNode
+  readonly helpTitle?: string
+  readonly helpVariant?: HelpButtonProps["variant"]
+  readonly helpSize?: HelpButtonProps["size"]
+  readonly className?: string
+  readonly customizations?: Readonly<Record<string, unknown>>
 }
 
 export interface ComponentWithHelpProps {
@@ -30,7 +30,7 @@ export interface ComponentWithHelpProps {
 /**
  * Higher-order component wrapper that adds help button to any component
  */
-export function withHelp<T extends object>(
+export function withHelp<T extends Readonly<Record<string, unknown>>>(
   Component: React.ComponentType<T>,
   defaultHelp?: ComponentConfig["helpContent"]
 ) {
@@ -50,7 +50,7 @@ export function withHelp<T extends object>(
           <div className="absolute top-0 right-0 -mt-1 -mr-1">
             <HelpButton
               content={helpContent}
-              title={help.title}
+              title={help?.title}
               variant={help?.variant || "default"}
               size={help?.size || "md"}
             />
@@ -59,6 +59,17 @@ export function withHelp<T extends object>(
       </div>
     )
   }
+}
+
+export type HelpHintPosition = "top-right" | "top-left" | "bottom-right" | "bottom-left" | "inline"
+
+export interface HelpHintProps {
+  readonly content: string | React.ReactNode
+  readonly title?: string
+  readonly variant?: HelpButtonProps["variant"]
+  readonly size?: HelpButtonProps["size"]
+  readonly position?: HelpHintPosition
+  readonly className?: string
 }
 
 /**
@@ -71,14 +82,7 @@ export function HelpHint({
   size = "md",
   position = "top-right",
   className,
-}: {
-  content: string | React.ReactNode
-  title?: string
-  variant?: HelpButtonProps["variant"]
-  size?: HelpButtonProps["size"]
-  position?: "top-right" | "top-left" | "bottom-right" | "bottom-left" | "inline"
-  className?: string
-}) {
+}: HelpHintProps) {
   const positionClasses = {
     "top-right": "absolute top-0 right-0 -mt-1 -mr-1",
     "top-left": "absolute top-0 left-0 -mt-1 -ml-1",

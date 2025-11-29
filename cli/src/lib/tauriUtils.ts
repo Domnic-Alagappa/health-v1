@@ -3,6 +3,15 @@
  * Handles window management for both browser and Tauri environments
  */
 
+interface MockWindow {
+  closed: boolean
+  document: {
+    title: string
+  }
+  focus: () => Promise<void>
+  close: () => Promise<void>
+}
+
 // Check if running in Tauri
 export function isTauri(): boolean {
   return typeof window !== "undefined" && "__TAURI__" in window
@@ -50,14 +59,19 @@ export async function openNewWindow(
       await webview.setFocus()
 
       // Return a mock window-like object for compatibility
-      return {
+      const mockWindow: MockWindow = {
         closed: false,
         document: {
           title: `${label} - EHR Platform`,
         },
-        focus: () => webview.setFocus(),
-        close: () => webview.close(),
-      } as any
+        focus: async () => {
+          await webview.setFocus()
+        },
+        close: async () => {
+          await webview.close()
+        },
+      }
+      return mockWindow as Window
     } catch (error) {
       console.error("Error creating Tauri window:", error)
       return null
