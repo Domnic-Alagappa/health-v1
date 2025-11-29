@@ -1,14 +1,33 @@
 import * as React from "react"
-
+import { HelpHint } from "./component-registry"
 import { cn } from "@/lib/utils"
 
-const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => (
+export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  help?: {
+    content: string | React.ReactNode
+    title?: string
+  }
+}
+
+const Card = React.forwardRef<HTMLDivElement, CardProps>(
+  ({ className, help, children, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn("rounded-md border border-[#E1E4E8] bg-card text-card-foreground shadow-fluent-1 hover:shadow-fluent-2 hover:bg-white transition-fluent", className)}
+      className={cn("relative rounded-md border border-[#E1E4E8] bg-card text-card-foreground shadow-fluent-1 hover:shadow-fluent-2 hover:bg-white transition-fluent", className)}
       {...props}
-    />
+    >
+      {help && (
+        <HelpHint
+          content={help.content}
+          title={help.title}
+          variant="subtle"
+          size="md"
+          position="top-right"
+          className="opacity-0 group-hover:opacity-100 transition-opacity"
+        />
+      )}
+      {children}
+    </div>
   )
 )
 Card.displayName = "Card"

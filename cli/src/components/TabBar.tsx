@@ -147,7 +147,7 @@ const TabItem = memo(function TabItem({
             tabIndex={0}
             className={cn(
               // Base styles - Microsoft Fluent UI tab design
-              "group flex items-center gap-1.5 h-[42px] px-4 py-2 border-b-4 transition-fluent min-w-[120px] max-w-[200px] shrink-0",
+              "group flex items-center gap-1.5 h-[42px] px-4 py-2 border-b-4 transition-fluent w-[180px] shrink-0",
               "text-[14px] font-medium tracking-[0.25px]",
               "rounded-t-sm", // 4px top corners only (Fluent UI)
               isDraggable && !isDragging && "cursor-grab active:cursor-grabbing",
@@ -648,7 +648,7 @@ export const TabBar = memo(function TabBar({ onMobileMenuClick }: TabBarProps) {
                 {/* Chrome-style placeholder: empty space where tab will be inserted */}
                 {showPlaceholderBefore && !isDragging && (
                   <div
-                    className="absolute left-0 top-0 bottom-0 w-[120px] bg-primary/10 border-2 border-dashed border-primary rounded transition-all duration-200 z-10 h-[42px]"
+                    className="absolute left-0 top-0 bottom-0 w-[180px] bg-primary/10 border-2 border-dashed border-primary rounded transition-all duration-200 z-10 h-[42px]"
                     style={{
                       animation: "pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite",
                     }}
@@ -668,7 +668,7 @@ export const TabBar = memo(function TabBar({ onMobileMenuClick }: TabBarProps) {
                 )}
                 {/* Show invisible placeholder when dragging to maintain layout */}
                 {isDragging && (
-                  <div className="invisible min-w-[120px] max-w-[200px] shrink-0 h-[42px]">
+                  <div className="invisible w-[180px] shrink-0 h-[42px]">
                     <div className="flex items-center gap-2 px-4 py-2 h-full">
                       {tab.icon && <span className="h-[18px] w-[18px] shrink-0">{tab.icon}</span>}
                       <span className="text-[14px] font-medium tracking-[0.25px] truncate flex-1">{tab.label}</span>
@@ -686,7 +686,7 @@ export const TabBar = memo(function TabBar({ onMobileMenuClick }: TabBarProps) {
                 dragOverIndex === nonDashboardCount &&
                 draggedTabId && (
                   <div
-                    className="w-[120px] h-[42px] bg-primary/10 border-2 border-dashed border-primary rounded shrink-0 transition-all duration-200"
+                    className="w-[180px] h-[42px] bg-primary/10 border-2 border-dashed border-primary rounded shrink-0 transition-all duration-200"
                     style={{
                       animation: "pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite",
                     }}
