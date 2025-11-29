@@ -3,103 +3,103 @@
  * Demonstrates voice command interaction with patient "John Doe"
  */
 
-import { Box } from '@/components/ui/box';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Stack } from '@/components/ui/stack';
-import { useNavigate } from '@tanstack/react-router';
-import { useOpenTab } from '@/stores/tabStore';
-import { User } from 'lucide-react';
-import { useEffect } from 'react';
-import { registerComponent } from '@/components/ui/component-registry';
-import { getVoiceCommandEngine } from '@/lib/voice/voiceCommandEngine';
-import { getVoiceCommandParser } from '@/lib/voice/voiceCommandParser';
-import { getVoiceCommandExecutor } from '@/lib/voice/voiceCommandExecutor';
-import { useAccessibilityStore } from '@/stores/accessibilityStore';
-import { useVoiceCommandStore } from '@/stores/voiceCommandStore';
+import { useNavigate } from "@tanstack/react-router"
+import { User } from "lucide-react"
+import { useEffect } from "react"
+import { Box } from "@/components/ui/box"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { registerComponent } from "@/components/ui/component-registry"
+import { Stack } from "@/components/ui/stack"
+import { getVoiceCommandEngine } from "@/lib/voice/voiceCommandEngine"
+import { getVoiceCommandExecutor } from "@/lib/voice/voiceCommandExecutor"
+import { getVoiceCommandParser } from "@/lib/voice/voiceCommandParser"
+import { useAccessibilityStore } from "@/stores/accessibilityStore"
+import { useOpenTab } from "@/stores/tabStore"
+import { useVoiceCommandStore } from "@/stores/voiceCommandStore"
 
 export function VoiceCommandDemo() {
-  const navigate = useNavigate();
-  const openTab = useOpenTab();
-  const preferences = useAccessibilityStore((state) => state.preferences);
-  const isListening = useVoiceCommandStore((state) => state.isListening);
-  const lastCommand = useVoiceCommandStore((state) => state.lastCommand);
+  const navigate = useNavigate()
+  const openTab = useOpenTab()
+  const preferences = useAccessibilityStore((state) => state.preferences)
+  const isListening = useVoiceCommandStore((state) => state.isListening)
+  const lastCommand = useVoiceCommandStore((state) => state.lastCommand)
 
   // Register demo component with voice commands
   useEffect(() => {
-    registerComponent('voice-command-demo', {
-      ariaLabel: 'Voice Command Demo',
+    registerComponent("voice-command-demo", {
+      ariaLabel: "Voice Command Demo",
       voiceInteractable: true,
-      voiceDescription: 'Demo page showing voice command capabilities with patient John Doe',
-      
+      voiceDescription: "Demo page showing voice command capabilities with patient John Doe",
+
       actionItems: [
         {
-          id: 'open-john-doe',
-          label: 'Open Patient John Doe',
+          id: "open-john-doe",
+          label: "Open Patient John Doe",
           voiceCommand: [
-            'open john doe',
-            'open patient john doe',
-            'show john doe',
-            'view john doe',
-            'john doe patient',
+            "open john doe",
+            "open patient john doe",
+            "show john doe",
+            "view john doe",
+            "john doe patient",
           ],
           action: () => {
             openTab(
               {
-                label: 'John Doe (MRN-123456)',
-                path: '/patients/john-doe-123',
+                label: "John Doe (MRN-123456)",
+                path: "/patients/john-doe-123",
                 icon: <User className="h-4 w-4" />,
                 closable: true,
               },
               (path) => navigate({ to: path as "/" | (string & {}) })
-            );
+            )
           },
         },
       ],
-    });
-  }, [openTab, navigate]);
+    })
+  }, [openTab, navigate])
 
   // Handle voice commands
   useEffect(() => {
     if (preferences.voiceCommandsEnabled && isListening && lastCommand) {
-      const parser = getVoiceCommandParser();
-      const executor = getVoiceCommandExecutor();
-      
-      const intent = parser.parse(lastCommand);
-      
+      const parser = getVoiceCommandParser()
+      const executor = getVoiceCommandExecutor()
+
+      const intent = parser.parse(lastCommand)
+
       // Check if command is to open John Doe
       if (
-        intent.type === 'navigate' &&
-        (intent.target?.toLowerCase().includes('john') ||
-          intent.target?.toLowerCase().includes('doe') ||
-          lastCommand.toLowerCase().includes('john doe'))
+        intent.type === "navigate" &&
+        (intent.target?.toLowerCase().includes("john") ||
+          intent.target?.toLowerCase().includes("doe") ||
+          lastCommand.toLowerCase().includes("john doe"))
       ) {
         openTab(
           {
-            label: 'John Doe (MRN-123456)',
-            path: '/patients/john-doe-123',
+            label: "John Doe (MRN-123456)",
+            path: "/patients/john-doe-123",
             icon: <User className="h-4 w-4" />,
             closable: true,
           },
           (path) => navigate({ to: path as "/" | (string & {}) })
-        );
+        )
       } else {
-        executor.execute(intent);
+        executor.execute(intent)
       }
     }
-  }, [isListening, lastCommand, preferences.voiceCommandsEnabled, openTab, navigate]);
+  }, [isListening, lastCommand, preferences.voiceCommandsEnabled, openTab, navigate])
 
   const handleOpenJohnDoe = () => {
     openTab(
       {
-        label: 'John Doe (MRN-123456)',
-        path: '/patients/john-doe-123',
+        label: "John Doe (MRN-123456)",
+        path: "/patients/john-doe-123",
         icon: <User className="h-4 w-4" />,
         closable: true,
       },
       (path) => navigate({ to: path as "/" | (string & {}) })
-    );
-  };
+    )
+  }
 
   return (
     <Box className="p-6">
@@ -149,6 +149,5 @@ export function VoiceCommandDemo() {
         </CardContent>
       </Card>
     </Box>
-  );
+  )
 }
-

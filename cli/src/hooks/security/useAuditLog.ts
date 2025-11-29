@@ -3,43 +3,38 @@
  * Hook for audit logging and immutable audit trail access
  */
 
-import { useCallback } from 'react';
-import { useAuditStore } from '@/stores/auditStore';
-import { useAuth } from '@/stores/authStore';
-import { logPHIAccess, logStateChange, logPermissionCheck, logAccessDenied } from '@/lib/api/audit';
-import type { AuditEntry } from '@/lib/api/types';
+import { useCallback } from "react"
+import { logAccessDenied, logPermissionCheck, logPHIAccess, logStateChange } from "@/lib/api/audit"
+import type { AuditEntry } from "@/lib/api/types"
+import { useAuditStore } from "@/stores/auditStore"
+import { useAuth } from "@/stores/authStore"
 
 export function useAuditLog() {
-  const { user } = useAuth();
-  const { addEntry, getEntriesByUser, getEntriesByResource, exportEntries } = useAuditStore();
+  const { user } = useAuth()
+  const { addEntry, getEntriesByUser, getEntriesByResource, exportEntries } = useAuditStore()
 
   const logPHI = useCallback(
     (resource: string, resourceId?: string, details?: Record<string, unknown>) => {
-      if (!user) return;
+      if (!user) return
 
       // Add to local store
       addEntry({
         userId: user.id,
-        action: 'PHI_ACCESS',
+        action: "PHI_ACCESS",
         resource,
         resourceId,
         details,
-      });
+      })
 
       // Also log via API
-      logPHIAccess(user.id, resource, resourceId, details);
+      logPHIAccess(user.id, resource, resourceId, details)
     },
     [user, addEntry]
-  );
+  )
 
   const logState = useCallback(
-    (
-      action: string,
-      resource: string,
-      resourceId?: string,
-      details?: Record<string, unknown>
-    ) => {
-      if (!user) return;
+    (action: string, resource: string, resourceId?: string, details?: Record<string, unknown>) => {
+      if (!user) return
 
       addEntry({
         userId: user.id,
@@ -47,71 +42,71 @@ export function useAuditLog() {
         resource,
         resourceId,
         details,
-      });
+      })
 
-      logStateChange(user.id, resource, action, resourceId, details);
+      logStateChange(user.id, resource, action, resourceId, details)
     },
     [user, addEntry]
-  );
+  )
 
   const logPermission = useCallback(
     (permission: string, granted: boolean, resource?: string) => {
-      if (!user) return;
+      if (!user) return
 
       addEntry({
         userId: user.id,
-        action: 'PERMISSION_CHECK',
-        resource: resource || 'system',
+        action: "PERMISSION_CHECK",
+        resource: resource || "system",
         details: {
           permission,
           granted,
         },
-      });
+      })
 
-      logPermissionCheck(user.id, permission, granted, resource);
+      logPermissionCheck(user.id, permission, granted, resource)
     },
     [user, addEntry]
-  );
+  )
 
   const logDenied = useCallback(
     (resource: string, requiredPermission: string) => {
-      if (!user) return;
+      if (!user) return
 
       addEntry({
         userId: user.id,
-        action: 'ACCESS_DENIED',
+        action: "ACCESS_DENIED",
         resource,
         details: {
           requiredPermission,
           userRole: user.role,
         },
-      });
+      })
 
-      logAccessDenied(user.id, resource, requiredPermission, user.role);
+      logAccessDenied(user.id, resource, requiredPermission, user.role)
     },
     [user, addEntry]
-  );
+  )
 
   const getUserEntries = useCallback(
     (userId: string): readonly AuditEntry[] => {
-      return getEntriesByUser(userId);
+      return getEntriesByUser(userId)
     },
     [getEntriesByUser]
-  );
+  )
 
   const getResourceEntries = useCallback(
     (resource: string): readonly AuditEntry[] => {
-      return getEntriesByResource(resource);
+      return getEntriesByResource(resource)
     },
     [getEntriesByResource]
-  );
+  )
 
   const exportAuditLog = useCallback(
     (masked = true): AuditEntry[] => {
-      return exportEntries(masked);
+      return exportEntries(masked)
     },
     [exportEntries]
-  );
+  )
 
   return {
     logPHI,
@@ -121,6 +116,5 @@ export function useAuditLog() {
     getUserEntries,
     getResourceEntries,
     exportAuditLog,
-  };
+  }
 }
-

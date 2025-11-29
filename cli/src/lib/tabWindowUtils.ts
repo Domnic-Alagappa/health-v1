@@ -5,7 +5,13 @@
 import { openNewWindow } from "./tauriUtils"
 
 interface CreateStandaloneWindowOptions {
-  draggedTab: { id: string; label: string; path: string; closable?: boolean; allowDuplicate?: boolean }
+  draggedTab: {
+    id: string
+    label: string
+    path: string
+    closable?: boolean
+    allowDuplicate?: boolean
+  }
   e: MouseEvent
   onClose: (tabId: string) => void
 }
@@ -79,4 +85,3 @@ export async function createStandaloneWindow({
     }
   }
 }
-

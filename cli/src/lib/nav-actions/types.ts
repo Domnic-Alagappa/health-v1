@@ -7,4 +7,3 @@ export interface NavAction {
   onClick: () => void
   disabled?: boolean
 }
-

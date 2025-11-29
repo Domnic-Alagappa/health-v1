@@ -1,12 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { useState } from "react"
 import { FileText, Layout } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Box } from "@/components/ui/box"
-import { Flex } from "@/components/ui/flex"
-import { Stack } from "@/components/ui/stack"
+import { useState } from "react"
 import { FormCanvasBuilder } from "@/components/forms/canvas"
+import { Box } from "@/components/ui/box"
+import { Button } from "@/components/ui/button"
+import { Flex } from "@/components/ui/flex"
 import { FormPlaygroundWithResizer } from "@/components/ui/form-playground-with-resizer"
+import { Stack } from "@/components/ui/stack"
 
 export const Route = createFileRoute("/form-builder")({
   component: FormBuilderPage,
@@ -51,11 +51,7 @@ function FormBuilderPage() {
 
       {/* Builder Content */}
       <Box className="flex-1 overflow-hidden">
-        {builderType === "canvas" ? (
-          <FormCanvasBuilder />
-        ) : (
-          <FormPlaygroundWithResizer />
-        )}
+        {builderType === "canvas" ? <FormCanvasBuilder /> : <FormPlaygroundWithResizer />}
       </Box>
     </Flex>
   )

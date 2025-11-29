@@ -1,5 +1,10 @@
-import { useState, useEffect } from "react"
-import type { CanvasField, CanvasGroup, CanvasSection, CanvasFormConfig } from "@/components/forms/canvas/types"
+import { useEffect, useState } from "react"
+import type {
+  CanvasField,
+  CanvasFormConfig,
+  CanvasGroup,
+  CanvasSection,
+} from "@/components/forms/canvas/types"
 import { createDragHandlers } from "./handlers"
 import { handleMouseMove } from "./move"
 
@@ -71,18 +76,36 @@ export function useCanvasDrag({
       document.removeEventListener("mousemove", handleMouseMoveEvent)
       document.removeEventListener("mouseup", handleMouseUp)
     }
-  }, [draggedField, draggedGroup, draggedSection, dragOffset, wrapOverflow, canvasConfig, fields, groups, sections, snapToGrid, gridSize, canvasRef, updateField, setGroups, setSections])
-
-  const { handleFieldDragStart, handleGroupDragStart, handleSectionDragStart } = createDragHandlers({
+  }, [
+    draggedField,
+    draggedGroup,
+    draggedSection,
+    dragOffset,
+    wrapOverflow,
+    canvasConfig,
     fields,
     groups,
     sections,
+    snapToGrid,
+    gridSize,
     canvasRef,
-    setDraggedField,
-    setDraggedGroup,
-    setDraggedSection,
-    setDragOffset,
-  })
+    updateField,
+    setGroups,
+    setSections,
+  ])
+
+  const { handleFieldDragStart, handleGroupDragStart, handleSectionDragStart } = createDragHandlers(
+    {
+      fields,
+      groups,
+      sections,
+      canvasRef,
+      setDraggedField,
+      setDraggedGroup,
+      setDraggedSection,
+      setDragOffset,
+    }
+  )
 
   return {
     draggedField,
@@ -93,4 +116,3 @@ export function useCanvasDrag({
     handleSectionDragStart,
   }
 }
-

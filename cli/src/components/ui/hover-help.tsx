@@ -1,5 +1,5 @@
 import { Info } from "lucide-react"
-import * as React from "react"
+import type * as React from "react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
 
@@ -14,12 +14,7 @@ export interface HoverHelpProps {
  * Hover help icon - appears on hover in top-right corner
  * Perfect for buttons, cards, and forms
  */
-export function HoverHelp({
-  content,
-  title,
-  position = "top-right",
-  className,
-}: HoverHelpProps) {
+export function HoverHelp({ content, title, position = "top-right", className }: HoverHelpProps) {
   const positionClasses = {
     "top-right": "absolute top-1 right-1",
     "top-left": "absolute top-1 left-1",
@@ -57,4 +52,3 @@ export function HoverHelp({
     </TooltipProvider>
   )
 }
-

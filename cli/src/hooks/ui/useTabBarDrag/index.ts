@@ -5,7 +5,10 @@ import { createMouseHandlers } from "./mouseHandlers"
 const DASHBOARD_ID = "dashboard"
 
 interface UseTabBarDragOptions {
-  sortedTabs: Array<{ id: string; label: string; path: string; closable?: boolean; allowDuplicate?: boolean } | undefined>
+  sortedTabs: Array<
+    | { id: string; label: string; path: string; closable?: boolean; allowDuplicate?: boolean }
+    | undefined
+  >
   scrollContainerRef: React.RefObject<HTMLDivElement>
   tabBarRef: React.RefObject<HTMLDivElement>
 }
@@ -124,4 +127,3 @@ export function useTabBarDrag({ sortedTabs, scrollContainerRef, tabBarRef }: Use
     handleDragStart,
   }
 }
-

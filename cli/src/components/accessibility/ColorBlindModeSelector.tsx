@@ -3,31 +3,31 @@
  * Select color blind mode filter
  */
 
-import { Box } from '@/components/ui/box';
-import { useAccessibilityStore } from '@/stores/accessibilityStore';
-import { useEffect } from 'react';
+import { useEffect } from "react"
+import { Box } from "@/components/ui/box"
+import { useAccessibilityStore } from "@/stores/accessibilityStore"
 
 export function ColorBlindModeSelector() {
-  const colorBlindMode = useAccessibilityStore((state) => state.preferences.colorBlindMode);
-  const updatePreference = useAccessibilityStore((state) => state.updatePreference);
+  const colorBlindMode = useAccessibilityStore((state) => state.preferences.colorBlindMode)
+  const updatePreference = useAccessibilityStore((state) => state.updatePreference)
 
   useEffect(() => {
-    if (typeof document !== 'undefined') {
+    if (typeof document !== "undefined") {
       // Remove all color blind data attributes
-      document.documentElement.removeAttribute('data-cb');
+      document.documentElement.removeAttribute("data-cb")
       // Set current color blind mode data attribute if not 'none'
-      if (colorBlindMode !== 'none') {
+      if (colorBlindMode !== "none") {
         // Map full names to short names for CSS selectors
         const modeMap: Record<string, string> = {
-          protanopia: 'protan',
-          deuteranopia: 'deutan',
-          tritanopia: 'tritan',
-        };
-        const shortName = modeMap[colorBlindMode] || colorBlindMode;
-        document.documentElement.setAttribute('data-cb', shortName);
+          protanopia: "protan",
+          deuteranopia: "deutan",
+          tritanopia: "tritan",
+        }
+        const shortName = modeMap[colorBlindMode] || colorBlindMode
+        document.documentElement.setAttribute("data-cb", shortName)
       }
     }
-  }, [colorBlindMode]);
+  }, [colorBlindMode])
 
   return (
     <Box>
@@ -38,7 +38,10 @@ export function ColorBlindModeSelector() {
         id="color-blind-mode"
         value={colorBlindMode}
         onChange={(e) =>
-          updatePreference('colorBlindMode', e.target.value as 'none' | 'protanopia' | 'deuteranopia' | 'tritanopia')
+          updatePreference(
+            "colorBlindMode",
+            e.target.value as "none" | "protanopia" | "deuteranopia" | "tritanopia"
+          )
         }
         className="w-full px-3 py-2 border rounded-md"
         aria-label="Select color blind mode"
@@ -49,6 +52,5 @@ export function ColorBlindModeSelector() {
         <option value="tritanopia">Tritanopia (Blue-Blind)</option>
       </select>
     </Box>
-  );
+  )
 }
-

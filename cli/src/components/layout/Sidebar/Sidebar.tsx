@@ -2,11 +2,11 @@ import { memo } from "react"
 import { Box } from "@/components/ui/box"
 import { Stack } from "@/components/ui/stack"
 import { cn } from "@/lib/utils"
-import { SidebarHeader } from "./SidebarHeader"
-import { SidebarNavigation, type SidebarItem } from "./SidebarNavigation"
-import { SidebarFooter } from "./SidebarFooter"
-import { SidebarCollapseButton } from "./SidebarCollapseButton"
 import { useSidebarExpandedItems, useToggleSidebarExpand } from "@/stores/uiStore"
+import { SidebarCollapseButton } from "./SidebarCollapseButton"
+import { SidebarFooter } from "./SidebarFooter"
+import { SidebarHeader } from "./SidebarHeader"
+import { type SidebarItem, SidebarNavigation } from "./SidebarNavigation"
 
 interface SidebarProps {
   isCollapsed: boolean
@@ -57,4 +57,3 @@ export const Sidebar = memo(function Sidebar({
     </aside>
   )
 })
-

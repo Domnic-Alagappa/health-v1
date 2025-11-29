@@ -4,55 +4,55 @@
   /* ============================================
      MICROSOFT-STYLE HEALTH-TECH COLOR PALETTE
      ============================================ */
-  
+
   /* Core/Default App Color: Microsoft Blue (WCAG AAA Compliant)
      - #0066CC - Strong blue (Microsoft Outlook/Office-blue)
      - Usage: Default UI, headers, nav bars, primary actions
   */
   --color-primary: hsl(210 100% 40%);
   --color-primary-foreground: hsl(0 0% 100%);
-  
+
   /* Health-Care Primary Blue: Clinical Blue (WCAG AA Compliant)
      - #2A7FA9 - Realistic medical/clinical blue
      - Usage: Clinical screens, patient dashboards, health modules
   */
   --color-health: hsl(201 60% 42%);
   --color-health-foreground: hsl(0 0% 100%);
-  
+
   /* Success / Wellness / Confirmation: Deep Green (WCAG AA Compliant)
      - #1E8D4C - Deep green (Excel-green inspired)
      - Usage: Success states, health metrics OK status, confirmations
   */
   --color-accent: hsl(145 65% 33%);
   --color-accent-foreground: hsl(0 0% 100%);
-  
+
   /* Warning / Attention / Alerts: Warm Orange-Red (WCAG AA Compliant)
      - #D6461F - Slightly darker orange-red for better contrast
      - Usage: Warnings, critical alerts, urgent messages
   */
   --color-warning: hsl(12 75% 48%);
   --color-warning-foreground: hsl(0 0% 100%);
-  
+
   /* Info / Secondary Modules: Modern Purple (WCAG AA Compliant)
      - #9C27B0 - Modern purple (MS app palettes)
      - Usage: Secondary modules, optional features, user-management UI
   */
   --color-info: hsl(292 70% 42%);
   --color-info-foreground: hsl(0 0% 100%);
-  
+
   /* Accent / Highlights: Bright Yellow (WCAG AA on Dark Only)
      - #FFC900 - Bright yellow (used sparingly, only on dark backgrounds)
      - Usage: Buttons, notifications, badges, highlights
   */
   --color-highlight: hsl(48 100% 50%);
   --color-highlight-foreground: hsl(0 0% 9%);
-  
+
   /* Neutrals - Light Backgrounds */
   --color-background: hsl(0 0% 100%);
   --color-card: hsl(210 13% 95%);
   --color-popover: hsl(0 0% 100%);
   --color-secondary: hsl(213 9% 90%);
-  
+
   /* Neutrals - Text / Dark Mode Base (WCAG AAA Compliant) */
   --color-foreground: hsl(0 0% 11%); /* #1C1C1E - AAA */
   --color-card-foreground: hsl(0 0% 11%);
@@ -60,11 +60,11 @@
   --color-secondary-foreground: hsl(0 0% 15%);
   --color-muted: hsl(210 13% 95%);
   --color-muted-foreground: hsl(0 0% 29%); /* #4A4A4E - AAA */
-  
+
   /* Semantic Colors (WCAG Compliant) */
   --color-destructive: hsl(12 75% 48%); /* #D6461F - AA */
   --color-destructive-foreground: hsl(0 0% 100%);
-  
+
   /* UI Element Colors */
   --color-border: hsl(213 9% 90%);
   --color-input: hsl(210 13% 95%);
@@ -165,190 +165,214 @@
     --input: 0 0% 18%;
     --ring: 210 100% 50%;
   }
+}
 
-  /* Color Blind Modes - Using data-cb attribute */
-  /* Red-blind mode (Protanopia) */
-  :root[data-cb="protan"] {
-    --primary: 210 90% 45%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 50 100% 55%;
-    --secondary-foreground: 24 20% 15%;
-    --destructive: 8 70% 42%;
-    --destructive-foreground: 210 40% 98%;
-    --warning: 38 95% 52%;
-    --warning-foreground: 24 20% 15%;
-    --info: 195 80% 45%;
-    --info-foreground: 210 40% 98%;
-    --health: 160 55% 40%;
-    --health-foreground: 210 40% 98%;
-    --highlight: 280 65% 52%;
-    --highlight-foreground: 210 40% 98%;
-    --chart-1: 210 90% 45%;
-    --chart-2: 50 100% 55%;
-    --chart-3: 160 55% 40%;
-    --chart-4: 280 65% 52%;
-    --chart-5: 195 80% 45%;
-  }
+/* Color Blind Modes - Outside @layer base for proper specificity */
+/* Red-blind mode (Protanopia) */
+:root[data-cb="protan"] {
+  --primary: 210 90% 45%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 50 100% 55%;
+  --secondary-foreground: 24 20% 15%;
+  --destructive: 8 70% 42%;
+  --destructive-foreground: 210 40% 98%;
+  --warning: 38 95% 52%;
+  --warning-foreground: 24 20% 15%;
+  --info: 195 80% 45%;
+  --info-foreground: 210 40% 98%;
+  --health: 160 55% 40%;
+  --health-foreground: 210 40% 98%;
+  --highlight: 280 65% 52%;
+  --highlight-foreground: 210 40% 98%;
+  --chart-1: 210 90% 45%;
+  --chart-2: 50 100% 55%;
+  --chart-3: 160 55% 40%;
+  --chart-4: 280 65% 52%;
+  --chart-5: 195 80% 45%;
+}
 
-  /* Green-blind mode (Deuteranopia) */
-  :root[data-cb="deutan"] {
-    --primary: 210 85% 46%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 40 96% 52%;
-    --secondary-foreground: 24 20% 15%;
-    --destructive: 0 72% 44%;
-    --destructive-foreground: 210 40% 98%;
-    --warning: 32 94% 53%;
-    --warning-foreground: 24 20% 15%;
-    --info: 195 82% 48%;
-    --info-foreground: 210 40% 98%;
-    --health: 170 60% 38%;
-    --health-foreground: 210 40% 98%;
-    --highlight: 285 70% 55%;
-    --highlight-foreground: 210 40% 98%;
-    --chart-1: 210 85% 46%;
-    --chart-2: 40 96% 52%;
-    --chart-3: 170 60% 38%;
-    --chart-4: 285 70% 55%;
-    --chart-5: 195 82% 48%;
-  }
+/* Green-blind mode (Deuteranopia) */
+:root[data-cb="deutan"] {
+  --primary: 210 85% 46%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 40 96% 52%;
+  --secondary-foreground: 24 20% 15%;
+  --destructive: 0 72% 44%;
+  --destructive-foreground: 210 40% 98%;
+  --warning: 32 94% 53%;
+  --warning-foreground: 24 20% 15%;
+  --info: 195 82% 48%;
+  --info-foreground: 210 40% 98%;
+  --health: 170 60% 38%;
+  --health-foreground: 210 40% 98%;
+  --highlight: 285 70% 55%;
+  --highlight-foreground: 210 40% 98%;
+  --chart-1: 210 85% 46%;
+  --chart-2: 40 96% 52%;
+  --chart-3: 170 60% 38%;
+  --chart-4: 285 70% 55%;
+  --chart-5: 195 82% 48%;
+}
 
-  /* Blue-blind mode (Tritanopia) */
-  :root[data-cb="tritan"] {
-    --primary: 260 70% 55%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 32 96% 54%;
-    --secondary-foreground: 24 20% 15%;
-    --destructive: 0 75% 45%;
-    --destructive-foreground: 210 40% 98%;
-    --warning: 45 95% 55%;
-    --warning-foreground: 24 20% 15%;
-    --info: 180 60% 44%;
-    --info-foreground: 210 40% 98%;
-    --health: 140 55% 42%;
-    --health-foreground: 210 40% 98%;
-    --highlight: 310 70% 55%;
-    --highlight-foreground: 210 40% 98%;
-    --chart-1: 260 70% 55%;
-    --chart-2: 32 96% 54%;
-    --chart-3: 180 60% 44%;
-    --chart-4: 140 55% 42%;
-    --chart-5: 310 70% 55%;
-  }
+/* Blue-blind mode (Tritanopia) */
+:root[data-cb="tritan"] {
+  --primary: 260 70% 55%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 32 96% 54%;
+  --secondary-foreground: 24 20% 15%;
+  --destructive: 0 75% 45%;
+  --destructive-foreground: 210 40% 98%;
+  --warning: 45 95% 55%;
+  --warning-foreground: 24 20% 15%;
+  --info: 180 60% 44%;
+  --info-foreground: 210 40% 98%;
+  --health: 140 55% 42%;
+  --health-foreground: 210 40% 98%;
+  --highlight: 310 70% 55%;
+  --highlight-foreground: 210 40% 98%;
+  --chart-1: 260 70% 55%;
+  --chart-2: 32 96% 54%;
+  --chart-3: 180 60% 44%;
+  --chart-4: 140 55% 42%;
+  --chart-5: 310 70% 55%;
+}
 
-  /* Color Blind Modes for Dark Mode */
-  .dark[data-cb="protan"],
-  :root.dark[data-cb="protan"] {
-    --primary: 210 90% 45%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 50 100% 55%;
-    --secondary-foreground: 24 20% 15%;
-    --destructive: 8 70% 42%;
-    --destructive-foreground: 210 40% 98%;
-    --warning: 38 95% 52%;
-    --warning-foreground: 24 20% 15%;
-    --info: 195 80% 45%;
-    --info-foreground: 210 40% 98%;
-    --health: 160 55% 40%;
-    --health-foreground: 210 40% 98%;
-    --highlight: 280 65% 52%;
-    --highlight-foreground: 210 40% 98%;
-    --chart-1: 210 90% 45%;
-    --chart-2: 50 100% 55%;
-    --chart-3: 160 55% 40%;
-    --chart-4: 280 65% 52%;
-    --chart-5: 195 80% 45%;
-  }
+/* Color Blind Modes for Dark Mode */
+.dark[data-cb="protan"],
+:root.dark[data-cb="protan"] {
+  --primary: 210 90% 45%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 50 100% 55%;
+  --secondary-foreground: 24 20% 15%;
+  --destructive: 8 70% 42%;
+  --destructive-foreground: 210 40% 98%;
+  --warning: 38 95% 52%;
+  --warning-foreground: 24 20% 15%;
+  --info: 195 80% 45%;
+  --info-foreground: 210 40% 98%;
+  --health: 160 55% 40%;
+  --health-foreground: 210 40% 98%;
+  --highlight: 280 65% 52%;
+  --highlight-foreground: 210 40% 98%;
+  --chart-1: 210 90% 45%;
+  --chart-2: 50 100% 55%;
+  --chart-3: 160 55% 40%;
+  --chart-4: 280 65% 52%;
+  --chart-5: 195 80% 45%;
+}
 
-  .dark[data-cb="deutan"],
-  :root.dark[data-cb="deutan"] {
-    --primary: 210 85% 46%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 40 96% 52%;
-    --secondary-foreground: 24 20% 15%;
-    --destructive: 0 72% 44%;
-    --destructive-foreground: 210 40% 98%;
-    --warning: 32 94% 53%;
-    --warning-foreground: 24 20% 15%;
-    --info: 195 82% 48%;
-    --info-foreground: 210 40% 98%;
-    --health: 170 60% 38%;
-    --health-foreground: 210 40% 98%;
-    --highlight: 285 70% 55%;
-    --highlight-foreground: 210 40% 98%;
-    --chart-1: 210 85% 46%;
-    --chart-2: 40 96% 52%;
-    --chart-3: 170 60% 38%;
-    --chart-4: 285 70% 55%;
-    --chart-5: 195 82% 48%;
-  }
+.dark[data-cb="deutan"],
+:root.dark[data-cb="deutan"] {
+  --primary: 210 85% 46%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 40 96% 52%;
+  --secondary-foreground: 24 20% 15%;
+  --destructive: 0 72% 44%;
+  --destructive-foreground: 210 40% 98%;
+  --warning: 32 94% 53%;
+  --warning-foreground: 24 20% 15%;
+  --info: 195 82% 48%;
+  --info-foreground: 210 40% 98%;
+  --health: 170 60% 38%;
+  --health-foreground: 210 40% 98%;
+  --highlight: 285 70% 55%;
+  --highlight-foreground: 210 40% 98%;
+  --chart-1: 210 85% 46%;
+  --chart-2: 40 96% 52%;
+  --chart-3: 170 60% 38%;
+  --chart-4: 285 70% 55%;
+  --chart-5: 195 82% 48%;
+}
 
-  .dark[data-cb="tritan"],
-  :root.dark[data-cb="tritan"] {
-    --primary: 260 70% 55%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 32 96% 54%;
-    --secondary-foreground: 24 20% 15%;
-    --destructive: 0 75% 45%;
-    --destructive-foreground: 210 40% 98%;
-    --warning: 45 95% 55%;
-    --warning-foreground: 24 20% 15%;
-    --info: 180 60% 44%;
-    --info-foreground: 210 40% 98%;
-    --health: 140 55% 42%;
-    --health-foreground: 210 40% 98%;
-    --highlight: 310 70% 55%;
-    --highlight-foreground: 210 40% 98%;
-    --chart-1: 260 70% 55%;
-    --chart-2: 32 96% 54%;
-    --chart-3: 180 60% 44%;
-    --chart-4: 140 55% 42%;
-    --chart-5: 310 70% 55%;
-  }
+.dark[data-cb="tritan"],
+:root.dark[data-cb="tritan"] {
+  --primary: 260 70% 55%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 32 96% 54%;
+  --secondary-foreground: 24 20% 15%;
+  --destructive: 0 75% 45%;
+  --destructive-foreground: 210 40% 98%;
+  --warning: 45 95% 55%;
+  --warning-foreground: 24 20% 15%;
+  --info: 180 60% 44%;
+  --info-foreground: 210 40% 98%;
+  --health: 140 55% 42%;
+  --health-foreground: 210 40% 98%;
+  --highlight: 310 70% 55%;
+  --highlight-foreground: 210 40% 98%;
+  --chart-1: 260 70% 55%;
+  --chart-2: 32 96% 54%;
+  --chart-3: 180 60% 44%;
+  --chart-4: 140 55% 42%;
+  --chart-5: 310 70% 55%;
 }
 
 @layer base {
   * {
     @apply border-border;
   }
-  
+
   body {
     @apply bg-background text-foreground text-[15px] leading-relaxed font-normal;
-    font-family: 'Avenir Next', 'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', Arial, sans-serif;
+    font-family:
+      "Avenir Next", "Segoe UI", "Inter", -apple-system, BlinkMacSystemFont, "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
-    cursor: url('/cursors/cursor-default.png') 0 0, default;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    cursor:
+      url("/cursors/cursor-default.png") 0 0,
+      default;
   }
-  
+
   /* Microsoft-style cursor behavior for interactive elements with Flaticon support */
-  a, button, [role="button"], [role="link"], input[type="button"], input[type="submit"] {
-    cursor: url('/cursors/cursor-pointer.png') 0 0, pointer;
+  a,
+  button,
+  [role="button"],
+  [role="link"],
+  input[type="button"],
+  input[type="submit"] {
+    cursor:
+      url("/cursors/cursor-pointer.png") 0 0,
+      pointer;
   }
-  
-  input[type="text"], input[type="email"], input[type="password"], input[type="number"], 
-  input[type="search"], input[type="tel"], input[type="url"], textarea, [contenteditable="true"] {
-    cursor: url('/cursors/cursor-text.png') 0 0, text;
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="search"],
+  input[type="tel"],
+  input[type="url"],
+  textarea,
+  [contenteditable="true"] {
+    cursor:
+      url("/cursors/cursor-text.png") 0 0,
+      text;
   }
-  
-  input:disabled, button:disabled, [aria-disabled="true"] {
-    cursor: url('/cursors/cursor-not-allowed.png') 0 0, not-allowed;
+
+  input:disabled,
+  button:disabled,
+  [aria-disabled="true"] {
+    cursor:
+      url("/cursors/cursor-not-allowed.png") 0 0,
+      not-allowed;
   }
-  
+
   /* Microsoft-inspired Typography Scale */
   h1 {
     @apply text-[32px] leading-tight font-bold;
   }
-  
+
   h2 {
     @apply text-[24px] leading-tight font-semibold;
   }
-  
+
   h3 {
     @apply text-[20px] leading-tight font-medium;
   }
-  
-  small, .text-small {
+
+  small,
+  .text-small {
     @apply text-[13px] leading-normal font-medium;
   }
 }
@@ -361,7 +385,7 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
-  
+
   /* Screen Reader Only - Accessible but visually hidden */
   .sr-only {
     position: absolute;
@@ -374,7 +398,7 @@
     white-space: nowrap;
     border-width: 0;
   }
-  
+
   .sr-only-focusable:focus,
   .sr-only-focusable:active {
     position: static;
@@ -386,23 +410,25 @@
     clip: auto;
     white-space: normal;
   }
-  
+
   /* Focus visible styles for keyboard navigation */
   .focus-visible-ring {
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
   }
-  
+
   /* High contrast mode support */
   @media (prefers-contrast: high) {
     * {
       border-color: currentColor;
     }
-    
-    button, a, [role="button"] {
+
+    button,
+    a,
+    [role="button"] {
       border: 2px solid currentColor;
     }
   }
-  
+
   /* Reduced motion support */
   @media (prefers-reduced-motion: reduce) {
     *,
@@ -414,69 +440,69 @@
       scroll-behavior: auto;
     }
   }
-  
+
   /* Microsoft Fluent UI Border Radius System */
   .radius-xs {
     border-radius: 2px; /* Table cells, chips, inputs */
   }
-  
+
   .radius-sm {
     border-radius: 4px; /* Buttons, tabs */
   }
-  
+
   .radius-md {
     border-radius: 6px; /* Cards, floating panels */
   }
-  
+
   .radius-lg {
     border-radius: 8px; /* Modal windows, navigation panes */
   }
-  
+
   .radius-full {
     border-radius: 100px; /* Tags, round loaders */
   }
-  
+
   /* Microsoft Fluent UI Shadow System (Elevation Levels) */
   .shadow-fluent-1 {
     box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.12); /* Level 1 - Low (cards, dropdowns) */
   }
-  
+
   .shadow-fluent-2 {
     box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.16); /* Level 2 - Medium (hover states, menus) */
   }
-  
+
   .shadow-fluent-3 {
     box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.18); /* Level 3 - High (modals, panels) */
   }
-  
+
   .shadow-fluent-4 {
-    box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.20); /* Level 4 - Popover / Floating UI */
+    box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.2); /* Level 4 - Popover / Floating UI */
   }
-  
+
   /* Microsoft Fluent UI Motion / Transitions */
   .transition-fluent {
     transition: all 0.15s cubic-bezier(0.2, 0, 0, 1);
   }
-  
+
   .transition-fluent-fast {
     transition: all 0.1s cubic-bezier(0.2, 0, 0, 1);
   }
-  
+
   .transition-fluent-medium {
     transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
   }
-  
+
   .transition-fluent-slow {
     transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
   }
-  
+
   /* Fluent UI Blur Loader */
   .blur-loader {
     background: rgba(255, 255, 255, 0.6);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
   }
-  
+
   /* Spinner animation */
   @keyframes spin-fluent {
     from {
@@ -486,206 +512,292 @@
       transform: rotate(360deg);
     }
   }
-  
+
   .animate-spin-fluent {
     animation: spin-fluent 0.9s linear infinite;
   }
-  
+
   .cursor-default {
-    cursor: url('/cursors/cursor-default.png') 0 0, default;
+    cursor:
+      url("/cursors/cursor-default.png") 0 0,
+      default;
   }
-  
+
   .cursor-pointer {
-    cursor: url('/cursors/cursor-pointer.png') 0 0, pointer;
+    cursor:
+      url("/cursors/cursor-pointer.png") 0 0,
+      pointer;
   }
-  
+
   .cursor-text {
-    cursor: url('/cursors/cursor-text.png') 0 0, text;
+    cursor:
+      url("/cursors/cursor-text.png") 0 0,
+      text;
   }
-  
+
   .cursor-move {
-    cursor: url('/cursors/cursor-move.png') 0 0, move;
+    cursor:
+      url("/cursors/cursor-move.png") 0 0,
+      move;
   }
-  
+
   .cursor-grab {
-    cursor: url('/cursors/cursor-grab.png') 0 0, grab;
+    cursor:
+      url("/cursors/cursor-grab.png") 0 0,
+      grab;
   }
-  
+
   .cursor-grabbing {
-    cursor: url('/cursors/cursor-grabbing.png') 0 0, grabbing;
+    cursor:
+      url("/cursors/cursor-grabbing.png") 0 0,
+      grabbing;
   }
-  
+
   .cursor-not-allowed {
-    cursor: url('/cursors/cursor-not-allowed.png') 0 0, not-allowed;
+    cursor:
+      url("/cursors/cursor-not-allowed.png") 0 0,
+      not-allowed;
   }
-  
+
   .cursor-wait {
-    cursor: url('/cursors/cursor-wait.png') 0 0, wait;
+    cursor:
+      url("/cursors/cursor-wait.png") 0 0,
+      wait;
   }
-  
+
   .cursor-help {
-    cursor: url('/cursors/cursor-help.png') 0 0, help;
+    cursor:
+      url("/cursors/cursor-help.png") 0 0,
+      help;
   }
-  
+
   .cursor-crosshair {
-    cursor: url('/cursors/cursor-crosshair.png') 0 0, crosshair;
+    cursor:
+      url("/cursors/cursor-crosshair.png") 0 0,
+      crosshair;
   }
-  
+
   /* Resize cursors - Microsoft style with Flaticon support */
   .cursor-resize {
-    cursor: url('/cursors/cursor-resize.png') 0 0, resize;
+    cursor:
+      url("/cursors/cursor-resize.png") 0 0,
+      resize;
   }
-  
+
   .cursor-resize-n {
-    cursor: url('/cursors/cursor-resize-n.png') 0 0, n-resize;
+    cursor:
+      url("/cursors/cursor-resize-n.png") 0 0,
+      n-resize;
   }
-  
+
   .cursor-resize-s {
-    cursor: url('/cursors/cursor-resize-s.png') 0 0, s-resize;
+    cursor:
+      url("/cursors/cursor-resize-s.png") 0 0,
+      s-resize;
   }
-  
+
   .cursor-resize-e {
-    cursor: url('/cursors/cursor-resize-e.png') 0 0, e-resize;
+    cursor:
+      url("/cursors/cursor-resize-e.png") 0 0,
+      e-resize;
   }
-  
+
   .cursor-resize-w {
-    cursor: url('/cursors/cursor-resize-w.png') 0 0, w-resize;
+    cursor:
+      url("/cursors/cursor-resize-w.png") 0 0,
+      w-resize;
   }
-  
+
   .cursor-resize-ne {
-    cursor: url('/cursors/cursor-resize-ne.png') 0 0, ne-resize;
+    cursor:
+      url("/cursors/cursor-resize-ne.png") 0 0,
+      ne-resize;
   }
-  
+
   .cursor-resize-nw {
-    cursor: url('/cursors/cursor-resize-nw.png') 0 0, nw-resize;
+    cursor:
+      url("/cursors/cursor-resize-nw.png") 0 0,
+      nw-resize;
   }
-  
+
   .cursor-resize-se {
-    cursor: url('/cursors/cursor-resize-se.png') 0 0, se-resize;
+    cursor:
+      url("/cursors/cursor-resize-se.png") 0 0,
+      se-resize;
   }
-  
+
   .cursor-resize-sw {
-    cursor: url('/cursors/cursor-resize-sw.png') 0 0, sw-resize;
+    cursor:
+      url("/cursors/cursor-resize-sw.png") 0 0,
+      sw-resize;
   }
-  
+
   .cursor-resize-ew {
-    cursor: url('/cursors/cursor-resize-ew.png') 0 0, ew-resize;
+    cursor:
+      url("/cursors/cursor-resize-ew.png") 0 0,
+      ew-resize;
   }
-  
+
   .cursor-resize-ns {
-    cursor: url('/cursors/cursor-resize-ns.png') 0 0, ns-resize;
+    cursor:
+      url("/cursors/cursor-resize-ns.png") 0 0,
+      ns-resize;
   }
-  
+
   .cursor-resize-nesw {
-    cursor: url('/cursors/cursor-resize-nesw.png') 0 0, nesw-resize;
+    cursor:
+      url("/cursors/cursor-resize-nesw.png") 0 0,
+      nesw-resize;
   }
-  
+
   .cursor-resize-nwse {
-    cursor: url('/cursors/cursor-resize-nwse.png') 0 0, nwse-resize;
+    cursor:
+      url("/cursors/cursor-resize-nwse.png") 0 0,
+      nwse-resize;
   }
-  
+
   /* Microsoft Fluent UI specific cursor states with Flaticon support */
   .cursor-context-menu {
-    cursor: url('/cursors/cursor-context-menu.png') 0 0, context-menu;
+    cursor:
+      url("/cursors/cursor-context-menu.png") 0 0,
+      context-menu;
   }
-  
+
   .cursor-progress {
-    cursor: url('/cursors/cursor-progress.png') 0 0, progress;
+    cursor:
+      url("/cursors/cursor-progress.png") 0 0,
+      progress;
   }
-  
+
   .cursor-cell {
-    cursor: url('/cursors/cursor-cell.png') 0 0, cell;
+    cursor:
+      url("/cursors/cursor-cell.png") 0 0,
+      cell;
   }
-  
+
   .cursor-copy {
-    cursor: url('/cursors/cursor-copy.png') 0 0, copy;
+    cursor:
+      url("/cursors/cursor-copy.png") 0 0,
+      copy;
   }
-  
+
   .cursor-alias {
-    cursor: url('/cursors/cursor-alias.png') 0 0, alias;
+    cursor:
+      url("/cursors/cursor-alias.png") 0 0,
+      alias;
   }
-  
+
   .cursor-no-drop {
-    cursor: url('/cursors/cursor-no-drop.png') 0 0, no-drop;
+    cursor:
+      url("/cursors/cursor-no-drop.png") 0 0,
+      no-drop;
   }
-  
+
   .cursor-vertical-text {
-    cursor: url('/cursors/cursor-vertical-text.png') 0 0, vertical-text;
+    cursor:
+      url("/cursors/cursor-vertical-text.png") 0 0,
+      vertical-text;
   }
-  
+
   .cursor-zoom-in {
-    cursor: url('/cursors/cursor-zoom-in.png') 0 0, zoom-in;
+    cursor:
+      url("/cursors/cursor-zoom-in.png") 0 0,
+      zoom-in;
   }
-  
+
   .cursor-zoom-out {
-    cursor: url('/cursors/cursor-zoom-out.png') 0 0, zoom-out;
+    cursor:
+      url("/cursors/cursor-zoom-out.png") 0 0,
+      zoom-out;
   }
-  
+
   /* Microsoft-style hover cursor states */
   .cursor-hover-pointer:hover {
     cursor: pointer;
   }
-  
+
   .cursor-hover-grab:hover {
     cursor: grab;
   }
-  
+
   .cursor-hover-grabbing:active {
     cursor: grabbing;
   }
-  
+
   /* Custom cursor for interactive elements with Flaticon support */
   .cursor-interactive {
-    cursor: url('/cursors/cursor-pointer.png') 0 0, pointer;
+    cursor:
+      url("/cursors/cursor-pointer.png") 0 0,
+      pointer;
   }
-  
+
   /* Microsoft-style drag cursor */
   .cursor-drag {
-    cursor: url('/cursors/cursor-grab.png') 0 0, grab;
+    cursor:
+      url("/cursors/cursor-grab.png") 0 0,
+      grab;
   }
-  
+
   .cursor-drag:active {
-    cursor: url('/cursors/cursor-grabbing.png') 0 0, grabbing;
+    cursor:
+      url("/cursors/cursor-grabbing.png") 0 0,
+      grabbing;
   }
-  
+
   /* Microsoft-style selection cursor */
   .cursor-select {
-    cursor: url('/cursors/cursor-text.png') 0 0, text;
+    cursor:
+      url("/cursors/cursor-text.png") 0 0,
+      text;
   }
-  
+
   /* Microsoft-style link cursor */
   .cursor-link {
-    cursor: url('/cursors/cursor-pointer.png') 0 0, pointer;
+    cursor:
+      url("/cursors/cursor-pointer.png") 0 0,
+      pointer;
   }
-  
+
   /* Microsoft-style button cursor */
   .cursor-button {
-    cursor: url('/cursors/cursor-pointer.png') 0 0, pointer;
+    cursor:
+      url("/cursors/cursor-pointer.png") 0 0,
+      pointer;
   }
-  
+
   /* Microsoft-style disabled cursor */
   .cursor-disabled {
-    cursor: url('/cursors/cursor-not-allowed.png') 0 0, not-allowed;
+    cursor:
+      url("/cursors/cursor-not-allowed.png") 0 0,
+      not-allowed;
   }
-  
+
   /* Microsoft-style loading cursor */
   .cursor-loading {
-    cursor: url('/cursors/cursor-wait.png') 0 0, wait;
+    cursor:
+      url("/cursors/cursor-wait.png") 0 0,
+      wait;
   }
-  
+
   /* Microsoft-style resize handle cursor */
   .cursor-resize-handle {
-    cursor: url('/cursors/cursor-resize-nwse.png') 0 0, nwse-resize;
+    cursor:
+      url("/cursors/cursor-resize-nwse.png") 0 0,
+      nwse-resize;
   }
-  
+
   /* Microsoft-style column resize cursor */
   .cursor-resize-column {
-    cursor: url('/cursors/cursor-resize-ew.png') 0 0, col-resize;
+    cursor:
+      url("/cursors/cursor-resize-ew.png") 0 0,
+      col-resize;
   }
-  
+
   /* Microsoft-style row resize cursor */
   .cursor-resize-row {
-    cursor: url('/cursors/cursor-resize-ns.png') 0 0, row-resize;
+    cursor:
+      url("/cursors/cursor-resize-ns.png") 0 0,
+      row-resize;
   }
 
   /* ============================================
@@ -721,24 +833,24 @@
 
   /* Font Family Options */
   .font-dyslexic {
-    font-family: 'OpenDyslexic', 'Comic Sans MS', sans-serif;
+    font-family: "OpenDyslexic", "Comic Sans MS", sans-serif;
   }
 
   .font-monospace {
-    font-family: 'Courier New', monospace;
+    font-family: "Courier New", monospace;
   }
 
   /* Color Blind Mode Filters */
   .color-blind-protanopia {
-    filter: url('#protanopia-filter');
+    filter: url("#protanopia-filter");
   }
 
   .color-blind-deuteranopia {
-    filter: url('#deuteranopia-filter');
+    filter: url("#deuteranopia-filter");
   }
 
   .color-blind-tritanopia {
-    filter: url('#tritanopia-filter');
+    filter: url("#tritanopia-filter");
   }
 
   /* Focus Indicators */
@@ -762,10 +874,10 @@
     *,
     *::before,
     *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-      scroll-behavior: auto !important;
+      animation-duration: 0.01ms;
+      animation-iteration-count: 1;
+      transition-duration: 0.01ms;
+      scroll-behavior: auto;
     }
   }
 

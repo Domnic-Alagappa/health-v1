@@ -2,14 +2,14 @@ import { useState } from "react"
 import { Box } from "@/components/ui/box"
 import { Flex } from "@/components/ui/flex"
 import { FormCanvasPreview } from "@/components/ui/form-canvas-preview"
+import { useCanvasOperations } from "@/hooks/forms/useCanvasOperations"
 import { useFormCanvas } from "@/hooks/forms/useFormCanvas"
 import { useCanvasDrag } from "@/hooks/ui/useCanvasDrag"
 import { useCanvasResize } from "@/hooks/ui/useCanvasResize"
-import { useCanvasOperations } from "@/hooks/forms/useCanvasOperations"
-import { CanvasFieldLibrary } from "./CanvasFieldLibrary"
-import { CanvasToolbar } from "./CanvasToolbar"
-import { CanvasPropertyPanel } from "./CanvasPropertyPanel"
 import { Canvas } from "./Canvas"
+import { CanvasFieldLibrary } from "./CanvasFieldLibrary"
+import { CanvasPropertyPanel } from "./CanvasPropertyPanel"
+import { CanvasToolbar } from "./CanvasToolbar"
 import { FIELD_CATEGORIES } from "./constants"
 
 export function FormCanvasBuilder() {
@@ -111,7 +111,9 @@ export function FormCanvasBuilder() {
         onAddField={addField}
         onSheetSizeChange={setSelectedSheetSize}
         onCanvasWidthChange={(width) => setCanvasConfig({ ...canvasConfig, canvasWidth: width })}
-        onCanvasHeightChange={(height) => setCanvasConfig({ ...canvasConfig, canvasHeight: height })}
+        onCanvasHeightChange={(height) =>
+          setCanvasConfig({ ...canvasConfig, canvasHeight: height })
+        }
         onGridSizeChange={setGridSize}
         onShowGridChange={setShowGrid}
         onSnapToGridChange={setSnapToGrid}
@@ -184,8 +186,12 @@ export function FormCanvasBuilder() {
         selectedSection={selectedSectionData || null}
         snap={snap}
         onUpdateField={updateField}
-        onUpdateGroup={(groupId, updates) => setGroups(groups.map((g) => (g.id === groupId ? { ...g, ...updates } : g)))}
-        onUpdateSection={(sectionId, updates) => setSections(sections.map((s) => (s.id === sectionId ? { ...s, ...updates } : s)))}
+        onUpdateGroup={(groupId, updates) =>
+          setGroups(groups.map((g) => (g.id === groupId ? { ...g, ...updates } : g)))
+        }
+        onUpdateSection={(sectionId, updates) =>
+          setSections(sections.map((s) => (s.id === sectionId ? { ...s, ...updates } : s)))
+        }
         onRemoveField={removeField}
         onRemoveGroup={removeGroup}
         onRemoveSection={removeSection}
@@ -193,4 +199,3 @@ export function FormCanvasBuilder() {
     </Flex>
   )
 }
-

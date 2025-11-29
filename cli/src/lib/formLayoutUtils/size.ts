@@ -12,4 +12,3 @@ export function getFieldSizeClasses(size?: FieldLayout["size"]): string {
       return "h-11 text-sm px-4" // md
   }
 }
-

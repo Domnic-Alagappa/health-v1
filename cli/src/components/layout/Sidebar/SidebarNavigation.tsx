@@ -1,6 +1,6 @@
 import { Box } from "@/components/ui/box"
 import { Stack } from "@/components/ui/stack"
-import { SidebarItemComponent, type SidebarItem } from "./SidebarItem"
+import { type SidebarItem, SidebarItemComponent } from "./SidebarItem"
 
 interface SidebarNavigationProps {
   items: SidebarItem[]
@@ -39,4 +39,3 @@ export function SidebarNavigation({
     </nav>
   )
 }
-

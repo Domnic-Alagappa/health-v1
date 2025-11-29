@@ -10,8 +10,8 @@ import {
   Printer,
   RefreshCw,
 } from "lucide-react"
-import type { TabActionGroup } from "./types"
 import { getBaseTabActions } from "./base"
+import type { TabActionGroup } from "./types"
 
 export function getPatientsTabActions(
   path: string,
@@ -121,4 +121,3 @@ export function getPatientsTabActions(
     },
   ]
 }
-

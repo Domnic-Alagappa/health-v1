@@ -3,27 +3,33 @@
  * Main accessibility settings panel
  */
 
-import { Settings } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Box } from '@/components/ui/box';
-import { Stack } from '@/components/ui/stack';
-import { Separator } from '@/components/ui/separator';
-import { useAccessibilityStore } from '@/stores/accessibilityStore';
-import { HighContrastToggle } from './HighContrastToggle';
-import { FontSizeSelector } from './FontSizeSelector';
-import { ColorBlindModeSelector } from './ColorBlindModeSelector';
-import { VoiceCommandButton } from './VoiceCommandButton';
-import { useDisclosure } from '@/hooks/ui/useDisclosure';
+import { Settings } from "lucide-react"
+import { Box } from "@/components/ui/box"
+import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Separator } from "@/components/ui/separator"
+import { Stack } from "@/components/ui/stack"
+import { useDisclosure } from "@/hooks/ui/useDisclosure"
+import { useAccessibilityStore } from "@/stores/accessibilityStore"
+import { ColorBlindModeSelector } from "./ColorBlindModeSelector"
+import { FontSizeSelector } from "./FontSizeSelector"
+import { HighContrastToggle } from "./HighContrastToggle"
+import { VoiceCommandButton } from "./VoiceCommandButton"
 
 interface AccessibilityPanelProps {
-  showTrigger?: boolean;
+  showTrigger?: boolean
 }
 
 export function AccessibilityPanel({ showTrigger = false }: AccessibilityPanelProps) {
-  const { isOpen, onOpen, onClose, onToggle } = useDisclosure('accessibility-panel');
-  const preferences = useAccessibilityStore((state) => state.preferences);
-  const resetPreferences = useAccessibilityStore((state) => state.resetPreferences);
+  const { isOpen, onOpen, onClose, onToggle } = useDisclosure("accessibility-panel")
+  const preferences = useAccessibilityStore((state) => state.preferences)
+  const resetPreferences = useAccessibilityStore((state) => state.resetPreferences)
 
   return (
     <Dialog open={isOpen} onOpenChange={onToggle}>
@@ -43,7 +49,7 @@ export function AccessibilityPanel({ showTrigger = false }: AccessibilityPanelPr
         <DialogHeader>
           <DialogTitle>Accessibility Settings</DialogTitle>
         </DialogHeader>
-        
+
         <Stack spacing="lg" className="mt-4">
           {/* Visual Accessibility */}
           <Box>
@@ -70,7 +76,9 @@ export function AccessibilityPanel({ showTrigger = false }: AccessibilityPanelPr
                   type="checkbox"
                   checked={preferences.voiceCommandsEnabled}
                   onChange={(e) =>
-                    useAccessibilityStore.getState().updatePreference('voiceCommandsEnabled', e.target.checked)
+                    useAccessibilityStore
+                      .getState()
+                      .updatePreference("voiceCommandsEnabled", e.target.checked)
                   }
                   className="h-4 w-4"
                 />
@@ -101,7 +109,9 @@ export function AccessibilityPanel({ showTrigger = false }: AccessibilityPanelPr
                   type="checkbox"
                   checked={preferences.screenReaderOptimized}
                   onChange={(e) =>
-                    useAccessibilityStore.getState().updatePreference('screenReaderOptimized', e.target.checked)
+                    useAccessibilityStore
+                      .getState()
+                      .updatePreference("screenReaderOptimized", e.target.checked)
                   }
                   className="h-4 w-4"
                 />
@@ -115,7 +125,9 @@ export function AccessibilityPanel({ showTrigger = false }: AccessibilityPanelPr
                   type="checkbox"
                   checked={preferences.announcePageChanges}
                   onChange={(e) =>
-                    useAccessibilityStore.getState().updatePreference('announcePageChanges', e.target.checked)
+                    useAccessibilityStore
+                      .getState()
+                      .updatePreference("announcePageChanges", e.target.checked)
                   }
                   className="h-4 w-4"
                 />
@@ -135,6 +147,5 @@ export function AccessibilityPanel({ showTrigger = false }: AccessibilityPanelPr
         </Stack>
       </DialogContent>
     </Dialog>
-  );
+  )
 }
-

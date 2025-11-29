@@ -1,11 +1,24 @@
+import {
+  Check,
+  Code,
+  Copy,
+  Download,
+  Eye,
+  GripVertical,
+  Maximize2,
+  Move,
+  Plus,
+  Settings,
+  Trash2,
+  Upload,
+} from "lucide-react"
 import * as React from "react"
-import { Plus, Trash2, GripVertical, Eye, Code, Download, Upload, Copy, Check, Settings, Move, Maximize2 } from "lucide-react"
+import { cn } from "@/lib/utils"
 import { Button } from "./button"
 import { Card, CardContent, CardHeader, CardTitle } from "./card"
+import { type FieldType, FormBuilder, type FormConfig, type FormField } from "./form-builder"
 import { Input } from "./input"
 import { Label } from "./label"
-import { FormBuilder, FormConfig, FormField, FieldType } from "./form-builder"
-import { cn } from "@/lib/utils"
 
 /**
  * Enhanced Visual Form Builder Playground
@@ -83,7 +96,12 @@ export function FormPlaygroundEnhanced() {
     const newField: FormField = {
       id: `field-${Date.now()}`,
       name: `field${fields.length + 1}`,
-      label: type === "separator" ? "" : type === "display-text" ? "Display Text" : `Field ${fields.length + 1}`,
+      label:
+        type === "separator"
+          ? ""
+          : type === "display-text"
+            ? "Display Text"
+            : `Field ${fields.length + 1}`,
       type,
       ...fieldDefaults[type],
       layout: {
@@ -132,9 +150,9 @@ export function FormPlaygroundEnhanced() {
 
     const newFields = [...fields]
     if (direction === "up" && index > 0) {
-      [newFields[index - 1], newFields[index]] = [newFields[index]!, newFields[index - 1]!]
+      ;[newFields[index - 1], newFields[index]] = [newFields[index]!, newFields[index - 1]!]
     } else if (direction === "down" && index < fields.length - 1) {
-      [newFields[index], newFields[index + 1]] = [newFields[index + 1]!, newFields[index]!]
+      ;[newFields[index], newFields[index + 1]] = [newFields[index + 1]!, newFields[index]!]
     }
     setFields(newFields)
   }
@@ -226,7 +244,9 @@ export function MyForm() {
             </h3>
             <div className="space-y-3">
               <div>
-                <Label htmlFor="form-title" className="text-xs mb-1.5 block">Title</Label>
+                <Label htmlFor="form-title" className="text-xs mb-1.5 block">
+                  Title
+                </Label>
                 <Input
                   id="form-title"
                   value={formConfig.title || ""}
@@ -235,7 +255,9 @@ export function MyForm() {
                 />
               </div>
               <div>
-                <Label htmlFor="form-description" className="text-xs mb-1.5 block">Description</Label>
+                <Label htmlFor="form-description" className="text-xs mb-1.5 block">
+                  Description
+                </Label>
                 <Input
                   id="form-description"
                   value={formConfig.description || ""}
@@ -244,7 +266,9 @@ export function MyForm() {
                 />
               </div>
               <div>
-                <Label htmlFor="form-layout" className="text-xs mb-1.5 block">Layout</Label>
+                <Label htmlFor="form-layout" className="text-xs mb-1.5 block">
+                  Layout
+                </Label>
                 <select
                   id="form-layout"
                   value={formConfig.layout || "two-column"}
@@ -308,7 +332,11 @@ export function MyForm() {
       {/* Center - Main Canvas */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Tabs */}
-        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)} className="flex-1 flex flex-col">
+        <Tabs
+          value={activeTab}
+          onValueChange={(v) => setActiveTab(v as typeof activeTab)}
+          className="flex-1 flex flex-col"
+        >
           <div className="border-b bg-white dark:bg-[#2B2B2B] px-4">
             <TabsList className="bg-transparent">
               <TabsTrigger value="edit" className="gap-2">
@@ -327,13 +355,18 @@ export function MyForm() {
           </div>
 
           {/* Edit Tab */}
-          <TabsContent value="edit" className="flex-1 overflow-y-auto p-6 m-0 bg-[#F4F6F8] dark:bg-[#1E1E1E]">
+          <TabsContent
+            value="edit"
+            className="flex-1 overflow-y-auto p-6 m-0 bg-[#F4F6F8] dark:bg-[#1E1E1E]"
+          >
             <Card className="max-w-5xl mx-auto">
               <CardContent className="p-6">
                 {fields.length === 0 ? (
                   <div className="text-center py-16 text-muted-foreground">
                     <p className="text-lg font-medium mb-2">No fields yet</p>
-                    <p className="text-sm">Add fields from the sidebar to start building your form</p>
+                    <p className="text-sm">
+                      Add fields from the sidebar to start building your form
+                    </p>
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -353,8 +386,12 @@ export function MyForm() {
                             <GripVertical className="h-4 w-4 text-muted-foreground cursor-move shrink-0" />
                             <div className="flex-1">
                               <div className="flex items-center gap-2">
-                                <span className="text-sm font-medium">{field.label || "(No label)"}</span>
-                                <span className="text-xs text-muted-foreground">({field.type})</span>
+                                <span className="text-sm font-medium">
+                                  {field.label || "(No label)"}
+                                </span>
+                                <span className="text-xs text-muted-foreground">
+                                  ({field.type})
+                                </span>
                               </div>
                               {(field.description || field.placeholder) && (
                                 <p className="text-xs text-muted-foreground mt-0.5">
@@ -423,7 +460,10 @@ export function MyForm() {
           </TabsContent>
 
           {/* Code Tab */}
-          <TabsContent value="code" className="flex-1 overflow-y-auto p-6 m-0 bg-[#F4F6F8] dark:bg-[#1E1E1E]">
+          <TabsContent
+            value="code"
+            className="flex-1 overflow-y-auto p-6 m-0 bg-[#F4F6F8] dark:bg-[#1E1E1E]"
+          >
             <Card className="max-w-5xl mx-auto">
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>Generated Code</CardTitle>
@@ -450,15 +490,20 @@ export function MyForm() {
           </TabsContent>
 
           {/* Preview Tab */}
-          <TabsContent value="preview" className="flex-1 overflow-y-auto p-6 m-0 bg-[#F4F6F8] dark:bg-[#1E1E1E]">
+          <TabsContent
+            value="preview"
+            className="flex-1 overflow-y-auto p-6 m-0 bg-[#F4F6F8] dark:bg-[#1E1E1E]"
+          >
             <Card className="max-w-5xl mx-auto">
               <CardContent className="p-6">
                 <FormBuilder
-                  config={{
-                    id: "preview-form",
-                    ...formConfig,
-                    fields,
-                  } as FormConfig}
+                  config={
+                    {
+                      id: "preview-form",
+                      ...formConfig,
+                      fields,
+                    } as FormConfig
+                  }
                   onSubmit={(data) => {
                     console.log("Form submitted:", data)
                     alert("Form submitted! Check console for data.")
@@ -478,7 +523,9 @@ export function MyForm() {
           <div className="space-y-4">
             {/* Basic Properties */}
             <div className="space-y-2">
-              <Label htmlFor="field-label" className="text-xs">Label</Label>
+              <Label htmlFor="field-label" className="text-xs">
+                Label
+              </Label>
               <Input
                 id="field-label"
                 value={selectedFieldData.label}
@@ -488,7 +535,9 @@ export function MyForm() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="field-name" className="text-xs">Name</Label>
+              <Label htmlFor="field-name" className="text-xs">
+                Name
+              </Label>
               <Input
                 id="field-name"
                 value={selectedFieldData.name}
@@ -497,36 +546,43 @@ export function MyForm() {
               />
             </div>
 
-            {selectedFieldData.type !== "separator" && selectedFieldData.type !== "display-text" && (
-              <>
-                <div className="space-y-2">
-                  <Label htmlFor="field-placeholder" className="text-xs">Placeholder</Label>
-                  <Input
-                    id="field-placeholder"
-                    value={selectedFieldData.placeholder || ""}
-                    onChange={(e) => updateField(selectedField, { placeholder: e.target.value })}
-                    className="h-8 text-sm"
-                  />
-                </div>
+            {selectedFieldData.type !== "separator" &&
+              selectedFieldData.type !== "display-text" && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="field-placeholder" className="text-xs">
+                      Placeholder
+                    </Label>
+                    <Input
+                      id="field-placeholder"
+                      value={selectedFieldData.placeholder || ""}
+                      onChange={(e) => updateField(selectedField, { placeholder: e.target.value })}
+                      className="h-8 text-sm"
+                    />
+                  </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="field-description" className="text-xs">Description</Label>
-                  <Input
-                    id="field-description"
-                    value={selectedFieldData.description || ""}
-                    onChange={(e) => updateField(selectedField, { description: e.target.value })}
-                    className="h-8 text-sm"
-                  />
-                </div>
-              </>
-            )}
+                  <div className="space-y-2">
+                    <Label htmlFor="field-description" className="text-xs">
+                      Description
+                    </Label>
+                    <Input
+                      id="field-description"
+                      value={selectedFieldData.description || ""}
+                      onChange={(e) => updateField(selectedField, { description: e.target.value })}
+                      className="h-8 text-sm"
+                    />
+                  </div>
+                </>
+              )}
 
             {/* Layout Properties */}
             <div className="pt-4 border-t">
               <h4 className="text-xs font-semibold mb-3">Layout & Sizing</h4>
 
               <div className="space-y-2">
-                <Label htmlFor="field-colspan" className="text-xs">Column Span</Label>
+                <Label htmlFor="field-colspan" className="text-xs">
+                  Column Span
+                </Label>
                 <select
                   id="field-colspan"
                   value={selectedFieldData.layout?.colSpan || 12}
@@ -534,7 +590,19 @@ export function MyForm() {
                     updateField(selectedField, {
                       layout: {
                         ...selectedFieldData.layout,
-                        colSpan: Number(e.target.value) as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12,
+                        colSpan: Number(e.target.value) as
+                          | 1
+                          | 2
+                          | 3
+                          | 4
+                          | 5
+                          | 6
+                          | 7
+                          | 8
+                          | 9
+                          | 10
+                          | 11
+                          | 12,
                       },
                     })
                   }
@@ -549,7 +617,9 @@ export function MyForm() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="field-size" className="text-xs">Size</Label>
+                <Label htmlFor="field-size" className="text-xs">
+                  Size
+                </Label>
                 <select
                   id="field-size"
                   value={selectedFieldData.layout?.size || "md"}
@@ -572,31 +642,31 @@ export function MyForm() {
             </div>
 
             {/* Validation */}
-            {selectedFieldData.type !== "separator" && selectedFieldData.type !== "display-text" && (
-              <div className="pt-4 border-t">
-                <h4 className="text-xs font-semibold mb-3">Validation</h4>
-                <label className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    checked={selectedFieldData.validation?.required || false}
-                    onChange={(e) =>
-                      updateField(selectedField, {
-                        validation: {
-                          ...selectedFieldData.validation,
-                          required: e.target.checked,
-                        },
-                      })
-                    }
-                    className="h-4 w-4 rounded-xs border border-[#E1E4E8]"
-                  />
-                  <span className="text-xs">Required</span>
-                </label>
-              </div>
-            )}
+            {selectedFieldData.type !== "separator" &&
+              selectedFieldData.type !== "display-text" && (
+                <div className="pt-4 border-t">
+                  <h4 className="text-xs font-semibold mb-3">Validation</h4>
+                  <label className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      checked={selectedFieldData.validation?.required || false}
+                      onChange={(e) =>
+                        updateField(selectedField, {
+                          validation: {
+                            ...selectedFieldData.validation,
+                            required: e.target.checked,
+                          },
+                        })
+                      }
+                      className="h-4 w-4 rounded-xs border border-[#E1E4E8]"
+                    />
+                    <span className="text-xs">Required</span>
+                  </label>
+                </div>
+              )}
           </div>
         </div>
       )}
     </div>
   )
 }
-

@@ -1,7 +1,7 @@
 import { Box } from "@/components/ui/box"
 import { Flex } from "@/components/ui/flex"
-import { cn } from "@/lib/utils"
 import type { FormField } from "@/components/ui/form-builder"
+import { cn } from "@/lib/utils"
 
 interface FormFieldSectionProps {
   field: FormField
@@ -30,13 +30,8 @@ export function FormFieldSection({ field, className }: FormFieldSectionProps) {
 
   return (
     <Box className={cn("col-span-12", className)}>
-      {field.label && (
-        <h3 className="text-base font-semibold">{field.label}</h3>
-      )}
-      {field.description && (
-        <p className="text-sm text-muted-foreground">{field.description}</p>
-      )}
+      {field.label && <h3 className="text-base font-semibold">{field.label}</h3>}
+      {field.description && <p className="text-sm text-muted-foreground">{field.description}</p>}
     </Box>
   )
 }
-

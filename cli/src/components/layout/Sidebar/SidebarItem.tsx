@@ -1,5 +1,6 @@
 import { ChevronDown, ChevronUp } from "lucide-react"
 import { memo } from "react"
+import { Box } from "@/components/ui/box"
 import {
   ContextMenu,
   ContextMenuContent,
@@ -7,7 +8,6 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu"
-import { Box } from "@/components/ui/box"
 import { Stack } from "@/components/ui/stack"
 import { getNavActions, getNavContextActions } from "@/lib/nav-actions"
 import { cn } from "@/lib/utils"
@@ -135,4 +135,3 @@ export const SidebarItemComponent = memo(function SidebarItemComponent({
     </ContextMenu>
   )
 })
-

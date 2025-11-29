@@ -6,84 +6,84 @@
 export const PERMISSIONS = {
   // Patient permissions
   PATIENTS: {
-    VIEW: 'patients:view',
-    CREATE: 'patients:create',
-    UPDATE: 'patients:update',
-    DELETE: 'patients:delete',
-    VIEW_SSN: 'patients:view:ssn',
-    VIEW_FULL: 'patients:view:full',
+    VIEW: "patients:view",
+    CREATE: "patients:create",
+    UPDATE: "patients:update",
+    DELETE: "patients:delete",
+    VIEW_SSN: "patients:view:ssn",
+    VIEW_FULL: "patients:view:full",
   },
-  
+
   // User permissions
   USERS: {
-    VIEW: 'users:view',
-    CREATE: 'users:create',
-    UPDATE: 'users:update',
-    DELETE: 'users:delete',
+    VIEW: "users:view",
+    CREATE: "users:create",
+    UPDATE: "users:update",
+    DELETE: "users:delete",
   },
-  
+
   // Clinical permissions
   CLINICAL: {
-    VIEW: 'clinical:view',
-    CREATE: 'clinical:create',
-    UPDATE: 'clinical:update',
-    DELETE: 'clinical:delete',
+    VIEW: "clinical:view",
+    CREATE: "clinical:create",
+    UPDATE: "clinical:update",
+    DELETE: "clinical:delete",
   },
-  
+
   // Orders permissions
   ORDERS: {
-    VIEW: 'orders:view',
-    CREATE: 'orders:create',
-    UPDATE: 'orders:update',
-    DELETE: 'orders:delete',
+    VIEW: "orders:view",
+    CREATE: "orders:create",
+    UPDATE: "orders:update",
+    DELETE: "orders:delete",
   },
-  
+
   // Results permissions
   RESULTS: {
-    VIEW: 'results:view',
-    CREATE: 'results:create',
-    UPDATE: 'results:update',
-    DELETE: 'results:delete',
+    VIEW: "results:view",
+    CREATE: "results:create",
+    UPDATE: "results:update",
+    DELETE: "results:delete",
   },
-  
+
   // Pharmacy permissions
   PHARMACY: {
-    VIEW: 'pharmacy:view',
-    CREATE: 'pharmacy:create',
-    UPDATE: 'pharmacy:update',
-    DELETE: 'pharmacy:delete',
+    VIEW: "pharmacy:view",
+    CREATE: "pharmacy:create",
+    UPDATE: "pharmacy:update",
+    DELETE: "pharmacy:delete",
   },
-  
+
   // Scheduling permissions
   SCHEDULING: {
-    VIEW: 'scheduling:view',
-    CREATE: 'scheduling:create',
-    UPDATE: 'scheduling:update',
-    DELETE: 'scheduling:delete',
+    VIEW: "scheduling:view",
+    CREATE: "scheduling:create",
+    UPDATE: "scheduling:update",
+    DELETE: "scheduling:delete",
   },
-  
+
   // Revenue permissions
   REVENUE: {
-    VIEW: 'revenue:view',
-    CREATE: 'revenue:create',
-    UPDATE: 'revenue:update',
-    DELETE: 'revenue:delete',
+    VIEW: "revenue:view",
+    CREATE: "revenue:create",
+    UPDATE: "revenue:update",
+    DELETE: "revenue:delete",
   },
-  
+
   // Analytics permissions
   ANALYTICS: {
-    VIEW: 'analytics:view',
-    EXPORT: 'analytics:export',
+    VIEW: "analytics:view",
+    EXPORT: "analytics:export",
   },
-  
+
   // Settings permissions
   SETTINGS: {
-    VIEW: 'settings:view',
-    UPDATE: 'settings:update',
+    VIEW: "settings:view",
+    UPDATE: "settings:update",
   },
-} as const;
+} as const
 
-export type Permission = 
+export type Permission =
   | (typeof PERMISSIONS.PATIENTS)[keyof typeof PERMISSIONS.PATIENTS]
   | (typeof PERMISSIONS.USERS)[keyof typeof PERMISSIONS.USERS]
   | (typeof PERMISSIONS.CLINICAL)[keyof typeof PERMISSIONS.CLINICAL]
@@ -93,7 +93,7 @@ export type Permission =
   | (typeof PERMISSIONS.SCHEDULING)[keyof typeof PERMISSIONS.SCHEDULING]
   | (typeof PERMISSIONS.REVENUE)[keyof typeof PERMISSIONS.REVENUE]
   | (typeof PERMISSIONS.ANALYTICS)[keyof typeof PERMISSIONS.ANALYTICS]
-  | (typeof PERMISSIONS.SETTINGS)[keyof typeof PERMISSIONS.SETTINGS];
+  | (typeof PERMISSIONS.SETTINGS)[keyof typeof PERMISSIONS.SETTINGS]
 
 // Role-based permission mappings
 export const ROLE_PERMISSIONS: Record<string, Permission[]> = {
@@ -124,5 +124,4 @@ export const ROLE_PERMISSIONS: Record<string, Permission[]> = {
     PERMISSIONS.SCHEDULING.CREATE,
     PERMISSIONS.SCHEDULING.UPDATE,
   ],
-};
-
+}

@@ -1,6 +1,6 @@
 import { Eye, Settings } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import { Box } from "@/components/ui/box"
+import { Button } from "@/components/ui/button"
 import { Flex } from "@/components/ui/flex"
 
 interface CanvasToolbarProps {
@@ -41,4 +41,3 @@ export function CanvasToolbar({ viewMode, fieldCount, onViewModeChange }: Canvas
     </Flex>
   )
 }
-

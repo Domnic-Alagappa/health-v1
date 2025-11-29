@@ -3,7 +3,7 @@
  * This demonstrates all layout options available
  */
 
-import { FormBuilder, FormConfig } from "./form-builder"
+import { FormBuilder, type FormConfig } from "./form-builder"
 
 // Example: Patient Registration Form with custom layout
 export const patientRegistrationForm: FormConfig = {
@@ -206,4 +206,3 @@ function PatientRegistrationPage() {
   )
 }
 */
-

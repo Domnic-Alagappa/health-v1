@@ -71,7 +71,8 @@ export function createCanvasField(
   return {
     id: `field-${Date.now()}`,
     name: `field${index + 1}`,
-    label: type === "separator" ? "" : type === "display-text" ? "Display Text" : `Field ${index + 1}`,
+    label:
+      type === "separator" ? "" : type === "display-text" ? "Display Text" : `Field ${index + 1}`,
     type,
     x: 50 + (index % 5) * 200,
     y: 50 + Math.floor(index / 5) * 100,
@@ -84,4 +85,3 @@ export function createCanvasField(
     },
   }
 }
-

@@ -3,10 +3,10 @@
  * WCAG 2.1 AA/AAA compliant
  */
 
-import * as React from "react"
-import { keyboardShortcutManager, COMMON_SHORTCUTS } from "./keyboard/shortcuts"
+import type * as React from "react"
 import { useAccessibilityStore } from "@/stores/accessibilityStore"
 import { useVoiceCommandStore } from "@/stores/voiceCommandStore"
+import { COMMON_SHORTCUTS, keyboardShortcutManager } from "./keyboard/shortcuts"
 import { getVoiceCommandEngine } from "./voice/voiceCommandEngine"
 
 /**
@@ -40,10 +40,7 @@ export function createLiveRegion(level: "polite" | "assertive" = "polite") {
 /**
  * Announce message to screen readers
  */
-export function announceToScreenReader(
-  message: string,
-  level: "polite" | "assertive" = "polite"
-) {
+export function announceToScreenReader(message: string, level: "polite" | "assertive" = "polite") {
   const region = createLiveRegion(level)
   region.textContent = message
   setTimeout(() => {
@@ -183,38 +180,37 @@ export function initializeAccessibility(): void {
     ...COMMON_SHORTCUTS.OPEN_ACCESSIBILITY,
     action: () => {
       // Trigger accessibility panel open
-      const event = new CustomEvent('open-accessibility-panel');
-      window.dispatchEvent(event);
+      const event = new CustomEvent("open-accessibility-panel")
+      window.dispatchEvent(event)
     },
     global: true,
-  });
+  })
 
   keyboardShortcutManager.register({
     ...COMMON_SHORTCUTS.TOGGLE_VOICE_COMMANDS,
     action: () => {
-      const preferences = useAccessibilityStore.getState().preferences;
+      const preferences = useAccessibilityStore.getState().preferences
       if (preferences.voiceCommandsEnabled) {
-        const engine = getVoiceCommandEngine();
-        const voiceStore = useVoiceCommandStore.getState();
+        const engine = getVoiceCommandEngine()
+        const voiceStore = useVoiceCommandStore.getState()
         if (voiceStore.isListening) {
-          engine.stop();
+          engine.stop()
         } else {
-          engine.start({ language: preferences.voiceCommandsLanguage || 'en-US' });
+          engine.start({ language: preferences.voiceCommandsLanguage || "en-US" })
         }
       }
     },
     global: true,
-  });
+  })
 
   // Register escape key for closing modals
   keyboardShortcutManager.register({
     ...COMMON_SHORTCUTS.ESCAPE,
     action: () => {
       // Close any open modals/dialogs
-      const event = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true });
-      document.activeElement?.dispatchEvent(event);
+      const event = new KeyboardEvent("keydown", { key: "Escape", bubbles: true })
+      document.activeElement?.dispatchEvent(event)
     },
     global: true,
-  });
+  })
 }
-

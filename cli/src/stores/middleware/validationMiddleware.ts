@@ -3,13 +3,13 @@
  * Validates data before state updates to ensure data integrity
  */
 
-import type { StateCreator } from 'zustand';
-import { SECURITY_CONFIG } from '@/lib/constants/security';
-import { FIELD_DEFINITIONS } from '@/lib/constants/fields';
+import type { StateCreator } from "zustand"
+import { FIELD_DEFINITIONS } from "@/lib/constants/fields"
+import { SECURITY_CONFIG } from "@/lib/constants/security"
 
 interface ValidationError {
-  field: string;
-  message: string;
+  field: string
+  message: string
 }
 
 /**
@@ -24,67 +24,64 @@ function validateField(
   if (fieldDef.immutable && value !== undefined && value !== null) {
     // In a real implementation, we'd check if this is an update vs create
     // For now, we'll just log a warning
-    console.warn(`Attempted to modify immutable field: ${fieldName}`);
+    console.warn(`Attempted to modify immutable field: ${fieldName}`)
   }
-  
+
   // Type validation
   if (fieldDef.type && value !== undefined && value !== null) {
     switch (fieldDef.type) {
-      case 'string':
-        if (typeof value !== 'string') {
-          return { field: fieldName, message: `Expected string, got ${typeof value}` };
+      case "string":
+        if (typeof value !== "string") {
+          return { field: fieldName, message: `Expected string, got ${typeof value}` }
         }
-        break;
-      case 'number':
-        if (typeof value !== 'number') {
-          return { field: fieldName, message: `Expected number, got ${typeof value}` };
+        break
+      case "number":
+        if (typeof value !== "number") {
+          return { field: fieldName, message: `Expected number, got ${typeof value}` }
         }
-        break;
-      case 'date':
-        if (typeof value !== 'string' && !(value instanceof Date)) {
-          return { field: fieldName, message: `Expected date, got ${typeof value}` };
+        break
+      case "date":
+        if (typeof value !== "string" && !(value instanceof Date)) {
+          return { field: fieldName, message: `Expected date, got ${typeof value}` }
         }
-        break;
-      case 'timestamp':
-        if (typeof value !== 'string' && typeof value !== 'number' && !(value instanceof Date)) {
-          return { field: fieldName, message: `Expected timestamp, got ${typeof value}` };
+        break
+      case "timestamp":
+        if (typeof value !== "string" && typeof value !== "number" && !(value instanceof Date)) {
+          return { field: fieldName, message: `Expected timestamp, got ${typeof value}` }
         }
-        break;
+        break
     }
   }
-  
-  return null;
+
+  return null
 }
 
 /**
  * Validate an object against field definitions
  */
-function validateObject(
-  obj: unknown,
-  entityType: string = 'patient'
-): ValidationError[] {
-  const errors: ValidationError[] = [];
-  
-  if (!obj || typeof obj !== 'object') {
-    return errors;
+function validateObject(obj: unknown, entityType: string = "patient"): ValidationError[] {
+  const errors: ValidationError[] = []
+
+  if (!obj || typeof obj !== "object") {
+    return errors
   }
-  
-  const fieldDefs = FIELD_DEFINITIONS[entityType as keyof typeof FIELD_DEFINITIONS];
+
+  const fieldDefs = FIELD_DEFINITIONS[entityType as keyof typeof FIELD_DEFINITIONS]
   if (!fieldDefs) {
-    return errors;
+    return errors
   }
-  
+
   for (const [key, value] of Object.entries(obj)) {
-    const fieldDef = fieldDefs[key as keyof typeof fieldDefs];
+    const fieldDef = fieldDefs[key as keyof typeof fieldDefs]
     if (fieldDef) {
-      const error = validateField(key, value, fieldDef);
+      const error = validateField(key, value, fieldDef)
       if (error) {
-        errors.push(error);
+        errors.push(error)
       }
     }
   }
-  
-  return errors;
+
+  return errors
 }
 
 /**
@@ -96,33 +93,36 @@ export function validationMiddleware<T>(
 ): StateCreator<T> {
   return (set, get, api) => {
     // Wrap set function to validate changes
-    const setWithValidation = (partial: T | Partial<T> | ((state: T) => T | Partial<T>), replace?: boolean) => {
-      let dataToValidate: unknown = partial;
-      
+    const setWithValidation = (
+      partial: T | Partial<T> | ((state: T) => T | Partial<T>),
+      replace?: boolean
+    ) => {
+      let dataToValidate: unknown = partial
+
       // If partial is a function, execute it first to get the actual data
-      if (typeof partial === 'function') {
-        const currentState = get();
-        dataToValidate = partial(currentState);
+      if (typeof partial === "function") {
+        const currentState = get()
+        dataToValidate = partial(currentState)
       }
-      
+
       // Validate the data
-      if (entityType && typeof dataToValidate === 'object' && dataToValidate !== null) {
-        const errors = validateObject(dataToValidate, entityType);
-        
+      if (entityType && typeof dataToValidate === "object" && dataToValidate !== null) {
+        const errors = validateObject(dataToValidate, entityType)
+
         if (errors.length > 0) {
-          console.error('Validation errors:', errors);
+          console.error("Validation errors:", errors)
           // In a production system, you might want to throw an error or return early
           // For now, we'll log and continue
           // throw new Error(`Validation failed: ${errors.map(e => e.message).join(', ')}`);
         }
       }
-      
-      // Call original set
-      return set(partial, replace);
-    };
 
-    return config(setWithValidation, get, api);
-  };
+      // Call original set
+      return set(partial, replace)
+    }
+
+    return config(setWithValidation, get, api)
+  }
 }
 
 /**
@@ -132,6 +132,5 @@ export function createValidatedStore<T>(
   config: StateCreator<T>,
   entityType: string
 ): StateCreator<T> {
-  return validationMiddleware(config, entityType);
+  return validationMiddleware(config, entityType)
 }
-

@@ -13,4 +13,3 @@ export interface TabActionGroup {
   label?: string
   actions: TabAction[]
 }
-

@@ -1,4 +1,4 @@
-import { FormField, FieldType } from "@/components/ui/form-builder"
+import type { FieldType, FormField } from "@/components/ui/form-builder"
 
 export interface CanvasField extends FormField {
   x: number // X position on canvas
@@ -74,4 +74,3 @@ export interface FieldCategoryItem {
 export interface FieldCategory {
   [category: string]: FieldCategoryItem[]
 }
-

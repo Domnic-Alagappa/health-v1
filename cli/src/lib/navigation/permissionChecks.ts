@@ -3,8 +3,8 @@
  * Utilities for checking permissions in navigation
  */
 
-import type { Permission } from '@/lib/constants/permissions';
-import { PERMISSIONS } from '@/lib/constants/permissions';
+import type { Permission } from "@/lib/constants/permissions"
+import { PERMISSIONS } from "@/lib/constants/permissions"
 
 /**
  * Get required permission for a route
@@ -12,32 +12,32 @@ import { PERMISSIONS } from '@/lib/constants/permissions';
 export function getRoutePermission(route: string): Permission | null {
   // Map routes to permissions
   const routePermissionMap: Record<string, Permission> = {
-    '/patients': PERMISSIONS.PATIENTS.VIEW,
-    '/patients/:id': PERMISSIONS.PATIENTS.VIEW,
-    '/clinical': PERMISSIONS.CLINICAL.VIEW,
-    '/orders': PERMISSIONS.ORDERS.VIEW,
-    '/results': PERMISSIONS.RESULTS.VIEW,
-    '/pharmacy': PERMISSIONS.PHARMACY.VIEW,
-    '/scheduling': PERMISSIONS.SCHEDULING.VIEW,
-    '/revenue': PERMISSIONS.REVENUE.VIEW,
-    '/analytics': PERMISSIONS.ANALYTICS.VIEW,
-    '/settings': PERMISSIONS.SETTINGS.VIEW,
-  };
+    "/patients": PERMISSIONS.PATIENTS.VIEW,
+    "/patients/:id": PERMISSIONS.PATIENTS.VIEW,
+    "/clinical": PERMISSIONS.CLINICAL.VIEW,
+    "/orders": PERMISSIONS.ORDERS.VIEW,
+    "/results": PERMISSIONS.RESULTS.VIEW,
+    "/pharmacy": PERMISSIONS.PHARMACY.VIEW,
+    "/scheduling": PERMISSIONS.SCHEDULING.VIEW,
+    "/revenue": PERMISSIONS.REVENUE.VIEW,
+    "/analytics": PERMISSIONS.ANALYTICS.VIEW,
+    "/settings": PERMISSIONS.SETTINGS.VIEW,
+  }
 
   // Try exact match first
   if (routePermissionMap[route]) {
-    return routePermissionMap[route];
+    return routePermissionMap[route]
   }
 
   // Try pattern matching (e.g., /patients/:id)
   for (const [pattern, permission] of Object.entries(routePermissionMap)) {
-    const patternRegex = new RegExp('^' + pattern.replace(/:\w+/g, '[^/]+') + '$');
+    const patternRegex = new RegExp("^" + pattern.replace(/:\w+/g, "[^/]+") + "$")
     if (patternRegex.test(route)) {
-      return permission;
+      return permission
     }
   }
 
-  return null;
+  return null
 }
 
 /**
@@ -47,13 +47,12 @@ export function canAccessRoute(
   route: string,
   hasPermission: (perm: Permission) => boolean
 ): boolean {
-  const requiredPermission = getRoutePermission(route);
-  
+  const requiredPermission = getRoutePermission(route)
+
   if (!requiredPermission) {
     // No permission required, allow access
-    return true;
+    return true
   }
 
-  return hasPermission(requiredPermission);
+  return hasPermission(requiredPermission)
 }
-

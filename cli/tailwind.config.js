@@ -5,15 +5,30 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Avenir Next', 'Segoe UI', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', 'Arial', 'sans-serif'],
+        sans: [
+          "Avenir Next",
+          "Segoe UI",
+          "Inter",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Roboto",
+          "Oxygen",
+          "Ubuntu",
+          "Cantarell",
+          "Fira Sans",
+          "Droid Sans",
+          "Helvetica Neue",
+          "Arial",
+          "sans-serif",
+        ],
       },
       fontSize: {
-        'h1': ['32px', { lineHeight: '1.2', fontWeight: '700' }],
-        'h2': ['24px', { lineHeight: '1.3', fontWeight: '600' }],
-        'h3': ['20px', { lineHeight: '1.4', fontWeight: '500' }],
-        'body': ['15px', { lineHeight: '1.6', fontWeight: '400' }],
-        'small': ['13px', { lineHeight: '1.5', fontWeight: '500' }],
-        'button': ['14px', { lineHeight: '1.4', fontWeight: '600' }],
+        h1: ["32px", { lineHeight: "1.2", fontWeight: "700" }],
+        h2: ["24px", { lineHeight: "1.3", fontWeight: "600" }],
+        h3: ["20px", { lineHeight: "1.4", fontWeight: "500" }],
+        body: ["15px", { lineHeight: "1.6", fontWeight: "400" }],
+        small: ["13px", { lineHeight: "1.5", fontWeight: "500" }],
+        button: ["14px", { lineHeight: "1.4", fontWeight: "600" }],
       },
       borderRadius: {
         xs: "var(--radius-xs)",
@@ -23,13 +38,13 @@ export default {
         full: "var(--radius-full)",
       },
       boxShadow: {
-        'fluent-1': '0px 1px 3px rgba(0, 0, 0, 0.12)',
-        'fluent-2': '0px 2px 6px rgba(0, 0, 0, 0.16)',
-        'fluent-3': '0px 4px 12px rgba(0, 0, 0, 0.18)',
-        'fluent-4': '0px 8px 24px rgba(0, 0, 0, 0.20)',
+        "fluent-1": "0px 1px 3px rgba(0, 0, 0, 0.12)",
+        "fluent-2": "0px 2px 6px rgba(0, 0, 0, 0.16)",
+        "fluent-3": "0px 4px 12px rgba(0, 0, 0, 0.18)",
+        "fluent-4": "0px 8px 24px rgba(0, 0, 0, 0.20)",
       },
       transitionTimingFunction: {
-        'fluent': 'cubic-bezier(0.2, 0, 0, 1)',
+        fluent: "cubic-bezier(0.2, 0, 0, 1)",
       },
       colors: {
         background: "hsl(var(--background))",

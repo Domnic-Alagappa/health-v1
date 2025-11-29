@@ -1,6 +1,6 @@
 import * as React from "react"
-import { HoverHelp } from "./hover-help"
 import { cn } from "@/lib/utils"
+import { HoverHelp } from "./hover-help"
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   help?: {
@@ -13,16 +13,13 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, help, children, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn("relative group rounded-md border border-[#E1E4E8] bg-card text-card-foreground shadow-fluent-1 hover:shadow-fluent-2 hover:bg-white transition-fluent", className)}
+      className={cn(
+        "relative group rounded-md border border-[#E1E4E8] bg-card text-card-foreground shadow-fluent-1 hover:shadow-fluent-2 hover:bg-white transition-fluent",
+        className
+      )}
       {...props}
     >
-      {help && (
-        <HoverHelp
-          content={help.content}
-          title={help.title}
-          position="top-right"
-        />
-      )}
+      {help && <HoverHelp content={help.content} title={help.title} position="top-right" />}
       {children}
     </div>
   )

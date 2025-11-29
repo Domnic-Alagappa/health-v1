@@ -1,24 +1,24 @@
-import { Button } from "@/components/ui/button"
 import { Box } from "@/components/ui/box"
+import { Button } from "@/components/ui/button"
 import { Flex } from "@/components/ui/flex"
+import type { FormBuilderProps, FormField } from "@/components/ui/form-builder"
 import { Label } from "@/components/ui/label"
 import { Stack } from "@/components/ui/stack"
-import { cn } from "@/lib/utils"
 import { useFormBuilder } from "@/hooks/forms/useFormBuilder"
-import { FormFieldRenderer } from "./FormFieldRenderer"
-import { FormFieldGroupComponent } from "./FormFieldGroup"
-import { FormFieldSection } from "./FormFieldSection"
 import {
-  getFieldSizeClasses,
-  getWidthClasses,
-  getMarginClasses,
-  getPaddingClasses,
   getAlignmentClasses,
+  getFieldSizeClasses,
+  getGapClasses,
   getGridColSpan,
   getGridLayoutClasses,
-  getGapClasses,
+  getMarginClasses,
+  getPaddingClasses,
+  getWidthClasses,
 } from "@/lib/formLayoutUtils"
-import type { FormBuilderProps, FormField } from "@/components/ui/form-builder"
+import { cn } from "@/lib/utils"
+import { FormFieldGroupComponent } from "./FormFieldGroup"
+import { FormFieldRenderer } from "./FormFieldRenderer"
+import { FormFieldSection } from "./FormFieldSection"
 
 export function FormBuilder({
   config,
@@ -75,18 +75,23 @@ export function FormBuilder({
     )
 
     return (
-      <Stack key={field.id} spacing="xs" className={fieldContainerClasses} style={layout.order ? { order: layout.order } : undefined}>
+      <Stack
+        key={field.id}
+        spacing="xs"
+        className={fieldContainerClasses}
+        style={layout.order ? { order: layout.order } : undefined}
+      >
         {field.label && (
           <Label htmlFor={field.id} help={field.help}>
             {field.label}
             {field.validation?.required && (
-              <span className="text-destructive ml-1" aria-label="required">*</span>
+              <span className="text-destructive ml-1" aria-label="required">
+                *
+              </span>
             )}
           </Label>
         )}
-        {field.description && (
-          <p className="text-sm text-muted-foreground">{field.description}</p>
-        )}
+        {field.description && <p className="text-sm text-muted-foreground">{field.description}</p>}
 
         <FormFieldRenderer
           field={field}
@@ -142,7 +147,14 @@ export function FormBuilder({
           </Stack>
         )}
 
-        <Box className={cn("grid", getGridLayoutClasses(config), getGapClasses(config), "auto-rows-min")}>
+        <Box
+          className={cn(
+            "grid",
+            getGridLayoutClasses(config),
+            getGapClasses(config),
+            "auto-rows-min"
+          )}
+        >
           {renderFieldsWithGroups()}
         </Box>
 
@@ -160,4 +172,3 @@ export function FormBuilder({
     </form>
   )
 }
-

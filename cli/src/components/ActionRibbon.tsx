@@ -3,8 +3,8 @@ import { Box } from "@/components/ui/box"
 import { Button } from "@/components/ui/button"
 import { Flex } from "@/components/ui/flex"
 import { Separator } from "@/components/ui/separator"
-import { useTabs, useActiveTabId } from "@/stores/tabStore"
 import { getTabActions } from "@/lib/tab-actions"
+import { useActiveTabId, useTabs } from "@/stores/tabStore"
 
 interface ActionRibbonProps {
   onAction?: (actionId: string, tabPath: string) => void
@@ -45,7 +45,11 @@ export const ActionRibbon = memo(function ActionRibbon({ onAction }: ActionRibbo
                 className="h-8 text-xs"
                 aria-label={action.label}
               >
-                {action.icon && <span className="mr-1.5 h-3.5 w-3.5 shrink-0" aria-hidden="true">{action.icon}</span>}
+                {action.icon && (
+                  <span className="mr-1.5 h-3.5 w-3.5 shrink-0" aria-hidden="true">
+                    {action.icon}
+                  </span>
+                )}
                 <span>{action.label}</span>
               </Button>
               {index < allActions.length - 1 && (

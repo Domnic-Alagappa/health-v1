@@ -24,4 +24,3 @@ export function createCanvasSection(index: number, canvasWidth?: number): Canvas
     height: 80,
   }
 }
-

@@ -27,4 +27,3 @@ export function getPaddingClasses(padding?: FieldLayout["padding"]): string {
   if (padding.right) classes.push(`pr-${spacingMap[padding.right] || padding.right}`)
   return classes.join(" ")
 }
-

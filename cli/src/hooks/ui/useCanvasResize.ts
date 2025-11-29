@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react"
-import type { CanvasField, CanvasGroup, CanvasFormConfig } from "@/components/forms/canvas/types"
+import { useEffect, useState } from "react"
+import type { CanvasField, CanvasFormConfig, CanvasGroup } from "@/components/forms/canvas/types"
 
 interface UseCanvasResizeOptions {
   fields: CanvasField[]
@@ -136,4 +136,3 @@ export function useCanvasResize({
     setResizeStart,
   }
 }
-

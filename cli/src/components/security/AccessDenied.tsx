@@ -3,19 +3,19 @@
  * Unified access denied component for all scenarios
  */
 
-import { AlertCircle, Lock } from 'lucide-react';
-import { Card } from '@/components/ui/card';
-import { Stack } from '@/components/ui/stack';
-import { Box } from '@/components/ui/box';
-import { usePermissions } from '@/hooks/security/usePermissions';
-import type { Permission } from '@/lib/constants/permissions';
+import { AlertCircle, Lock } from "lucide-react"
+import { Box } from "@/components/ui/box"
+import { Card } from "@/components/ui/card"
+import { Stack } from "@/components/ui/stack"
+import { usePermissions } from "@/hooks/security/usePermissions"
+import type { Permission } from "@/lib/constants/permissions"
 
 interface AccessDeniedProps {
-  type: 'route' | 'tab' | 'component' | 'api';
-  resource: string;
-  requiredPermissions: Permission[];
-  currentPermissions?: string[];
-  onRequestAccess?: () => void;
+  type: "route" | "tab" | "component" | "api"
+  resource: string
+  requiredPermissions: Permission[]
+  currentPermissions?: string[]
+  onRequestAccess?: () => void
 }
 
 export function AccessDenied({
@@ -25,8 +25,8 @@ export function AccessDenied({
   currentPermissions,
   onRequestAccess,
 }: AccessDeniedProps) {
-  const { permissions, role } = usePermissions();
-  const displayPermissions = currentPermissions || permissions;
+  const { permissions, role } = usePermissions()
+  const displayPermissions = currentPermissions || permissions
 
   return (
     <Card className="p-6">
@@ -38,7 +38,8 @@ export function AccessDenied({
         <Stack spacing="sm" align="center">
           <h3 className="text-lg font-semibold">Access Denied</h3>
           <p className="text-sm text-muted-foreground text-center">
-            You don't have permission to access this {type === 'route' ? 'page' : type === 'tab' ? 'tab' : 'resource'}.
+            You don't have permission to access this{" "}
+            {type === "route" ? "page" : type === "tab" ? "tab" : "resource"}.
           </p>
         </Stack>
 
@@ -53,7 +54,11 @@ export function AccessDenied({
             {requiredPermissions.map((perm) => (
               <Box key={perm} className="flex items-center gap-2 text-sm">
                 <AlertCircle className="h-4 w-4 text-destructive" />
-                <span className={displayPermissions.includes(perm) ? 'text-muted-foreground line-through' : ''}>
+                <span
+                  className={
+                    displayPermissions.includes(perm) ? "text-muted-foreground line-through" : ""
+                  }
+                >
                   {perm}
                 </span>
               </Box>
@@ -69,15 +74,11 @@ export function AccessDenied({
         )}
 
         {onRequestAccess && (
-          <button
-            onClick={onRequestAccess}
-            className="text-sm text-primary hover:underline"
-          >
+          <button onClick={onRequestAccess} className="text-sm text-primary hover:underline">
             Request Access
           </button>
         )}
       </Stack>
     </Card>
-  );
+  )
 }
-

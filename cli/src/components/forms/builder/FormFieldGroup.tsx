@@ -1,11 +1,11 @@
 import { ChevronDown, ChevronUp } from "lucide-react"
 import { useState } from "react"
-import { Button } from "@/components/ui/button"
 import { Box } from "@/components/ui/box"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Flex } from "@/components/ui/flex"
-import { cn } from "@/lib/utils"
 import type { FormFieldGroup } from "@/components/ui/form-builder"
+import { cn } from "@/lib/utils"
 
 interface FormFieldGroupProps {
   group: FormFieldGroup
@@ -63,4 +63,3 @@ export function FormFieldGroupComponent({
     </Box>
   )
 }
-

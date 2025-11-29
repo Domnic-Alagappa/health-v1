@@ -1,5 +1,10 @@
-import { useState, useRef } from "react"
-import type { CanvasField, CanvasGroup, CanvasSection, CanvasFormConfig } from "@/components/forms/canvas/types"
+import { useRef, useState } from "react"
+import type {
+  CanvasField,
+  CanvasFormConfig,
+  CanvasGroup,
+  CanvasSection,
+} from "@/components/forms/canvas/types"
 
 export function useFormCanvas() {
   const [fields, setFields] = useState<CanvasField[]>([])
@@ -70,4 +75,3 @@ export function useFormCanvas() {
     removeSection,
   }
 }
-

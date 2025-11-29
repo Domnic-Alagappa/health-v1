@@ -1,7 +1,18 @@
 import { useState } from "react"
-import { createCanvasField, createCanvasGroup, createCanvasSection, exportCanvasConfig, generateFormCode } from "@/lib/canvasFieldUtils"
+import type {
+  CanvasField,
+  CanvasFormConfig,
+  CanvasGroup,
+  CanvasSection,
+} from "@/components/forms/canvas/types"
 import type { FieldType } from "@/components/ui/form-builder"
-import type { CanvasField, CanvasGroup, CanvasSection, CanvasFormConfig } from "@/components/forms/canvas/types"
+import {
+  createCanvasField,
+  createCanvasGroup,
+  createCanvasSection,
+  exportCanvasConfig,
+  generateFormCode,
+} from "@/lib/canvasFieldUtils"
 
 interface UseCanvasOperationsOptions {
   fields: CanvasField[]
@@ -32,7 +43,9 @@ export function useCanvasOperations({
 }: UseCanvasOperationsOptions) {
   const [copied, setCopied] = useState(false)
 
-  const addField = (type: FieldType | "group" | "section" | "image" | "line-horizontal" | "line-vertical" | "box") => {
+  const addField = (
+    type: FieldType | "group" | "section" | "image" | "line-horizontal" | "line-vertical" | "box"
+  ) => {
     if (type === "group") {
       const newGroup = createCanvasGroup(groups.length)
       setGroups([...groups, newGroup])
@@ -105,4 +118,3 @@ export function useCanvasOperations({
     copyCode,
   }
 }
-

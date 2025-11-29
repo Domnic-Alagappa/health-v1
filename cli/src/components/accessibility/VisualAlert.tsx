@@ -3,57 +3,57 @@
  * Visual indicators for audio alerts
  */
 
-import { Box } from '@/components/ui/box';
-import { useAccessibilityStore } from '@/stores/accessibilityStore';
-import { useEffect, useState } from 'react';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle } from "lucide-react"
+import { useEffect, useState } from "react"
+import { Box } from "@/components/ui/box"
+import { useAccessibilityStore } from "@/stores/accessibilityStore"
 
 export interface VisualAlertProps {
-  message: string;
-  type?: 'info' | 'warning' | 'error' | 'success';
-  duration?: number;
+  message: string
+  type?: "info" | "warning" | "error" | "success"
+  duration?: number
 }
 
-export function VisualAlert({ message, type = 'info', duration = 3000 }: VisualAlertProps) {
-  const visualAlerts = useAccessibilityStore((state) => state.preferences.visualAlerts);
-  const [visible, setVisible] = useState(true);
+export function VisualAlert({ message, type = "info", duration = 3000 }: VisualAlertProps) {
+  const visualAlerts = useAccessibilityStore((state) => state.preferences.visualAlerts)
+  const [visible, setVisible] = useState(true)
 
   useEffect(() => {
     if (duration > 0) {
       const timer = setTimeout(() => {
-        setVisible(false);
-      }, duration);
-      return () => clearTimeout(timer);
+        setVisible(false)
+      }, duration)
+      return () => clearTimeout(timer)
     }
-  }, [duration]);
+  }, [duration])
 
   useEffect(() => {
     if (visualAlerts) {
       // Flash screen for visual alert
-      const flash = document.createElement('div');
-      flash.className = 'fixed inset-0 bg-white z-[9999] opacity-50 pointer-events-none';
-      document.body.appendChild(flash);
-      
+      const flash = document.createElement("div")
+      flash.className = "fixed inset-0 bg-white z-[9999] opacity-50 pointer-events-none"
+      document.body.appendChild(flash)
+
       setTimeout(() => {
-        flash.style.transition = 'opacity 0.3s';
-        flash.style.opacity = '0';
+        flash.style.transition = "opacity 0.3s"
+        flash.style.opacity = "0"
         setTimeout(() => {
-          document.body.removeChild(flash);
-        }, 300);
-      }, 100);
+          document.body.removeChild(flash)
+        }, 300)
+      }, 100)
     }
-  }, [visualAlerts, message]);
+  }, [visualAlerts, message])
 
   if (!visible) {
-    return null;
+    return null
   }
 
   const typeClasses = {
-    info: 'bg-blue-500 text-white',
-    warning: 'bg-yellow-500 text-black',
-    error: 'bg-red-500 text-white',
-    success: 'bg-green-500 text-white',
-  };
+    info: "bg-blue-500 text-white",
+    warning: "bg-yellow-500 text-black",
+    error: "bg-red-500 text-white",
+    success: "bg-green-500 text-white",
+  }
 
   return (
     <Box
@@ -64,6 +64,5 @@ export function VisualAlert({ message, type = 'info', duration = 3000 }: VisualA
       <AlertCircle className="h-4 w-4" />
       <span className="text-sm font-medium">{message}</span>
     </Box>
-  );
+  )
 }
-

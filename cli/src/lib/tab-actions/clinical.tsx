@@ -1,6 +1,6 @@
 import { FileText, Printer } from "lucide-react"
-import type { TabActionGroup } from "./types"
 import { getBaseTabActions } from "./base"
+import type { TabActionGroup } from "./types"
 
 export function getClinicalTabActions(
   path: string,
@@ -39,4 +39,3 @@ export function getClinicalTabActions(
     },
   ]
 }
-

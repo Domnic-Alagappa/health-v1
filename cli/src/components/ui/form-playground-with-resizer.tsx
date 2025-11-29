@@ -1,11 +1,25 @@
+import {
+  Check,
+  Code,
+  Copy,
+  Download,
+  Eye,
+  Grid3x3,
+  GripVertical,
+  Maximize2,
+  Move,
+  Plus,
+  Settings,
+  Trash2,
+  Upload,
+} from "lucide-react"
 import * as React from "react"
-import { Plus, Trash2, GripVertical, Eye, Code, Download, Upload, Copy, Check, Settings, Move, Maximize2, Grid3x3 } from "lucide-react"
+import { cn } from "@/lib/utils"
 import { Button } from "./button"
 import { Card, CardContent, CardHeader, CardTitle } from "./card"
+import { type FieldType, FormBuilder, type FormConfig, type FormField } from "./form-builder"
 import { Input } from "./input"
 import { Label } from "./label"
-import { FormBuilder, FormConfig, FormField, FieldType } from "./form-builder"
-import { cn } from "@/lib/utils"
 
 /**
  * Enhanced Form Builder with Drag & Drop, Resizers, and Visual Placement
@@ -86,7 +100,12 @@ export function FormPlaygroundWithResizer() {
     const newField: FormField = {
       id: `field-${Date.now()}`,
       name: `field${fields.length + 1}`,
-      label: type === "separator" ? "" : type === "display-text" ? "Display Text" : `Field ${fields.length + 1}`,
+      label:
+        type === "separator"
+          ? ""
+          : type === "display-text"
+            ? "Display Text"
+            : `Field ${fields.length + 1}`,
       type,
       ...fieldDefaults[type],
       layout: {
@@ -276,7 +295,9 @@ export function MyForm() {
             </h3>
             <div className="space-y-3">
               <div>
-                <Label htmlFor="form-title" className="text-xs mb-1.5 block">Title</Label>
+                <Label htmlFor="form-title" className="text-xs mb-1.5 block">
+                  Title
+                </Label>
                 <Input
                   id="form-title"
                   value={formConfig.title || ""}
@@ -285,7 +306,9 @@ export function MyForm() {
                 />
               </div>
               <div>
-                <Label htmlFor="form-layout" className="text-xs mb-1.5 block">Layout</Label>
+                <Label htmlFor="form-layout" className="text-xs mb-1.5 block">
+                  Layout
+                </Label>
                 <select
                   id="form-layout"
                   value={formConfig.layout || "two-column"}
@@ -461,8 +484,12 @@ export function MyForm() {
                                 <GripVertical className="h-4 w-4 text-muted-foreground shrink-0" />
                                 <div className="flex-1">
                                   <div className="flex items-center gap-2">
-                                    <span className="text-sm font-medium">{field.label || "(No label)"}</span>
-                                    <span className="text-xs text-muted-foreground">({field.type})</span>
+                                    <span className="text-sm font-medium">
+                                      {field.label || "(No label)"}
+                                    </span>
+                                    <span className="text-xs text-muted-foreground">
+                                      ({field.type})
+                                    </span>
                                     <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded">
                                       {colSpan}/12
                                     </span>
@@ -539,11 +566,13 @@ export function MyForm() {
             <Card className="max-w-5xl mx-auto">
               <CardContent className="p-6">
                 <FormBuilder
-                  config={{
-                    id: "preview-form",
-                    ...formConfig,
-                    fields,
-                  } as FormConfig}
+                  config={
+                    {
+                      id: "preview-form",
+                      ...formConfig,
+                      fields,
+                    } as FormConfig
+                  }
                   onSubmit={(data) => {
                     console.log("Form submitted:", data)
                     alert("Form submitted! Check console.")
@@ -563,7 +592,9 @@ export function MyForm() {
           <div className="space-y-4">
             {/* Basic Properties */}
             <div className="space-y-2">
-              <Label htmlFor="field-label" className="text-xs">Label</Label>
+              <Label htmlFor="field-label" className="text-xs">
+                Label
+              </Label>
               <Input
                 id="field-label"
                 value={selectedFieldData.label}
@@ -573,7 +604,9 @@ export function MyForm() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="field-name" className="text-xs">Name</Label>
+              <Label htmlFor="field-name" className="text-xs">
+                Name
+              </Label>
               <Input
                 id="field-name"
                 value={selectedFieldData.name}
@@ -588,7 +621,9 @@ export function MyForm() {
               <div className="space-y-3">
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <Label htmlFor="field-colspan" className="text-xs">Column Span</Label>
+                    <Label htmlFor="field-colspan" className="text-xs">
+                      Column Span
+                    </Label>
                     <span className="text-xs font-medium text-primary">
                       {selectedFieldData.layout?.colSpan || 12}/12
                     </span>
@@ -603,7 +638,19 @@ export function MyForm() {
                       updateField(selectedField, {
                         layout: {
                           ...selectedFieldData.layout,
-                          colSpan: Number(e.target.value) as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12,
+                          colSpan: Number(e.target.value) as
+                            | 1
+                            | 2
+                            | 3
+                            | 4
+                            | 5
+                            | 6
+                            | 7
+                            | 8
+                            | 9
+                            | 10
+                            | 11
+                            | 12,
                         },
                       })
                     }
@@ -617,7 +664,9 @@ export function MyForm() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="field-size" className="text-xs">Size</Label>
+                  <Label htmlFor="field-size" className="text-xs">
+                    Size
+                  </Label>
                   <select
                     id="field-size"
                     value={selectedFieldData.layout?.size || "md"}
@@ -670,4 +719,3 @@ export function MyForm() {
     </div>
   )
 }
-

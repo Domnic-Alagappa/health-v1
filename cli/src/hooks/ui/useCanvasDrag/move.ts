@@ -66,8 +66,14 @@ export function handleMouseMove(e: MouseEvent, options: MoveOptions) {
     }
 
     updateField(draggedField, {
-      x: Math.max(0, Math.min(newX, canvasWidth - (fields.find((f) => f.id === draggedField)?.width || 0))),
-      y: Math.max(0, Math.min(newY, canvasHeight - (fields.find((f) => f.id === draggedField)?.height || 0))),
+      x: Math.max(
+        0,
+        Math.min(newX, canvasWidth - (fields.find((f) => f.id === draggedField)?.width || 0))
+      ),
+      y: Math.max(
+        0,
+        Math.min(newY, canvasHeight - (fields.find((f) => f.id === draggedField)?.height || 0))
+      ),
     })
   }
 
@@ -131,4 +137,3 @@ export function handleMouseMove(e: MouseEvent, options: MoveOptions) {
     )
   }
 }
-

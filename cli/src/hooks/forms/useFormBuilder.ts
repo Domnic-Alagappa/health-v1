@@ -1,6 +1,6 @@
-import { useState, useEffect, useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
+import type { FormConfig, FormField } from "@/components/ui/form-builder"
 import { validateField } from "@/lib/formValidationUtils"
-import type { FormField, FormConfig } from "@/components/ui/form-builder"
 
 interface UseFormBuilderOptions {
   config: FormConfig
@@ -60,10 +60,13 @@ export function useFormBuilder({ config, initialValues = {} }: UseFormBuilderOpt
 
     setErrors(newErrors)
     setTouched(
-      config.fields.reduce((acc, field) => {
-        acc[field.id] = true
-        return acc
-      }, {} as Record<string, boolean>)
+      config.fields.reduce(
+        (acc, field) => {
+          acc[field.id] = true
+          return acc
+        },
+        {} as Record<string, boolean>
+      )
     )
 
     return isValid
@@ -96,4 +99,3 @@ export function useFormBuilder({ config, initialValues = {} }: UseFormBuilderOpt
     sortedFields,
   }
 }
-

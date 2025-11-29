@@ -2,7 +2,12 @@ import { calculateInsertionIndex } from "@/lib/tabDragUtils"
 import { createStandaloneWindow } from "@/lib/tabWindowUtils"
 
 interface MouseHandlersOptions {
-  sortedTabsRef: React.RefObject<Array<{ id: string; label: string; path: string; closable?: boolean; allowDuplicate?: boolean } | undefined>>
+  sortedTabsRef: React.RefObject<
+    Array<
+      | { id: string; label: string; path: string; closable?: boolean; allowDuplicate?: boolean }
+      | undefined
+    >
+  >
   scrollContainerRef: React.RefObject<HTMLDivElement>
   tabBarRef: React.RefObject<HTMLDivElement>
   draggedTabIdRef: React.RefObject<string | null>
@@ -119,4 +124,3 @@ export function createMouseHandlers(options: MouseHandlersOptions) {
     handleMouseUp,
   }
 }
-

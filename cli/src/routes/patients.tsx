@@ -1,5 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import { ArrowRight, Filter, Plus, Search, Users } from "lucide-react"
+import { ProtectedRoute } from "@/components/security/ProtectedRoute"
 import { Badge } from "@/components/ui/badge"
 import { Box } from "@/components/ui/box"
 import { Button } from "@/components/ui/button"
@@ -7,10 +8,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Flex } from "@/components/ui/flex"
 import { Input } from "@/components/ui/input"
 import { Stack } from "@/components/ui/stack"
-import { useNavigate } from "@tanstack/react-router"
-import { useOpenTab } from "@/stores/tabStore"
-import { ProtectedRoute } from "@/components/security/ProtectedRoute"
 import { PERMISSIONS } from "@/lib/constants/permissions"
+import { useOpenTab } from "@/stores/tabStore"
 
 export const Route = createFileRoute("/patients")({
   component: PatientsComponent,
@@ -70,13 +69,16 @@ function PatientsComponentInner() {
   ]
 
   const handleOpenPatient = (patient: (typeof patients)[0]) => {
-    openTab({
-      label: `${patient.name} (${patient.mrn})`,
-      path: `/patients/${patient.id}`,
-      icon: <Users className="h-4 w-4" />,
-      closable: true,
-      requiredPermission: PERMISSIONS.PATIENTS.VIEW,
-    }, (path) => navigate({ to: path as "/" | (string & {}) }))
+    openTab(
+      {
+        label: `${patient.name} (${patient.mrn})`,
+        path: `/patients/${patient.id}`,
+        icon: <Users className="h-4 w-4" />,
+        closable: true,
+        requiredPermission: PERMISSIONS.PATIENTS.VIEW,
+      },
+      (path) => navigate({ to: path as "/" | (string & {}) })
+    )
   }
 
   return (

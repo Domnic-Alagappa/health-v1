@@ -37,4 +37,3 @@ export function getAlignmentClasses(alignment?: FieldLayout["alignment"]): strin
   }
   return classes.join(" ")
 }
-

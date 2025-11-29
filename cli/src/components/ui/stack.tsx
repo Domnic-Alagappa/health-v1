@@ -12,15 +12,7 @@ export interface StackProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const Stack = React.forwardRef<HTMLDivElement, StackProps>(
   (
-    {
-      className,
-      asChild = false,
-      direction = "column",
-      spacing = "md",
-      align,
-      justify,
-      ...props
-    },
+    { className, asChild = false, direction = "column", spacing = "md", align, justify, ...props },
     ref
   ) => {
     const Comp = asChild ? Slot : "div"
@@ -69,4 +61,3 @@ const Stack = React.forwardRef<HTMLDivElement, StackProps>(
 Stack.displayName = "Stack"
 
 export { Stack }
-

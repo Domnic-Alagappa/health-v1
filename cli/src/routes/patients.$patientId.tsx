@@ -120,7 +120,17 @@ function PatientDetailComponentInner() {
     return () => {
       // Component registry cleanup would go here if we had an unregister function
     }
-  }, [patientId, patient.name, patient.mrn, patient.age, patient.gender, patient.status, patient.primaryCare, patient.dob, patient.lastVisit])
+  }, [
+    patientId,
+    patient.name,
+    patient.mrn,
+    patient.age,
+    patient.gender,
+    patient.status,
+    patient.primaryCare,
+    patient.dob,
+    patient.lastVisit,
+  ])
 
   return (
     <Box className="space-y-6" role="main" aria-label={`Patient detail for ${patient.name}`}>
@@ -134,9 +144,7 @@ function PatientDetailComponentInner() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Badge variant="secondary">
-            {patient.status}
-          </Badge>
+          <Badge variant="secondary">{patient.status}</Badge>
           <Button variant="outline" aria-label="Patient actions menu">
             Actions
           </Button>

@@ -1,5 +1,5 @@
-import * as React from "react"
-import { HelpButton, HelpButtonProps } from "./help-button"
+import type * as React from "react"
+import { HelpButton, type HelpButtonProps } from "./help-button"
 
 /**
  * Component Registry - Centralized component configuration and customization
@@ -22,7 +22,16 @@ export interface ActionItem {
  * Component Structure - Exposes component's internal structure to LLM
  */
 export interface ComponentStructure {
-  readonly type: 'form' | 'button' | 'dropdown' | 'table' | 'modal' | 'card' | 'input' | 'navigation' | 'other'
+  readonly type:
+    | "form"
+    | "button"
+    | "dropdown"
+    | "table"
+    | "modal"
+    | "card"
+    | "input"
+    | "navigation"
+    | "other"
   readonly fields?: FieldStructure[]
   readonly options?: OptionStructure[]
   readonly columns?: ColumnStructure[]
@@ -68,7 +77,7 @@ export interface RowStructure {
 export interface ActionStructure {
   readonly id: string
   readonly label: string
-  readonly type: 'button' | 'link' | 'menu-item'
+  readonly type: "button" | "link" | "menu-item"
   readonly ref?: { current: HTMLElement | null }
   readonly confirmationRequired?: boolean
 }
@@ -226,12 +235,14 @@ export function getVoiceInteractableComponents(): Array<{ id: string; config: Co
  */
 export function findComponentByVoiceCommand(command: string): ComponentConfig | null {
   const normalizedCommand = command.toLowerCase().trim()
-  
+
   for (const config of componentRegistry.values()) {
     if (config.actionItems) {
       for (const action of config.actionItems) {
         if (action.voiceCommand) {
-          const commands = Array.isArray(action.voiceCommand) ? action.voiceCommand : [action.voiceCommand]
+          const commands = Array.isArray(action.voiceCommand)
+            ? action.voiceCommand
+            : [action.voiceCommand]
           for (const cmd of commands) {
             if (normalizedCommand.includes(cmd.toLowerCase())) {
               return config
@@ -241,7 +252,7 @@ export function findComponentByVoiceCommand(command: string): ComponentConfig | 
       }
     }
   }
-  
+
   return null
 }
 
@@ -250,7 +261,7 @@ export function findComponentByVoiceCommand(command: string): ComponentConfig | 
  */
 export function getAllActionItems(): Array<{ componentId: string; action: ActionItem }> {
   const actions: Array<{ componentId: string; action: ActionItem }> = []
-  
+
   for (const [componentId, config] of componentRegistry.entries()) {
     if (config.actionItems) {
       for (const action of config.actionItems) {
@@ -258,7 +269,7 @@ export function getAllActionItems(): Array<{ componentId: string; action: Action
       }
     }
   }
-  
+
   return actions
 }
 
@@ -274,6 +285,91 @@ export function registerComponent(name: string, config: ComponentConfig) {
  */
 export function getComponentConfig(name: string): ComponentConfig | undefined {
   return componentRegistry.get(name)
+}
+
+/**
+ * Get all actions with full metadata including i18n
+ */
+export function getAllActionsWithMetadata(): Array<{
+  componentId: string
+  action: ActionItem
+  config: ComponentConfig
+}> {
+  const actions: Array<{ componentId: string; action: ActionItem; config: ComponentConfig }> = []
+
+  for (const [componentId, config] of componentRegistry.entries()) {
+    if (config.actionItems) {
+      for (const action of config.actionItems) {
+        actions.push({ componentId, action, config })
+      }
+    }
+  }
+
+  return actions
+}
+
+/**
+ * Get actions for specific component
+ */
+export function getActionsByComponent(componentId: string): ActionItem[] {
+  const config = componentRegistry.get(componentId)
+  return config?.actionItems || []
+}
+
+/**
+ * Get component structure for LLM
+ */
+export function getComponentStructure(componentId: string): ComponentStructure | undefined {
+  const config = componentRegistry.get(componentId)
+  return config?.componentStructure
+}
+
+/**
+ * Find actions matching voice command
+ */
+export function findActionsByVoiceCommand(
+  command: string
+): Array<{ componentId: string; action: ActionItem; config: ComponentConfig }> {
+  const normalizedCommand = command.toLowerCase().trim()
+  const matches: Array<{ componentId: string; action: ActionItem; config: ComponentConfig }> = []
+
+  for (const [componentId, config] of componentRegistry.entries()) {
+    if (config.actionItems) {
+      for (const action of config.actionItems) {
+        if (action.voiceCommand) {
+          const commands = Array.isArray(action.voiceCommand)
+            ? action.voiceCommand
+            : [action.voiceCommand]
+          for (const cmd of commands) {
+            if (
+              normalizedCommand.includes(cmd.toLowerCase()) ||
+              cmd.toLowerCase().includes(normalizedCommand)
+            ) {
+              matches.push({ componentId, action, config })
+              break
+            }
+          }
+        }
+
+        // Also check label match
+        if (
+          action.label.toLowerCase().includes(normalizedCommand) ||
+          normalizedCommand.includes(action.label.toLowerCase())
+        ) {
+          if (!matches.find((m) => m.action.id === action.id && m.componentId === componentId)) {
+            matches.push({ componentId, action, config })
+          }
+        }
+      }
+    }
+  }
+
+  return matches
+}
+
+// Expose registry globally for LLM context
+if (typeof window !== "undefined") {
+  ;(window as any).__componentRegistry = componentRegistry
 }
 
 /**
@@ -314,4 +410,3 @@ export function ComponentWrapper({
 function cn(...classes: (string | undefined | null | false)[]): string {
   return classes.filter(Boolean).join(" ")
 }
-

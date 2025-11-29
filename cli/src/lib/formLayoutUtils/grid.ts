@@ -39,7 +39,7 @@ export function getGridLayoutClasses(config: FormConfig): string {
   }
 
   const layoutMap: Record<string, string> = {
-    "single": "grid-cols-1",
+    single: "grid-cols-1",
     "two-column": "grid-cols-1 md:grid-cols-2",
     "three-column": "grid-cols-1 md:grid-cols-2 lg:grid-cols-3",
     "four-column": "grid-cols-1 md:grid-cols-2 lg:grid-cols-4",
@@ -50,12 +50,11 @@ export function getGridLayoutClasses(config: FormConfig): string {
 
 export function getGapClasses(config: FormConfig): string {
   const gapMap: Record<string, string> = {
-    "none": "gap-0",
-    "sm": "gap-2",
-    "md": "gap-4",
-    "lg": "gap-6",
-    "xl": "gap-8",
+    none: "gap-0",
+    sm: "gap-2",
+    md: "gap-4",
+    lg: "gap-6",
+    xl: "gap-8",
   }
   return gapMap[config.gap || "md"] ?? gapMap["md"]
 }
-

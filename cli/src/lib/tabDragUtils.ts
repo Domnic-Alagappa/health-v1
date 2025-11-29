@@ -7,7 +7,12 @@ const DASHBOARD_ID = "dashboard"
 interface CalculateInsertionIndexOptions {
   e: MouseEvent
   scrollContainerRef: React.RefObject<HTMLDivElement>
-  sortedTabsRef: React.MutableRefObject<Array<{ id: string; label: string; path: string; closable?: boolean; allowDuplicate?: boolean } | undefined>>
+  sortedTabsRef: React.MutableRefObject<
+    Array<
+      | { id: string; label: string; path: string; closable?: boolean; allowDuplicate?: boolean }
+      | undefined
+    >
+  >
 }
 
 export function calculateInsertionIndex({
@@ -71,8 +76,7 @@ export function calculateInsertionIndex({
     if (!element) continue
     const rect = element.getBoundingClientRect()
     const relativeLeft = rect.left - containerRect.left + container.scrollLeft - dashboardWidth
-    const relativeRight =
-      rect.right - containerRect.left + container.scrollLeft - dashboardWidth
+    const relativeRight = rect.right - containerRect.left + container.scrollLeft - dashboardWidth
     const tabWidth = rect.width
 
     // Get the actual index of this tab in the sorted array
@@ -117,4 +121,3 @@ export function calculateInsertionIndex({
   // Clamp to valid range
   return Math.max(0, Math.min(targetIndex, nonDashboardElements.length))
 }
-

@@ -20,4 +20,3 @@ export function TabCloseButton({ onClose }: TabCloseButtonProps) {
     </Button>
   )
 }
-

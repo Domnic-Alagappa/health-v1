@@ -3,22 +3,22 @@
  * Component that automatically masks sensitive fields with progressive disclosure
  */
 
-import { useState } from 'react';
-import { useMasking } from '@/hooks/security/useMasking';
-import { useAuditLog } from '@/hooks/security/useAuditLog';
-import { Eye, EyeOff, Lock } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Flex } from '@/components/ui/flex';
-import { Box } from '@/components/ui/box';
-import type { MaskingLevel } from '@/lib/constants/security';
+import { Eye, EyeOff, Lock } from "lucide-react"
+import { useState } from "react"
+import { Box } from "@/components/ui/box"
+import { Button } from "@/components/ui/button"
+import { Flex } from "@/components/ui/flex"
+import { useAuditLog } from "@/hooks/security/useAuditLog"
+import { useMasking } from "@/hooks/security/useMasking"
+import type { MaskingLevel } from "@/lib/constants/security"
 
 interface MaskedFieldProps {
-  value: string;
-  field: string;
-  level?: MaskingLevel;
-  label?: string;
-  showRevealButton?: boolean;
-  className?: string;
+  value: string
+  field: string
+  level?: MaskingLevel
+  label?: string
+  showRevealButton?: boolean
+  className?: string
 }
 
 export function MaskedField({
@@ -27,31 +27,29 @@ export function MaskedField({
   level,
   label,
   showRevealButton = true,
-  className = '',
+  className = "",
 }: MaskedFieldProps) {
-  const { mask } = useMasking();
-  const { logPHI } = useAuditLog();
-  const [revealed, setRevealed] = useState(false);
+  const { mask } = useMasking()
+  const { logPHI } = useAuditLog()
+  const [revealed, setRevealed] = useState(false)
 
-  const maskedValue = mask(value, field, level);
-  const displayValue = revealed ? value : maskedValue;
+  const maskedValue = mask(value, field, level)
+  const displayValue = revealed ? value : maskedValue
 
   const handleReveal = () => {
     if (!revealed) {
       // Log PHI access on reveal
-      logPHI('field', field, { field, action: 'reveal' });
+      logPHI("field", field, { field, action: "reveal" })
     }
-    setRevealed(!revealed);
-  };
+    setRevealed(!revealed)
+  }
 
   return (
     <Flex align="center" gap="sm" className={className}>
       <Box className="flex-1">
         {label && <span className="text-sm text-muted-foreground mr-2">{label}:</span>}
-        <span className={revealed ? '' : 'font-mono'}>{displayValue}</span>
-        {!revealed && (
-          <Lock className="inline-block ml-2 h-3 w-3 text-muted-foreground" />
-        )}
+        <span className={revealed ? "" : "font-mono"}>{displayValue}</span>
+        {!revealed && <Lock className="inline-block ml-2 h-3 w-3 text-muted-foreground" />}
       </Box>
       {showRevealButton && (
         <Button
@@ -59,16 +57,11 @@ export function MaskedField({
           size="sm"
           onClick={handleReveal}
           className="h-8 w-8 p-0"
-          aria-label={revealed ? 'Hide value' : 'Reveal value'}
+          aria-label={revealed ? "Hide value" : "Reveal value"}
         >
-          {revealed ? (
-            <EyeOff className="h-4 w-4" />
-          ) : (
-            <Eye className="h-4 w-4" />
-          )}
+          {revealed ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
         </Button>
       )}
     </Flex>
-  );
+  )
 }
-

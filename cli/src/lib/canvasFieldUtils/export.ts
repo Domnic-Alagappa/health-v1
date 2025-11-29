@@ -3,7 +3,14 @@ import type { FormConfig } from "@/components/ui/form-builder"
 
 export function exportCanvasConfig(
   fields: CanvasField[],
-  canvasConfig: { id?: string; title?: string; description?: string; layout?: string; gap?: "none" | "sm" | "md" | "lg" | "xl"; canvasWidth?: number }
+  canvasConfig: {
+    id?: string
+    title?: string
+    description?: string
+    layout?: string
+    gap?: "none" | "sm" | "md" | "lg" | "xl"
+    canvasWidth?: number
+  }
 ): FormConfig {
   return {
     id: canvasConfig.id || "form-1",
@@ -13,7 +20,10 @@ export function exportCanvasConfig(
       ...field,
       layout: {
         ...field.layout,
-        colSpan: Math.max(1, Math.min(12, Math.round((width / (canvasConfig.canvasWidth || 1200)) * 12))) as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12,
+        colSpan: Math.max(
+          1,
+          Math.min(12, Math.round((width / (canvasConfig.canvasWidth || 1200)) * 12))
+        ) as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12,
       },
     })),
     layout: canvasConfig.layout as "single" | "two-column" | "three-column" | undefined,
@@ -21,7 +31,16 @@ export function exportCanvasConfig(
   }
 }
 
-export function generateFormCode(fields: CanvasField[], canvasConfig: { id?: string; title?: string; description?: string; layout?: string; gap?: "none" | "sm" | "md" | "lg" | "xl" }): string {
+export function generateFormCode(
+  fields: CanvasField[],
+  canvasConfig: {
+    id?: string
+    title?: string
+    description?: string
+    layout?: string
+    gap?: "none" | "sm" | "md" | "lg" | "xl"
+  }
+): string {
   const config: FormConfig = {
     id: canvasConfig.id || "form-1",
     ...canvasConfig,
@@ -39,4 +58,3 @@ export function MyForm() {
   return <FormBuilder config={formConfig} onSubmit={handleSubmit} />
 }`
 }
-

@@ -39,4 +39,3 @@ export function getTabActions(
 }
 
 export type { TabAction, TabActionGroup } from "./types"
-

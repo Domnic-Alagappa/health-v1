@@ -13,4 +13,3 @@ export function SidebarFooter({ isCollapsed }: SidebarFooterProps) {
     </Box>
   )
 }
-

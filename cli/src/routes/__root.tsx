@@ -1,4 +1,4 @@
-import { createRootRoute, Outlet, useLocation } from "@tanstack/react-router"
+import { createRootRoute, Outlet, useLocation, useNavigate } from "@tanstack/react-router"
 import { TanStackRouterDevtools } from "@tanstack/router-devtools"
 import {
   Activity,
@@ -14,26 +14,24 @@ import {
   Users,
 } from "lucide-react"
 import { useCallback, useEffect, useMemo } from "react"
-import { useNavigate } from "@tanstack/react-router"
 import { ActionRibbon } from "@/components/ActionRibbon"
+import { AccessibilityPanel } from "@/components/accessibility/AccessibilityPanel"
+import { KeyboardShortcutsHelp } from "@/components/accessibility/KeyboardShortcutsHelp"
+import { VoiceCommandChatbox } from "@/components/accessibility/VoiceCommandChatbox"
+import { VoiceCommandFAB } from "@/components/accessibility/VoiceCommandFAB"
+import { VoiceCommandFeedback } from "@/components/accessibility/VoiceCommandFeedback"
+import { VoiceCommandIndicator } from "@/components/accessibility/VoiceCommandIndicator"
 import { Sidebar } from "@/components/layout/Sidebar"
 import { TabBar } from "@/components/layout/TabBar"
 import { Box } from "@/components/ui/box"
 import { Container } from "@/components/ui/container"
 import { Flex } from "@/components/ui/flex"
-import { SkipToMainContent } from "@/lib/accessibility"
-import { useAuthStore } from "@/stores/authStore"
-import { useTabs, useActiveTabId, useOpenTab, useSetActiveTab } from "@/stores/tabStore"
-import { useSidebarCollapsed, useSetSidebarCollapsed } from "@/stores/uiStore"
 import { useDisclosure } from "@/hooks/ui/useDisclosure"
+import { initializeAccessibility, SkipToMainContent } from "@/lib/accessibility"
 import { PERMISSIONS, type Permission } from "@/lib/constants/permissions"
-import { AccessibilityPanel } from "@/components/accessibility/AccessibilityPanel"
-import { VoiceCommandIndicator } from "@/components/accessibility/VoiceCommandIndicator"
-import { VoiceCommandFeedback } from "@/components/accessibility/VoiceCommandFeedback"
-import { VoiceCommandFAB } from "@/components/accessibility/VoiceCommandFAB"
-import { VoiceCommandChatbox } from "@/components/accessibility/VoiceCommandChatbox"
-import { KeyboardShortcutsHelp } from "@/components/accessibility/KeyboardShortcutsHelp"
-import { initializeAccessibility } from "@/lib/accessibility"
+import { useAuthStore } from "@/stores/authStore"
+import { useActiveTabId, useOpenTab, useSetActiveTab, useTabs } from "@/stores/tabStore"
+import { useSetSidebarCollapsed, useSidebarCollapsed } from "@/stores/uiStore"
 
 export const Route = createRootRoute({
   component: RootComponent,
@@ -74,7 +72,11 @@ function RootComponentInner() {
   const setActiveTab = useSetActiveTab()
   const isSidebarCollapsed = useSidebarCollapsed()
   const setIsSidebarCollapsed = useSetSidebarCollapsed()
-  const { isOpen: isMobileSidebarOpen, onClose: onMobileSidebarClose, onToggle: onMobileSidebarToggle } = useDisclosure('mobile-sidebar')
+  const {
+    isOpen: isMobileSidebarOpen,
+    onClose: onMobileSidebarClose,
+    onToggle: onMobileSidebarToggle,
+  } = useDisclosure("mobile-sidebar")
 
   // Initialize accessibility features on mount
   useEffect(() => {
@@ -121,13 +123,16 @@ function RootComponentInner() {
         const tabData = JSON.parse(tabDataStr)
 
         // Open the tab automatically with the correct icon
-        openTab({
-          label: tabData.label,
-          path: tabData.path || location.pathname,
-          icon: getIconForPath(tabData.path || location.pathname),
-          closable: tabData.closable !== false && (tabData.path || location.pathname) !== "/",
-          allowDuplicate: tabData.allowDuplicate || false,
-        }, (path) => navigate({ to: path as "/" | (string & {}) }))
+        openTab(
+          {
+            label: tabData.label,
+            path: tabData.path || location.pathname,
+            icon: getIconForPath(tabData.path || location.pathname),
+            closable: tabData.closable !== false && (tabData.path || location.pathname) !== "/",
+            allowDuplicate: tabData.allowDuplicate || false,
+          },
+          (path) => navigate({ to: path as "/" | (string & {}) })
+        )
 
         // Immediately delete the token (single-use security measure)
         // This prevents token reuse if URL is shared or bookmarked
@@ -169,33 +174,39 @@ function RootComponentInner() {
     }
   }, [tabs, activeTabId])
 
-  const handleNavClick = useCallback((path: string, label: string, icon: React.ReactNode) => {
-    // Get required permission for this route - use static map to avoid circular dependency
-    const routePermissionMap: Record<string, Permission | undefined> = {
-      '/': undefined,
-      '/patients': PERMISSIONS.PATIENTS.VIEW,
-      '/clinical': PERMISSIONS.CLINICAL.VIEW,
-      '/orders': PERMISSIONS.ORDERS.VIEW,
-      '/results': PERMISSIONS.RESULTS.VIEW,
-      '/scheduling': PERMISSIONS.SCHEDULING.VIEW,
-      '/pharmacy': PERMISSIONS.PHARMACY.VIEW,
-      '/revenue': PERMISSIONS.REVENUE.VIEW,
-      '/analytics': PERMISSIONS.ANALYTICS.VIEW,
-      '/form-builder': undefined,
-      '/settings': PERMISSIONS.SETTINGS.VIEW,
-    }
-    const requiredPermission = routePermissionMap[path]
-    
-    openTab({
-      label,
-      path,
-      icon,
-      closable: path !== "/",
-      requiredPermission,
-    }, (path) => navigate({ to: path as "/" | (string & {}) }))
-    // Close mobile sidebar after navigation
-    onMobileSidebarClose()
-  }, [openTab, navigate, onMobileSidebarClose])
+  const handleNavClick = useCallback(
+    (path: string, label: string, icon: React.ReactNode) => {
+      // Get required permission for this route - use static map to avoid circular dependency
+      const routePermissionMap: Record<string, Permission | undefined> = {
+        "/": undefined,
+        "/patients": PERMISSIONS.PATIENTS.VIEW,
+        "/clinical": PERMISSIONS.CLINICAL.VIEW,
+        "/orders": PERMISSIONS.ORDERS.VIEW,
+        "/results": PERMISSIONS.RESULTS.VIEW,
+        "/scheduling": PERMISSIONS.SCHEDULING.VIEW,
+        "/pharmacy": PERMISSIONS.PHARMACY.VIEW,
+        "/revenue": PERMISSIONS.REVENUE.VIEW,
+        "/analytics": PERMISSIONS.ANALYTICS.VIEW,
+        "/form-builder": undefined,
+        "/settings": PERMISSIONS.SETTINGS.VIEW,
+      }
+      const requiredPermission = routePermissionMap[path]
+
+      openTab(
+        {
+          label,
+          path,
+          icon,
+          closable: path !== "/",
+          requiredPermission,
+        },
+        (path) => navigate({ to: path as "/" | (string & {}) })
+      )
+      // Close mobile sidebar after navigation
+      onMobileSidebarClose()
+    },
+    [openTab, navigate, onMobileSidebarClose]
+  )
 
   const handleTabAction = (actionId: string, tabPath: string) => {
     // Handle different actions
@@ -208,12 +219,15 @@ function RootComponentInner() {
         // Open the same path in a new tab
         const tabToDuplicate = tabs.find((t) => t.path === tabPath)
         if (tabToDuplicate) {
-          openTab({
-            label: `${tabToDuplicate.label} (Copy)`,
-            path: tabPath,
-            icon: tabToDuplicate.icon,
-            closable: true,
-          }, (path) => navigate({ to: path as "/" | (string & {}) }))
+          openTab(
+            {
+              label: `${tabToDuplicate.label} (Copy)`,
+              path: tabPath,
+              icon: tabToDuplicate.icon,
+              closable: true,
+            },
+            (path) => navigate({ to: path as "/" | (string & {}) })
+          )
         }
         break
       }
@@ -241,104 +255,110 @@ function RootComponentInner() {
   }
 
   // Define navigation items with permissions
-  const allNavigationItems = useMemo<Array<{
-    path: string;
-    label: string;
-    icon: React.ReactNode;
-    onClick: () => void;
-    isActive: boolean;
-    permission?: Permission;
-  }>>(() => [
-    {
-      path: "/",
-      label: "Dashboard",
-      icon: <Stethoscope className="h-5 w-5" />,
-      onClick: () => handleNavClick("/", "Dashboard", <Stethoscope className="h-4 w-4" />),
-      isActive: location.pathname === "/",
-      permission: undefined, // Dashboard is always accessible
-    },
-    {
-      path: "/patients",
-      label: "Patients",
-      icon: <Users className="h-5 w-5" />,
-      onClick: () => handleNavClick("/patients", "Patients", <Users className="h-4 w-4" />),
-      isActive: location.pathname.startsWith("/patients"),
-      permission: PERMISSIONS.PATIENTS.VIEW,
-    },
-    {
-      path: "/clinical",
-      label: "Clinical",
-      icon: <FileText className="h-5 w-5" />,
-      onClick: () => handleNavClick("/clinical", "Clinical", <FileText className="h-4 w-4" />),
-      isActive: location.pathname.startsWith("/clinical"),
-      permission: PERMISSIONS.CLINICAL.VIEW,
-    },
-    {
-      path: "/orders",
-      label: "Orders",
-      icon: <ClipboardList className="h-5 w-5" />,
-      onClick: () => handleNavClick("/orders", "Orders", <ClipboardList className="h-4 w-4" />),
-      isActive: location.pathname.startsWith("/orders"),
-      permission: PERMISSIONS.ORDERS.VIEW,
-    },
-    {
-      path: "/results",
-      label: "Results",
-      icon: <Activity className="h-5 w-5" />,
-      onClick: () => handleNavClick("/results", "Results", <Activity className="h-4 w-4" />),
-      isActive: location.pathname.startsWith("/results"),
-      permission: PERMISSIONS.RESULTS.VIEW,
-    },
-    {
-      path: "/scheduling",
-      label: "Scheduling",
-      icon: <Calendar className="h-5 w-5" />,
-      onClick: () => handleNavClick("/scheduling", "Scheduling", <Calendar className="h-4 w-4" />),
-      isActive: location.pathname.startsWith("/scheduling"),
-      permission: PERMISSIONS.SCHEDULING.VIEW,
-    },
-    {
-      path: "/pharmacy",
-      label: "Pharmacy",
-      icon: <Pill className="h-5 w-5" />,
-      onClick: () => handleNavClick("/pharmacy", "Pharmacy", <Pill className="h-4 w-4" />),
-      isActive: location.pathname.startsWith("/pharmacy"),
-      permission: PERMISSIONS.PHARMACY.VIEW,
-    },
-    {
-      path: "/revenue",
-      label: "Revenue",
-      icon: <CreditCard className="h-5 w-5" />,
-      onClick: () => handleNavClick("/revenue", "Revenue", <CreditCard className="h-4 w-4" />),
-      isActive: location.pathname.startsWith("/revenue"),
-      permission: PERMISSIONS.REVENUE.VIEW,
-    },
-    {
-      path: "/analytics",
-      label: "Analytics",
-      icon: <BarChart3 className="h-5 w-5" />,
-      onClick: () => handleNavClick("/analytics", "Analytics", <BarChart3 className="h-4 w-4" />),
-      isActive: location.pathname.startsWith("/analytics"),
-      permission: PERMISSIONS.ANALYTICS.VIEW,
-    },
-    {
-      path: "/form-builder",
-      label: "Form Builder",
-      icon: <FileEdit className="h-5 w-5" />,
-      onClick: () =>
-        handleNavClick("/form-builder", "Form Builder", <FileEdit className="h-4 w-4" />),
-      isActive: location.pathname.startsWith("/form-builder"),
-      permission: undefined, // Form builder might not need specific permission
-    },
-    {
-      path: "/settings",
-      label: "Settings",
-      icon: <Settings className="h-5 w-5" />,
-      onClick: () => handleNavClick("/settings", "Settings", <Settings className="h-4 w-4" />),
-      isActive: location.pathname.startsWith("/settings"),
-      permission: PERMISSIONS.SETTINGS.VIEW,
-    },
-  ], [location.pathname, handleNavClick])
+  const allNavigationItems = useMemo<
+    Array<{
+      path: string
+      label: string
+      icon: React.ReactNode
+      onClick: () => void
+      isActive: boolean
+      permission?: Permission
+    }>
+  >(
+    () => [
+      {
+        path: "/",
+        label: "Dashboard",
+        icon: <Stethoscope className="h-5 w-5" />,
+        onClick: () => handleNavClick("/", "Dashboard", <Stethoscope className="h-4 w-4" />),
+        isActive: location.pathname === "/",
+        permission: undefined, // Dashboard is always accessible
+      },
+      {
+        path: "/patients",
+        label: "Patients",
+        icon: <Users className="h-5 w-5" />,
+        onClick: () => handleNavClick("/patients", "Patients", <Users className="h-4 w-4" />),
+        isActive: location.pathname.startsWith("/patients"),
+        permission: PERMISSIONS.PATIENTS.VIEW,
+      },
+      {
+        path: "/clinical",
+        label: "Clinical",
+        icon: <FileText className="h-5 w-5" />,
+        onClick: () => handleNavClick("/clinical", "Clinical", <FileText className="h-4 w-4" />),
+        isActive: location.pathname.startsWith("/clinical"),
+        permission: PERMISSIONS.CLINICAL.VIEW,
+      },
+      {
+        path: "/orders",
+        label: "Orders",
+        icon: <ClipboardList className="h-5 w-5" />,
+        onClick: () => handleNavClick("/orders", "Orders", <ClipboardList className="h-4 w-4" />),
+        isActive: location.pathname.startsWith("/orders"),
+        permission: PERMISSIONS.ORDERS.VIEW,
+      },
+      {
+        path: "/results",
+        label: "Results",
+        icon: <Activity className="h-5 w-5" />,
+        onClick: () => handleNavClick("/results", "Results", <Activity className="h-4 w-4" />),
+        isActive: location.pathname.startsWith("/results"),
+        permission: PERMISSIONS.RESULTS.VIEW,
+      },
+      {
+        path: "/scheduling",
+        label: "Scheduling",
+        icon: <Calendar className="h-5 w-5" />,
+        onClick: () =>
+          handleNavClick("/scheduling", "Scheduling", <Calendar className="h-4 w-4" />),
+        isActive: location.pathname.startsWith("/scheduling"),
+        permission: PERMISSIONS.SCHEDULING.VIEW,
+      },
+      {
+        path: "/pharmacy",
+        label: "Pharmacy",
+        icon: <Pill className="h-5 w-5" />,
+        onClick: () => handleNavClick("/pharmacy", "Pharmacy", <Pill className="h-4 w-4" />),
+        isActive: location.pathname.startsWith("/pharmacy"),
+        permission: PERMISSIONS.PHARMACY.VIEW,
+      },
+      {
+        path: "/revenue",
+        label: "Revenue",
+        icon: <CreditCard className="h-5 w-5" />,
+        onClick: () => handleNavClick("/revenue", "Revenue", <CreditCard className="h-4 w-4" />),
+        isActive: location.pathname.startsWith("/revenue"),
+        permission: PERMISSIONS.REVENUE.VIEW,
+      },
+      {
+        path: "/analytics",
+        label: "Analytics",
+        icon: <BarChart3 className="h-5 w-5" />,
+        onClick: () => handleNavClick("/analytics", "Analytics", <BarChart3 className="h-4 w-4" />),
+        isActive: location.pathname.startsWith("/analytics"),
+        permission: PERMISSIONS.ANALYTICS.VIEW,
+      },
+      {
+        path: "/form-builder",
+        label: "Form Builder",
+        icon: <FileEdit className="h-5 w-5" />,
+        onClick: () =>
+          handleNavClick("/form-builder", "Form Builder", <FileEdit className="h-4 w-4" />),
+        isActive: location.pathname.startsWith("/form-builder"),
+        permission: undefined, // Form builder might not need specific permission
+      },
+      {
+        path: "/settings",
+        label: "Settings",
+        icon: <Settings className="h-5 w-5" />,
+        onClick: () => handleNavClick("/settings", "Settings", <Settings className="h-4 w-4" />),
+        isActive: location.pathname.startsWith("/settings"),
+        permission: PERMISSIONS.SETTINGS.VIEW,
+      },
+    ],
+    [location.pathname, handleNavClick]
+  )
 
   // Filter navigation items based on permissions
   // Use direct store access to avoid hook re-render issues
@@ -378,11 +398,7 @@ function RootComponentInner() {
             }}
           />
           <aside className="fixed left-0 top-0 h-screen z-50 lg:hidden">
-            <Sidebar
-              isCollapsed={false}
-              onToggle={onMobileSidebarClose}
-              items={navigationItems}
-            />
+            <Sidebar isCollapsed={false} onToggle={onMobileSidebarClose} items={navigationItems} />
           </aside>
         </>
       )}
@@ -395,24 +411,24 @@ function RootComponentInner() {
         {/* Action Ribbon - shows actions for active tab */}
         <ActionRibbon onAction={handleTabAction} />
 
-          {/* Main Content */}
-          <main id="main-content" className="flex-1 overflow-y-auto" aria-label="Main content">
-            <Container size="full" className="py-2 px-4">
-              <Outlet />
-            </Container>
-          </main>
-        </Flex>
-
-        {/* Voice Command Components - Bottom Right */}
-        <VoiceCommandIndicator />
-        <VoiceCommandFeedback />
-        <VoiceCommandFAB />
-        <VoiceCommandChatbox />
-
-        <TanStackRouterDevtools />
+        {/* Main Content */}
+        <main id="main-content" className="flex-1 overflow-y-auto" aria-label="Main content">
+          <Container size="full" className="py-2 px-4">
+            <Outlet />
+          </Container>
+        </main>
       </Flex>
-    )
-  }
+
+      {/* Voice Command Components - Bottom Right */}
+      <VoiceCommandIndicator />
+      <VoiceCommandFeedback />
+      <VoiceCommandFAB />
+      <VoiceCommandChatbox />
+
+      <TanStackRouterDevtools />
+    </Flex>
+  )
+}
 
 // Root component - no longer needs TabProvider
 function RootComponent() {

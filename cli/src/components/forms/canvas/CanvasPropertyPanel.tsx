@@ -1,6 +1,6 @@
 import { Trash2 } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import { Box } from "@/components/ui/box"
+import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Stack } from "@/components/ui/stack"
@@ -40,7 +40,9 @@ export function CanvasPropertyPanel({
           <h3 className="text-sm font-semibold mb-4">Field Properties</h3>
           <Stack spacing="md">
             <Stack spacing="xs">
-              <Label htmlFor="field-label" className="text-xs">Label</Label>
+              <Label htmlFor="field-label" className="text-xs">
+                Label
+              </Label>
               <Input
                 id="field-label"
                 value={selectedField.label}
@@ -49,7 +51,9 @@ export function CanvasPropertyPanel({
               />
             </Stack>
             <Stack spacing="xs">
-              <Label htmlFor="field-name" className="text-xs">Name</Label>
+              <Label htmlFor="field-name" className="text-xs">
+                Name
+              </Label>
               <Input
                 id="field-name"
                 value={selectedField.name}
@@ -59,7 +63,9 @@ export function CanvasPropertyPanel({
             </Stack>
             {selectedField.imageUrl !== undefined && (
               <Stack spacing="xs">
-                <Label htmlFor="field-image-url" className="text-xs">Image URL</Label>
+                <Label htmlFor="field-image-url" className="text-xs">
+                  Image URL
+                </Label>
                 <Input
                   id="field-image-url"
                   type="url"
@@ -74,42 +80,58 @@ export function CanvasPropertyPanel({
               <h4 className="text-xs font-semibold mb-3">Position & Size</h4>
               <Box className="grid grid-cols-2 gap-2">
                 <Stack spacing="xs">
-                  <Label htmlFor="field-x" className="text-xs">X</Label>
+                  <Label htmlFor="field-x" className="text-xs">
+                    X
+                  </Label>
                   <Input
                     id="field-x"
                     type="number"
                     value={selectedField.x}
-                    onChange={(e) => onUpdateField(selectedField.id, { x: snap(Number(e.target.value)) })}
+                    onChange={(e) =>
+                      onUpdateField(selectedField.id, { x: snap(Number(e.target.value)) })
+                    }
                     className="h-8 text-sm"
                   />
                 </Stack>
                 <Stack spacing="xs">
-                  <Label htmlFor="field-y" className="text-xs">Y</Label>
+                  <Label htmlFor="field-y" className="text-xs">
+                    Y
+                  </Label>
                   <Input
                     id="field-y"
                     type="number"
                     value={selectedField.y}
-                    onChange={(e) => onUpdateField(selectedField.id, { y: snap(Number(e.target.value)) })}
+                    onChange={(e) =>
+                      onUpdateField(selectedField.id, { y: snap(Number(e.target.value)) })
+                    }
                     className="h-8 text-sm"
                   />
                 </Stack>
                 <Stack spacing="xs">
-                  <Label htmlFor="field-width" className="text-xs">Width</Label>
+                  <Label htmlFor="field-width" className="text-xs">
+                    Width
+                  </Label>
                   <Input
                     id="field-width"
                     type="number"
                     value={selectedField.width}
-                    onChange={(e) => onUpdateField(selectedField.id, { width: snap(Number(e.target.value)) })}
+                    onChange={(e) =>
+                      onUpdateField(selectedField.id, { width: snap(Number(e.target.value)) })
+                    }
                     className="h-8 text-sm"
                   />
                 </Stack>
                 <Stack spacing="xs">
-                  <Label htmlFor="field-height" className="text-xs">Height</Label>
+                  <Label htmlFor="field-height" className="text-xs">
+                    Height
+                  </Label>
                   <Input
                     id="field-height"
                     type="number"
                     value={selectedField.height}
-                    onChange={(e) => onUpdateField(selectedField.id, { height: snap(Number(e.target.value)) })}
+                    onChange={(e) =>
+                      onUpdateField(selectedField.id, { height: snap(Number(e.target.value)) })
+                    }
                     className="h-8 text-sm"
                   />
                 </Stack>
@@ -135,7 +157,9 @@ export function CanvasPropertyPanel({
           <h3 className="text-sm font-semibold mb-4">Group Properties</h3>
           <Stack spacing="md">
             <Stack spacing="xs">
-              <Label htmlFor="group-title" className="text-xs">Title</Label>
+              <Label htmlFor="group-title" className="text-xs">
+                Title
+              </Label>
               <Input
                 id="group-title"
                 value={selectedGroup.title || ""}
@@ -147,42 +171,58 @@ export function CanvasPropertyPanel({
               <h4 className="text-xs font-semibold mb-3">Position & Size</h4>
               <Box className="grid grid-cols-2 gap-2">
                 <Stack spacing="xs">
-                  <Label htmlFor="group-x" className="text-xs">X</Label>
+                  <Label htmlFor="group-x" className="text-xs">
+                    X
+                  </Label>
                   <Input
                     id="group-x"
                     type="number"
                     value={selectedGroup.x}
-                    onChange={(e) => onUpdateGroup(selectedGroup.id, { x: snap(Number(e.target.value)) })}
+                    onChange={(e) =>
+                      onUpdateGroup(selectedGroup.id, { x: snap(Number(e.target.value)) })
+                    }
                     className="h-8 text-sm"
                   />
                 </Stack>
                 <Stack spacing="xs">
-                  <Label htmlFor="group-y" className="text-xs">Y</Label>
+                  <Label htmlFor="group-y" className="text-xs">
+                    Y
+                  </Label>
                   <Input
                     id="group-y"
                     type="number"
                     value={selectedGroup.y}
-                    onChange={(e) => onUpdateGroup(selectedGroup.id, { y: snap(Number(e.target.value)) })}
+                    onChange={(e) =>
+                      onUpdateGroup(selectedGroup.id, { y: snap(Number(e.target.value)) })
+                    }
                     className="h-8 text-sm"
                   />
                 </Stack>
                 <Stack spacing="xs">
-                  <Label htmlFor="group-width" className="text-xs">Width</Label>
+                  <Label htmlFor="group-width" className="text-xs">
+                    Width
+                  </Label>
                   <Input
                     id="group-width"
                     type="number"
                     value={selectedGroup.width}
-                    onChange={(e) => onUpdateGroup(selectedGroup.id, { width: snap(Number(e.target.value)) })}
+                    onChange={(e) =>
+                      onUpdateGroup(selectedGroup.id, { width: snap(Number(e.target.value)) })
+                    }
                     className="h-8 text-sm"
                   />
                 </Stack>
                 <Stack spacing="xs">
-                  <Label htmlFor="group-height" className="text-xs">Height</Label>
+                  <Label htmlFor="group-height" className="text-xs">
+                    Height
+                  </Label>
                   <Input
                     id="group-height"
                     type="number"
                     value={selectedGroup.height}
-                    onChange={(e) => onUpdateGroup(selectedGroup.id, { height: snap(Number(e.target.value)) })}
+                    onChange={(e) =>
+                      onUpdateGroup(selectedGroup.id, { height: snap(Number(e.target.value)) })
+                    }
                     className="h-8 text-sm"
                   />
                 </Stack>
@@ -208,7 +248,9 @@ export function CanvasPropertyPanel({
           <h3 className="text-sm font-semibold mb-4">Section Properties</h3>
           <Stack spacing="md">
             <Stack spacing="xs">
-              <Label htmlFor="section-title" className="text-xs">Title</Label>
+              <Label htmlFor="section-title" className="text-xs">
+                Title
+              </Label>
               <Input
                 id="section-title"
                 value={selectedSection.title || ""}
@@ -220,22 +262,30 @@ export function CanvasPropertyPanel({
               <h4 className="text-xs font-semibold mb-3">Position & Size</h4>
               <Box className="grid grid-cols-2 gap-2">
                 <Stack spacing="xs">
-                  <Label htmlFor="section-x" className="text-xs">X</Label>
+                  <Label htmlFor="section-x" className="text-xs">
+                    X
+                  </Label>
                   <Input
                     id="section-x"
                     type="number"
                     value={selectedSection.x}
-                    onChange={(e) => onUpdateSection(selectedSection.id, { x: snap(Number(e.target.value)) })}
+                    onChange={(e) =>
+                      onUpdateSection(selectedSection.id, { x: snap(Number(e.target.value)) })
+                    }
                     className="h-8 text-sm"
                   />
                 </Stack>
                 <Stack spacing="xs">
-                  <Label htmlFor="section-y" className="text-xs">Y</Label>
+                  <Label htmlFor="section-y" className="text-xs">
+                    Y
+                  </Label>
                   <Input
                     id="section-y"
                     type="number"
                     value={selectedSection.y}
-                    onChange={(e) => onUpdateSection(selectedSection.id, { y: snap(Number(e.target.value)) })}
+                    onChange={(e) =>
+                      onUpdateSection(selectedSection.id, { y: snap(Number(e.target.value)) })
+                    }
                     className="h-8 text-sm"
                   />
                 </Stack>
@@ -258,4 +308,3 @@ export function CanvasPropertyPanel({
     </Box>
   )
 }
-

@@ -1,6 +1,6 @@
 import { Eye, FileText } from "lucide-react"
-import type { TabActionGroup } from "./types"
 import { getBaseTabActions } from "./base"
+import type { TabActionGroup } from "./types"
 
 export function getOrdersTabActions(
   path: string,
@@ -31,4 +31,3 @@ export function getOrdersTabActions(
     },
   ]
 }
-

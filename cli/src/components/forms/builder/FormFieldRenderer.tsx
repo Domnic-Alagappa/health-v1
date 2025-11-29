@@ -1,10 +1,10 @@
 import { Box } from "@/components/ui/box"
 import { Flex } from "@/components/ui/flex"
+import type { FieldLayout, FormField } from "@/components/ui/form-builder"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Stack } from "@/components/ui/stack"
 import { cn } from "@/lib/utils"
-import type { FormField, FieldLayout } from "@/components/ui/form-builder"
 
 interface FormFieldRendererProps {
   field: FormField
@@ -35,7 +35,9 @@ export function FormFieldRenderer({
     id: field.id,
     name: field.name || field.id,
     value: value as string | number,
-    onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    onChange: (
+      e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    ) => {
       onChange(e.target.value)
     },
     onBlur,
@@ -63,7 +65,13 @@ export function FormFieldRenderer({
           hasError && "border-destructive",
           getFieldSizeClasses(layout.size),
           getWidthClasses(layout.width),
-          layout.size === "sm" ? "min-h-[60px]" : layout.size === "lg" ? "min-h-[120px]" : layout.size === "xl" ? "min-h-[160px]" : "min-h-[80px]",
+          layout.size === "sm"
+            ? "min-h-[60px]"
+            : layout.size === "lg"
+              ? "min-h-[120px]"
+              : layout.size === "xl"
+                ? "min-h-[160px]"
+                : "min-h-[80px]",
           field.className
         )}
       />
@@ -158,4 +166,3 @@ export function FormFieldRenderer({
     />
   )
 }
-

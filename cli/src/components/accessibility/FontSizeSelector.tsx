@@ -3,27 +3,27 @@
  * Adjust font size for better readability
  */
 
-import { Box } from '@/components/ui/box';
-import { useAccessibilityStore } from '@/stores/accessibilityStore';
-import { useEffect } from 'react';
+import { useEffect } from "react"
+import { Box } from "@/components/ui/box"
+import { useAccessibilityStore } from "@/stores/accessibilityStore"
 
 export function FontSizeSelector() {
-  const fontSize = useAccessibilityStore((state) => state.preferences.fontSize);
-  const updatePreference = useAccessibilityStore((state) => state.updatePreference);
+  const fontSize = useAccessibilityStore((state) => state.preferences.fontSize)
+  const updatePreference = useAccessibilityStore((state) => state.updatePreference)
 
   useEffect(() => {
-    if (typeof document !== 'undefined') {
+    if (typeof document !== "undefined") {
       // Remove all font size classes
       document.documentElement.classList.remove(
-        'font-size-small',
-        'font-size-medium',
-        'font-size-large',
-        'font-size-extra-large'
-      );
+        "font-size-small",
+        "font-size-medium",
+        "font-size-large",
+        "font-size-extra-large"
+      )
       // Add current font size class
-      document.documentElement.classList.add(`font-size-${fontSize}`);
+      document.documentElement.classList.add(`font-size-${fontSize}`)
     }
-  }, [fontSize]);
+  }, [fontSize])
 
   return (
     <Box>
@@ -33,7 +33,12 @@ export function FontSizeSelector() {
       <select
         id="font-size"
         value={fontSize}
-        onChange={(e) => updatePreference('fontSize', e.target.value as 'small' | 'medium' | 'large' | 'extra-large')}
+        onChange={(e) =>
+          updatePreference(
+            "fontSize",
+            e.target.value as "small" | "medium" | "large" | "extra-large"
+          )
+        }
         className="w-full px-3 py-2 border rounded-md"
         aria-label="Select font size"
       >
@@ -43,6 +48,5 @@ export function FontSizeSelector() {
         <option value="extra-large">Extra Large</option>
       </select>
     </Box>
-  );
+  )
 }
-

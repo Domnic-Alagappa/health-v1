@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import {
   Activity,
   AlertCircle,
@@ -13,7 +13,6 @@ import { Box } from "@/components/ui/box"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Flex } from "@/components/ui/flex"
 import { Stack } from "@/components/ui/stack"
-import { useNavigate } from "@tanstack/react-router"
 import { useOpenTab } from "@/stores/tabStore"
 
 export const Route = createFileRoute("/")({
@@ -27,13 +26,16 @@ function DashboardComponent() {
   const handleOpenModule = (path: string, label: string, icon: React.ReactNode) => {
     // Forms and multi-step processes allow duplicates (paths ending with /new, /create, etc.)
     const isFormPath = path.includes("/new") || path.includes("/create") || path.includes("/edit")
-    openTab({
-      label,
-      path,
-      icon,
-      closable: path !== "/",
-      allowDuplicate: isFormPath, // Allow multiple instances of forms
-    }, (path) => navigate({ to: path as "/" | (string & {}) }))
+    openTab(
+      {
+        label,
+        path,
+        icon,
+        closable: path !== "/",
+        allowDuplicate: isFormPath, // Allow multiple instances of forms
+      },
+      (path) => navigate({ to: path as "/" | (string & {}) })
+    )
   }
   const stats = [
     {
@@ -102,9 +104,7 @@ function DashboardComponent() {
     <Stack spacing="lg">
       <Stack spacing="xs">
         <h1 className="text-3xl font-bold">Clinical Dashboard</h1>
-        <p className="text-muted-foreground">
-          Welcome back, Dr. John Doe. Here's your overview.
-        </p>
+        <p className="text-muted-foreground">Welcome back, Dr. John Doe. Here's your overview.</p>
       </Stack>
 
       {/* Stats Grid */}

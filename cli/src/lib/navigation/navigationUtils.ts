@@ -3,8 +3,8 @@
  * Helper functions for navigation with security
  */
 
-import { canAccessRoute } from './permissionChecks';
-import type { Permission } from '@/lib/constants/permissions';
+import type { Permission } from "@/lib/constants/permissions"
+import { canAccessRoute } from "./permissionChecks"
 
 /**
  * Filter navigation items based on permissions
@@ -16,12 +16,12 @@ export function filterNavigationItems<T extends { path: string; permission?: Per
   return items.filter((item) => {
     // If item has explicit permission, check it
     if (item.permission) {
-      return hasPermission(item.permission);
+      return hasPermission(item.permission)
     }
 
     // Otherwise, check route permission
-    return canAccessRoute(item.path, hasPermission);
-  });
+    return canAccessRoute(item.path, hasPermission)
+  })
 }
 
 /**
@@ -31,6 +31,5 @@ export function shouldHideNavigation(
   path: string,
   hasPermission: (perm: Permission) => boolean
 ): boolean {
-  return !canAccessRoute(path, hasPermission);
+  return !canAccessRoute(path, hasPermission)
 }
-

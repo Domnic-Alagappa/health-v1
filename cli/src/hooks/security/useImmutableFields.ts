@@ -3,18 +3,18 @@
  * Hook for validating and protecting immutable fields
  */
 
-import { useCallback } from 'react';
-import { SECURITY_CONFIG, FIELD_DEFINITIONS } from '@/lib/constants';
-import type { EntityType, FieldName } from '@/lib/constants/fields';
+import { useCallback } from "react"
+import { FIELD_DEFINITIONS, SECURITY_CONFIG } from "@/lib/constants"
+import type { EntityType, FieldName } from "@/lib/constants/fields"
 
 export function useImmutableFields() {
   const isImmutable = useCallback(
     <T extends EntityType>(entityType: T, fieldName: FieldName<T>): boolean => {
-      const fieldDef = FIELD_DEFINITIONS[entityType]?.[fieldName];
-      return fieldDef?.immutable ?? false;
+      const fieldDef = FIELD_DEFINITIONS[entityType]?.[fieldName]
+      return fieldDef?.immutable ?? false
     },
     []
-  );
+  )
 
   const validateFieldUpdate = useCallback(
     <T extends EntityType>(
@@ -26,30 +26,26 @@ export function useImmutableFields() {
         return {
           valid: false,
           error: `Field "${String(fieldName)}" is immutable and cannot be modified`,
-        };
+        }
       }
 
-      return { valid: true };
+      return { valid: true }
     },
     [isImmutable]
-  );
+  )
 
-  const getImmutableFields = useCallback(
-    <T extends EntityType>(entityType: T): string[] => {
-      const fields = FIELD_DEFINITIONS[entityType];
-      if (!fields) return [];
+  const getImmutableFields = useCallback(<T extends EntityType>(entityType: T): string[] => {
+    const fields = FIELD_DEFINITIONS[entityType]
+    if (!fields) return []
 
-      return Object.entries(fields)
-        .filter(([, def]) => def.immutable)
-        .map(([fieldName]) => fieldName);
-    },
-    []
-  );
+    return Object.entries(fields)
+      .filter(([, def]) => def.immutable)
+      .map(([fieldName]) => fieldName)
+  }, [])
 
   return {
     isImmutable,
     validateFieldUpdate,
     getImmutableFields,
-  };
+  }
 }
-

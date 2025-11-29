@@ -65,4 +65,3 @@ export function useTabDrag({ isDraggable, onDragStart, onSelect }: UseTabDragOpt
 
   return { handleMouseDown }
 }
-

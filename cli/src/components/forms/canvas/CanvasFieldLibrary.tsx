@@ -1,14 +1,13 @@
-import { Settings, Download, Upload, Code, Check } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Check, Code, Download, Grid3x3, Settings, Upload } from "lucide-react"
 import { Box } from "@/components/ui/box"
+import { Button } from "@/components/ui/button"
 import { Flex } from "@/components/ui/flex"
+import type { FieldType } from "@/components/ui/form-builder"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Stack } from "@/components/ui/stack"
-import { Grid3x3 } from "lucide-react"
 import type { FieldCategory, FieldCategoryItem, SheetSize } from "./types"
 import { SHEET_SIZES } from "./types"
-import type { FieldType } from "@/components/ui/form-builder"
 
 interface CanvasFieldLibraryProps {
   fieldCategories: FieldCategory
@@ -20,7 +19,9 @@ interface CanvasFieldLibraryProps {
   snapToGrid: boolean
   wrapOverflow: boolean
   copied: boolean
-  onAddField: (type: FieldType | "group" | "section" | "image" | "line-horizontal" | "line-vertical" | "box") => void
+  onAddField: (
+    type: FieldType | "group" | "section" | "image" | "line-horizontal" | "line-vertical" | "box"
+  ) => void
   onSheetSizeChange: (size: string) => void
   onCanvasWidthChange: (width: number) => void
   onCanvasHeightChange: (height: number) => void
@@ -71,7 +72,9 @@ export function CanvasFieldLibrary({
           </Flex>
           <Stack spacing="sm">
             <Stack spacing="xs">
-              <Label htmlFor="sheet-size" className="text-xs mb-1.5 block">Sheet Size</Label>
+              <Label htmlFor="sheet-size" className="text-xs mb-1.5 block">
+                Sheet Size
+              </Label>
               <select
                 id="sheet-size"
                 value={selectedSheetSize}
@@ -97,7 +100,9 @@ export function CanvasFieldLibrary({
             {selectedSheetSize === "custom" && (
               <>
                 <Stack spacing="xs">
-                  <Label htmlFor="canvas-width" className="text-xs mb-1.5 block">Canvas Width (px)</Label>
+                  <Label htmlFor="canvas-width" className="text-xs mb-1.5 block">
+                    Canvas Width (px)
+                  </Label>
                   <Input
                     id="canvas-width"
                     type="number"
@@ -107,7 +112,9 @@ export function CanvasFieldLibrary({
                   />
                 </Stack>
                 <Stack spacing="xs">
-                  <Label htmlFor="canvas-height" className="text-xs mb-1.5 block">Canvas Height (px)</Label>
+                  <Label htmlFor="canvas-height" className="text-xs mb-1.5 block">
+                    Canvas Height (px)
+                  </Label>
                   <Input
                     id="canvas-height"
                     type="number"
@@ -120,11 +127,14 @@ export function CanvasFieldLibrary({
             )}
             {selectedSheetSize !== "custom" && (
               <Box className="text-xs text-muted-foreground p-2 bg-muted rounded-xs">
-                {sheetSizes[selectedSheetSize as keyof typeof sheetSizes]?.name}: {canvasWidth} × {canvasHeight} px
+                {sheetSizes[selectedSheetSize as keyof typeof sheetSizes]?.name}: {canvasWidth} ×{" "}
+                {canvasHeight} px
               </Box>
             )}
             <Stack spacing="xs">
-              <Label htmlFor="grid-size" className="text-xs mb-1.5 block">Grid Size</Label>
+              <Label htmlFor="grid-size" className="text-xs mb-1.5 block">
+                Grid Size
+              </Label>
               <Input
                 id="grid-size"
                 type="number"
@@ -222,4 +232,3 @@ export function CanvasFieldLibrary({
     </Box>
   )
 }
-

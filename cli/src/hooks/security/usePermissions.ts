@@ -3,55 +3,55 @@
  * Hook for checking user permissions and roles
  */
 
-import { useMemo, useCallback } from 'react';
-import { useAuthStore } from '@/stores/authStore';
-import { PERMISSIONS, ROLE_PERMISSIONS, type Permission } from '@/lib/constants/permissions';
+import { useCallback, useMemo } from "react"
+import { PERMISSIONS, type Permission, ROLE_PERMISSIONS } from "@/lib/constants/permissions"
+import { useAuthStore } from "@/stores/authStore"
 
 export function usePermissions() {
   // Use individual selectors to avoid object recreation
-  const permissions = useAuthStore((state) => state.permissions);
-  const role = useAuthStore((state) => state.role);
+  const permissions = useAuthStore((state) => state.permissions)
+  const role = useAuthStore((state) => state.role)
 
   const hasPermission = useCallback(
     (permission: Permission): boolean => {
-      return permissions.includes(permission);
+      return permissions.includes(permission)
     },
     [permissions]
-  );
+  )
 
   const hasAnyPermission = useCallback(
     (requiredPermissions: Permission[]): boolean => {
-      return requiredPermissions.some((perm) => permissions.includes(perm));
+      return requiredPermissions.some((perm) => permissions.includes(perm))
     },
     [permissions]
-  );
+  )
 
   const hasAllPermissions = useCallback(
     (requiredPermissions: Permission[]): boolean => {
-      return requiredPermissions.every((perm) => permissions.includes(perm));
+      return requiredPermissions.every((perm) => permissions.includes(perm))
     },
     [permissions]
-  );
+  )
 
   const hasRole = useCallback(
     (requiredRole: string): boolean => {
-      return role === requiredRole;
+      return role === requiredRole
     },
     [role]
-  );
+  )
 
   const hasAnyRole = useCallback(
     (requiredRoles: string[]): boolean => {
-      return requiredRoles.includes(role || '');
+      return requiredRoles.includes(role || "")
     },
     [role]
-  );
+  )
 
   // Get all permissions for current role
   const rolePermissions = useMemo(() => {
-    if (!role) return [];
-    return ROLE_PERMISSIONS[role] || [];
-  }, [role]);
+    if (!role) return []
+    return ROLE_PERMISSIONS[role] || []
+  }, [role])
 
   return {
     hasPermission,
@@ -62,6 +62,5 @@ export function usePermissions() {
     permissions,
     role,
     rolePermissions,
-  };
+  }
 }
-

@@ -1,16 +1,16 @@
+import { useNavigate } from "@tanstack/react-router"
 import { Menu } from "lucide-react"
 import { memo, useEffect, useMemo, useRef } from "react"
-import { Button } from "@/components/ui/button"
 import { Box } from "@/components/ui/box"
+import { Button } from "@/components/ui/button"
 import { Flex } from "@/components/ui/flex"
 import { TooltipProvider } from "@/components/ui/tooltip"
-import { useNavigate } from "@tanstack/react-router"
-import { useTabs, useActiveTabId, useSetActiveTab, useCloseTab } from "@/stores/tabStore"
+import { useTabBarDrag } from "@/hooks/ui/useTabBarDrag"
 import { cn } from "@/lib/utils"
+import { useActiveTabId, useCloseTab, useSetActiveTab, useTabs } from "@/stores/tabStore"
+import { TabDragPreview } from "./TabDragPreview"
 import { TabItem } from "./TabItem"
 import { TabUserMenu } from "./TabUserMenu"
-import { TabDragPreview } from "./TabDragPreview"
-import { useTabBarDrag } from "@/hooks/ui/useTabBarDrag"
 
 interface TabBarProps {
   onMobileMenuClick?: () => void
@@ -139,8 +139,12 @@ export const TabBar = memo(function TabBar({ onMobileMenuClick }: TabBarProps) {
                     isActive={tab.id === activeTabId}
                     isDragging={false}
                     isDragOver={false}
-                    onSelect={() => setActiveTab(tab.id, (path) => navigate({ to: path as "/" | (string & {}) }))}
-                    onClose={() => closeTab(tab.id, (path) => navigate({ to: path as "/" | (string & {}) }))}
+                    onSelect={() =>
+                      setActiveTab(tab.id, (path) => navigate({ to: path as "/" | (string & {}) }))
+                    }
+                    onClose={() =>
+                      closeTab(tab.id, (path) => navigate({ to: path as "/" | (string & {}) }))
+                    }
                     onDragStart={(e) => handleDragStart(e, tab.id)}
                   />
                 )}
@@ -149,7 +153,9 @@ export const TabBar = memo(function TabBar({ onMobileMenuClick }: TabBarProps) {
                   <Box className="invisible w-[180px] shrink-0 h-[42px]">
                     <Flex className="items-center gap-2 px-4 py-2 h-full">
                       {tab.icon && <span className="h-[18px] w-[18px] shrink-0">{tab.icon}</span>}
-                      <span className="text-[14px] font-medium tracking-[0.25px] truncate flex-1">{tab.label}</span>
+                      <span className="text-[14px] font-medium tracking-[0.25px] truncate flex-1">
+                        {tab.label}
+                      </span>
                     </Flex>
                   </Box>
                 )}
@@ -197,4 +203,3 @@ export const TabBar = memo(function TabBar({ onMobileMenuClick }: TabBarProps) {
     </TooltipProvider>
   )
 })
-

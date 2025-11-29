@@ -3,31 +3,34 @@
  * Authentication-related API calls
  */
 
-import { apiClient } from './client';
-import { API_ROUTES, OIDC_CONFIG } from '@/lib/constants';
-import type { LoginRequest, LoginResponse, RefreshTokenRequest, RefreshTokenResponse, UserInfo } from './types';
+import { API_ROUTES, OIDC_CONFIG } from "@/lib/constants"
+import { apiClient } from "./client"
+import type {
+  LoginRequest,
+  LoginResponse,
+  RefreshTokenRequest,
+  RefreshTokenResponse,
+  UserInfo,
+} from "./types"
 
 /**
  * Login with email and password
  */
 export async function login(credentials: LoginRequest): Promise<LoginResponse> {
-  const response = await apiClient.post<LoginResponse>(
-    API_ROUTES.AUTH.LOGIN,
-    credentials
-  );
+  const response = await apiClient.post<LoginResponse>(API_ROUTES.AUTH.LOGIN, credentials)
 
   if (response.error) {
-    throw new Error(response.error.message);
+    throw new Error(response.error.message)
   }
 
   if (!response.data) {
-    throw new Error('No data returned from login');
+    throw new Error("No data returned from login")
   }
 
   // Set tokens in API client
-  apiClient.setAuthTokens(response.data.accessToken, response.data.refreshToken);
+  apiClient.setAuthTokens(response.data.accessToken, response.data.refreshToken)
 
-  return response.data;
+  return response.data
 }
 
 /**
@@ -35,69 +38,62 @@ export async function login(credentials: LoginRequest): Promise<LoginResponse> {
  */
 export async function logout(): Promise<void> {
   try {
-    await apiClient.post(API_ROUTES.AUTH.LOGOUT);
+    await apiClient.post(API_ROUTES.AUTH.LOGOUT)
   } finally {
     // Always clear tokens, even if API call fails
-    apiClient.setAuthTokens(null, null);
+    apiClient.setAuthTokens(null, null)
   }
 }
 
 /**
  * Refresh access token using refresh token
  */
-export async function refreshAccessToken(
-  refreshToken: string
-): Promise<RefreshTokenResponse> {
-  const response = await apiClient.post<RefreshTokenResponse>(
-    API_ROUTES.AUTH.REFRESH,
-    { refreshToken } as RefreshTokenRequest
-  );
+export async function refreshAccessToken(refreshToken: string): Promise<RefreshTokenResponse> {
+  const response = await apiClient.post<RefreshTokenResponse>(API_ROUTES.AUTH.REFRESH, {
+    refreshToken,
+  } as RefreshTokenRequest)
 
   if (response.error) {
-    throw new Error(response.error.message);
+    throw new Error(response.error.message)
   }
 
   if (!response.data) {
-    throw new Error('No data returned from token refresh');
+    throw new Error("No data returned from token refresh")
   }
 
   // Update tokens in API client
-  apiClient.setAuthTokens(
-    response.data.accessToken,
-    response.data.refreshToken
-  );
+  apiClient.setAuthTokens(response.data.accessToken, response.data.refreshToken)
 
-  return response.data;
+  return response.data
 }
 
 /**
  * Get user info from OIDC userinfo endpoint
  */
 export async function getUserInfo(): Promise<UserInfo> {
-  const response = await apiClient.get<UserInfo>(API_ROUTES.AUTH.USERINFO);
+  const response = await apiClient.get<UserInfo>(API_ROUTES.AUTH.USERINFO)
 
   if (response.error) {
-    throw new Error(response.error.message);
+    throw new Error(response.error.message)
   }
 
   if (!response.data) {
-    throw new Error('No data returned from userinfo');
+    throw new Error("No data returned from userinfo")
   }
 
-  return response.data;
+  return response.data
 }
 
 /**
  * OIDC Discovery - get OIDC configuration
  */
 export async function discoverOidcConfig(): Promise<unknown> {
-  const discoveryUrl = `${OIDC_CONFIG.ISSUER}${OIDC_CONFIG.DISCOVERY_ENDPOINT}`;
-  const response = await fetch(discoveryUrl);
+  const discoveryUrl = `${OIDC_CONFIG.ISSUER}${OIDC_CONFIG.DISCOVERY_ENDPOINT}`
+  const response = await fetch(discoveryUrl)
 
   if (!response.ok) {
-    throw new Error('Failed to discover OIDC configuration');
+    throw new Error("Failed to discover OIDC configuration")
   }
 
-  return response.json();
+  return response.json()
 }
-

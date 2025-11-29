@@ -19,4 +19,3 @@ export function CanvasGrid({ showGrid, gridSize }: CanvasGridProps) {
     />
   )
 }
-

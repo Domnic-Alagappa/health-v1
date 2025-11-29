@@ -1,15 +1,24 @@
 import { memo, useRef } from "react"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { Box } from "@/components/ui/box"
 import { Flex } from "@/components/ui/flex"
-import { cn } from "@/lib/utils"
-import { getModuleColor } from "./useTabColors"
-import { TabDragHandle } from "./TabDragHandle"
-import { TabCloseButton } from "./TabCloseButton"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { useTabDrag } from "@/hooks/ui/useTabDrag"
+import { cn } from "@/lib/utils"
+import { TabCloseButton } from "./TabCloseButton"
+import { TabDragHandle } from "./TabDragHandle"
+import { getModuleColor } from "./useTabColors"
 
 export interface TabItemProps {
-  tab: { id: string; label: string; path: string; icon?: React.ReactNode; closable?: boolean; alert?: boolean; success?: boolean; disabled?: boolean }
+  tab: {
+    id: string
+    label: string
+    path: string
+    icon?: React.ReactNode
+    closable?: boolean
+    alert?: boolean
+    success?: boolean
+    disabled?: boolean
+  }
   isActive: boolean
   isDragging?: boolean
   isDragOver?: boolean
@@ -59,9 +68,7 @@ export const TabItem = memo(function TabItem({
         // Arrow key navigation for tabs
         if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
           e.preventDefault()
-          const tabs = Array.from(
-            document.querySelectorAll<HTMLElement>('[role="tab"]')
-          )
+          const tabs = Array.from(document.querySelectorAll<HTMLElement>('[role="tab"]'))
           const currentIndex = tabs.findIndex((t) => t === e.currentTarget)
           const direction = e.key === "ArrowLeft" ? -1 : 1
           const nextIndex = (currentIndex + direction + tabs.length) % tabs.length
@@ -86,44 +93,53 @@ export const TabItem = memo(function TabItem({
               isDraggable && !isDragging && "cursor-grab active:cursor-grabbing",
               !isDraggable && !tab.disabled && "cursor-pointer",
               tab.disabled && "cursor-not-allowed opacity-60",
-              
+
               // Default (Inactive) State - Fluent UI styling
-              !isActive && !tab.disabled && !tab.alert && !tab.success && [
-                "bg-[#F4F6F8] border-[#E1E4E8] text-[#4A4A4E]",
-                "hover:bg-[#E9EEF3] hover:border-[#D0D6DB] hover:text-[#1C1C1E]",
-                "dark:bg-[#1E1E1E] dark:text-[#A9A9A9] dark:border-transparent",
-                "dark:hover:bg-[#2B2B2B] dark:hover:text-white"
-              ],
-              
+              !isActive &&
+                !tab.disabled &&
+                !tab.alert &&
+                !tab.success && [
+                  "bg-[#F4F6F8] border-[#E1E4E8] text-[#4A4A4E]",
+                  "hover:bg-[#E9EEF3] hover:border-[#D0D6DB] hover:text-[#1C1C1E]",
+                  "dark:bg-[#1E1E1E] dark:text-[#A9A9A9] dark:border-transparent",
+                  "dark:hover:bg-[#2B2B2B] dark:hover:text-white",
+                ],
+
               // Active State - Microsoft Fluent style with 4px bottom border
-              isActive && !tab.alert && !tab.success && [
-                "bg-white border-primary text-primary shadow-fluent-1",
-                "dark:bg-[#2B2B2B] dark:border-primary dark:text-white"
-              ],
-              
+              isActive &&
+                !tab.alert &&
+                !tab.success && [
+                  "bg-white border-primary text-primary shadow-fluent-1",
+                  "dark:bg-[#2B2B2B] dark:border-primary dark:text-white",
+                ],
+
               // Alert State
               tab.alert && [
-                isActive 
+                isActive
                   ? "bg-[#FFF5F2] border-warning text-warning shadow-fluent-1 dark:bg-[#2B2B2B]"
-                  : "bg-[#F4F6F8] border-transparent text-warning hover:bg-[#FFF5F2] hover:border-warning dark:bg-[#1E1E1E] dark:hover:bg-[#2B2B2B]"
+                  : "bg-[#F4F6F8] border-transparent text-warning hover:bg-[#FFF5F2] hover:border-warning dark:bg-[#1E1E1E] dark:hover:bg-[#2B2B2B]",
               ],
-              
+
               // Success State
               tab.success && [
                 isActive
                   ? "bg-[#F0FAF4] border-accent text-accent shadow-fluent-1 dark:bg-[#2B2B2B]"
-                  : "bg-[#F4F6F8] border-transparent text-accent hover:bg-[#F0FAF4] hover:border-accent dark:bg-[#1E1E1E] dark:hover:bg-[#2B2B2B]"
+                  : "bg-[#F4F6F8] border-transparent text-accent hover:bg-[#F0FAF4] hover:border-accent dark:bg-[#1E1E1E] dark:hover:bg-[#2B2B2B]",
               ],
-              
+
               // Disabled State
               tab.disabled && [
                 "bg-[#F4F6F8] border-transparent text-[#A5A5A5]",
-                "dark:bg-[#1E1E1E] dark:text-[#A5A5A5]"
+                "dark:bg-[#1E1E1E] dark:text-[#A5A5A5]",
               ]
             )}
-            style={isActive && !tab.alert && !tab.success ? {
-              borderBottomColor: getModuleColor(tab.path).color
-            } : undefined}
+            style={
+              isActive && !tab.alert && !tab.success
+                ? {
+                    borderBottomColor: getModuleColor(tab.path).color,
+                  }
+                : undefined
+            }
             onMouseDown={isDraggable ? handleMouseDown : undefined}
             onClick={!isDraggable && !tab.disabled ? onSelect : undefined}
             onKeyDown={(e) => {
@@ -134,7 +150,7 @@ export const TabItem = memo(function TabItem({
             }}
           >
             {tab.icon && (
-              <span 
+              <span
                 className={cn(
                   "shrink-0 transition-colors",
                   !isActive && !tab.alert && !tab.success && "text-[#4A4A4E] dark:text-[#A9A9A9]",
@@ -142,27 +158,34 @@ export const TabItem = memo(function TabItem({
                   tab.success && "text-accent",
                   tab.disabled && "text-[#A5A5A5]"
                 )}
-                style={{ 
-                  width: '18px', 
-                  height: '18px',
-                  ...(isActive && !tab.alert && !tab.success ? {
-                    color: getModuleColor(tab.path).color
-                  } : {})
+                style={{
+                  width: "18px",
+                  height: "18px",
+                  ...(isActive && !tab.alert && !tab.success
+                    ? {
+                        color: getModuleColor(tab.path).color,
+                      }
+                    : {}),
                 }}
               >
                 {tab.icon}
               </span>
             )}
-            <span className={cn(
-              "truncate flex-1 capitalize",
-              !isActive && !tab.alert && !tab.success && "text-[#4A4A4E] dark:text-[#A9A9A9]",
-              tab.alert && "text-warning",
-              tab.success && "text-accent",
-              tab.disabled && "text-[#A5A5A5]"
-            )}
-            style={isActive && !tab.alert && !tab.success ? {
-              color: getModuleColor(tab.path).color
-            } : undefined}
+            <span
+              className={cn(
+                "truncate flex-1 capitalize",
+                !isActive && !tab.alert && !tab.success && "text-[#4A4A4E] dark:text-[#A9A9A9]",
+                tab.alert && "text-warning",
+                tab.success && "text-accent",
+                tab.disabled && "text-[#A5A5A5]"
+              )}
+              style={
+                isActive && !tab.alert && !tab.success
+                  ? {
+                      color: getModuleColor(tab.path).color,
+                    }
+                  : undefined
+              }
             >
               {tab.label}
             </span>
@@ -176,4 +199,3 @@ export const TabItem = memo(function TabItem({
     </Box>
   )
 })
-

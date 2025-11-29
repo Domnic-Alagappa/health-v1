@@ -1,10 +1,16 @@
+import { Code, Download, Eye, GripVertical, Plus, Save, Trash2, Upload } from "lucide-react"
 import * as React from "react"
-import { Plus, Trash2, GripVertical, Eye, Code, Save, Download, Upload } from "lucide-react"
+import { cn } from "@/lib/utils"
 import { Button } from "./button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./card"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./dialog"
-import { Input } from "./input"
-import { Label } from "./label"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./dialog"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,8 +19,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./dropdown-menu"
-import { FormBuilder, FormConfig, FormField, FieldType } from "./form-builder"
-import { cn } from "@/lib/utils"
+import { type FieldType, FormBuilder, type FormConfig, type FormField } from "./form-builder"
+import { Input } from "./input"
+import { Label } from "./label"
 
 /**
  * Visual Form Builder Playground
@@ -114,7 +121,9 @@ export function FormPlayground() {
             <h3 className="text-sm font-semibold mb-2">Form Settings</h3>
             <div className="space-y-2">
               <div>
-                <Label htmlFor="form-title" className="text-xs">Title</Label>
+                <Label htmlFor="form-title" className="text-xs">
+                  Title
+                </Label>
                 <Input
                   id="form-title"
                   value={formConfig.title || ""}
@@ -123,7 +132,9 @@ export function FormPlayground() {
                 />
               </div>
               <div>
-                <Label htmlFor="form-description" className="text-xs">Description</Label>
+                <Label htmlFor="form-description" className="text-xs">
+                  Description
+                </Label>
                 <Input
                   id="form-description"
                   value={formConfig.description || ""}
@@ -176,12 +187,7 @@ export function FormPlayground() {
                     Import
                   </span>
                 </Button>
-                <input
-                  type="file"
-                  accept=".json"
-                  onChange={importConfig}
-                  className="hidden"
-                />
+                <input type="file" accept=".json" onChange={importConfig} className="hidden" />
               </label>
             </div>
           </div>
@@ -219,11 +225,13 @@ export function FormPlayground() {
             <Card className="max-w-4xl mx-auto">
               <CardContent className="p-6">
                 <FormBuilder
-                  config={{
-                    id: "preview-form",
-                    ...formConfig,
-                    fields,
-                  } as FormConfig}
+                  config={
+                    {
+                      id: "preview-form",
+                      ...formConfig,
+                      fields,
+                    } as FormConfig
+                  }
                   onSubmit={(data) => {
                     console.log("Form submitted:", data)
                     alert("Form submitted! Check console.")
@@ -238,7 +246,9 @@ export function FormPlayground() {
                 {fields.length === 0 ? (
                   <div className="text-center py-12 text-muted-foreground">
                     <p className="text-lg mb-2">No fields yet</p>
-                    <p className="text-sm">Add fields from the sidebar to start building your form</p>
+                    <p className="text-sm">
+                      Add fields from the sidebar to start building your form
+                    </p>
                   </div>
                 ) : (
                   <div className="space-y-4">
@@ -291,7 +301,9 @@ export function FormPlayground() {
           <div className="space-y-4">
             {/* Basic Properties */}
             <div className="space-y-2">
-              <Label htmlFor="field-label" className="text-xs">Label</Label>
+              <Label htmlFor="field-label" className="text-xs">
+                Label
+              </Label>
               <Input
                 id="field-label"
                 value={selectedFieldData.label}
@@ -301,7 +313,9 @@ export function FormPlayground() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="field-name" className="text-xs">Name</Label>
+              <Label htmlFor="field-name" className="text-xs">
+                Name
+              </Label>
               <Input
                 id="field-name"
                 value={selectedFieldData.name}
@@ -311,7 +325,9 @@ export function FormPlayground() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="field-placeholder" className="text-xs">Placeholder</Label>
+              <Label htmlFor="field-placeholder" className="text-xs">
+                Placeholder
+              </Label>
               <Input
                 id="field-placeholder"
                 value={selectedFieldData.placeholder || ""}
@@ -321,7 +337,9 @@ export function FormPlayground() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="field-description" className="text-xs">Description</Label>
+              <Label htmlFor="field-description" className="text-xs">
+                Description
+              </Label>
               <Input
                 id="field-description"
                 value={selectedFieldData.description || ""}
@@ -333,9 +351,11 @@ export function FormPlayground() {
             {/* Layout Properties */}
             <div className="pt-4 border-t">
               <h4 className="text-xs font-semibold mb-3">Layout & Sizing</h4>
-              
+
               <div className="space-y-2">
-                <Label htmlFor="field-colspan" className="text-xs">Column Span</Label>
+                <Label htmlFor="field-colspan" className="text-xs">
+                  Column Span
+                </Label>
                 <select
                   id="field-colspan"
                   value={selectedFieldData.layout?.colSpan || 12}
@@ -343,7 +363,19 @@ export function FormPlayground() {
                     updateField(selectedField, {
                       layout: {
                         ...selectedFieldData.layout,
-                        colSpan: Number(e.target.value) as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12,
+                        colSpan: Number(e.target.value) as
+                          | 1
+                          | 2
+                          | 3
+                          | 4
+                          | 5
+                          | 6
+                          | 7
+                          | 8
+                          | 9
+                          | 10
+                          | 11
+                          | 12,
                       },
                     })
                   }
@@ -358,7 +390,9 @@ export function FormPlayground() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="field-size" className="text-xs">Size</Label>
+                <Label htmlFor="field-size" className="text-xs">
+                  Size
+                </Label>
                 <select
                   id="field-size"
                   value={selectedFieldData.layout?.size || "md"}
@@ -380,7 +414,9 @@ export function FormPlayground() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="field-width" className="text-xs">Width</Label>
+                <Label htmlFor="field-width" className="text-xs">
+                  Width
+                </Label>
                 <select
                   id="field-width"
                   value={selectedFieldData.layout?.width || "full"}
@@ -431,4 +467,3 @@ export function FormPlayground() {
     </div>
   )
 }
-

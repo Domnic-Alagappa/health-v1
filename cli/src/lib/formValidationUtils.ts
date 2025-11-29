@@ -50,4 +50,3 @@ export function validateField(field: FormField, value: unknown): string | true {
 
   return true
 }
-

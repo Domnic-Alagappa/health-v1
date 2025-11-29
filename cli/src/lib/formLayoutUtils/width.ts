@@ -17,4 +17,3 @@ export function getWidthClasses(width?: FieldLayout["width"]): string {
       return width // Custom width class
   }
 }
-

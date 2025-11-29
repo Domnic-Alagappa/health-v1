@@ -1,7 +1,7 @@
-import * as React from "react"
+import type * as React from "react"
+import { cn } from "@/lib/utils"
 import { Input } from "./input"
 import { Label } from "./label"
-import { cn } from "@/lib/utils"
 
 export interface FormFieldProps {
   id: string
@@ -53,9 +53,7 @@ export function FormField({
           </span>
         )}
       </Label>
-      {description && (
-        <p className="text-sm text-muted-foreground">{description}</p>
-      )}
+      {description && <p className="text-sm text-muted-foreground">{description}</p>}
 
       <Input
         id={id}
@@ -79,4 +77,3 @@ export function FormField({
     </div>
   )
 }
-

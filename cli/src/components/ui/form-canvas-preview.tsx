@@ -1,7 +1,7 @@
 import * as React from "react"
+import { cn } from "@/lib/utils"
 import { Input } from "./input"
 import { Label } from "./label"
-import { cn } from "@/lib/utils"
 
 interface PreviewField {
   id: string
@@ -202,9 +202,7 @@ export function FormCanvasPreview({
           {field.label && (
             <Label htmlFor={field.id} className="text-xs font-medium text-[#1C1C1E]">
               {field.label}
-              {field.validation?.required && (
-                <span className="text-[#D6461F] ml-1">*</span>
-              )}
+              {field.validation?.required && <span className="text-[#D6461F] ml-1">*</span>}
             </Label>
           )}
           {field.type === "textarea" ? (
@@ -401,76 +399,76 @@ export function FormCanvasPreview({
                 minHeight: `${canvasHeight}px`,
               }}
             >
-          {/* Sections */}
-          {sections.map((section) => (
-            <div
-              key={section.id}
-              className="absolute border-b-2 border-[#1C1C1E] bg-gray-50"
-              style={{
-                left: `${section.x}px`,
-                top: `${section.y}px`,
-                width: `${section.width}px`,
-                height: `${section.height}px`,
-              }}
-            >
-              <div className="p-4">
-                <h2 className="text-lg font-bold text-[#1C1C1E]">{section.title || "Section"}</h2>
-              </div>
-            </div>
-          ))}
-
-          {/* Groups */}
-          {groups.map((group) => (
-            <div
-              key={group.id}
-              className="absolute border border-[#1C1C1E] bg-white"
-              style={{
-                left: `${group.x}px`,
-                top: `${group.y}px`,
-                width: `${group.width}px`,
-                height: `${group.height}px`,
-              }}
-            >
-              {group.title && (
-                <div className="border-b border-[#1C1C1E] p-2 bg-gray-50">
-                  <h4 className="text-sm font-semibold text-[#1C1C1E]">{group.title}</h4>
-                  {group.description && (
-                    <p className="text-xs text-[#4A4A4E] mt-1">{group.description}</p>
-                  )}
+              {/* Sections */}
+              {sections.map((section) => (
+                <div
+                  key={section.id}
+                  className="absolute border-b-2 border-[#1C1C1E] bg-gray-50"
+                  style={{
+                    left: `${section.x}px`,
+                    top: `${section.y}px`,
+                    width: `${section.width}px`,
+                    height: `${section.height}px`,
+                  }}
+                >
+                  <div className="p-4">
+                    <h2 className="text-lg font-bold text-[#1C1C1E]">
+                      {section.title || "Section"}
+                    </h2>
+                  </div>
                 </div>
-              )}
-              <div className="p-2">
-                {group.fields.map((fieldId) => {
-                  const field = fields.find((f) => f.id === fieldId)
-                  if (!field) return null
-                  // Adjust field position relative to group
-                  const relativeField = {
-                    ...field,
-                    x: field.x - group.x,
-                    y: field.y - group.y - (group.title ? 40 : 0),
-                  }
-                  return renderField(relativeField)
-                })}
-              </div>
-            </div>
-          ))}
+              ))}
 
-          {/* Fields (not in groups) */}
-          {fields
-            .filter((field) => !field.groupId)
-            .map(renderField)}
+              {/* Groups */}
+              {groups.map((group) => (
+                <div
+                  key={group.id}
+                  className="absolute border border-[#1C1C1E] bg-white"
+                  style={{
+                    left: `${group.x}px`,
+                    top: `${group.y}px`,
+                    width: `${group.width}px`,
+                    height: `${group.height}px`,
+                  }}
+                >
+                  {group.title && (
+                    <div className="border-b border-[#1C1C1E] p-2 bg-gray-50">
+                      <h4 className="text-sm font-semibold text-[#1C1C1E]">{group.title}</h4>
+                      {group.description && (
+                        <p className="text-xs text-[#4A4A4E] mt-1">{group.description}</p>
+                      )}
+                    </div>
+                  )}
+                  <div className="p-2">
+                    {group.fields.map((fieldId) => {
+                      const field = fields.find((f) => f.id === fieldId)
+                      if (!field) return null
+                      // Adjust field position relative to group
+                      const relativeField = {
+                        ...field,
+                        x: field.x - group.x,
+                        y: field.y - group.y - (group.title ? 40 : 0),
+                      }
+                      return renderField(relativeField)
+                    })}
+                  </div>
+                </div>
+              ))}
+
+              {/* Fields (not in groups) */}
+              {fields.filter((field) => !field.groupId).map(renderField)}
             </div>
           </div>
 
-        {/* Print Instructions */}
-        <div className="print-instructions mt-4 p-4 bg-white rounded-md shadow-sm border border-[#E1E4E8]">
-          <p className="text-xs text-muted-foreground">
-            💡 Tip: Use your browser's print dialog (Ctrl/Cmd + P) to print or save as PDF. The preview shows exactly how the form will appear on paper.
-          </p>
+          {/* Print Instructions */}
+          <div className="print-instructions mt-4 p-4 bg-white rounded-md shadow-sm border border-[#E1E4E8]">
+            <p className="text-xs text-muted-foreground">
+              💡 Tip: Use your browser's print dialog (Ctrl/Cmd + P) to print or save as PDF. The
+              preview shows exactly how the form will appear on paper.
+            </p>
+          </div>
         </div>
       </div>
-    </div>
     </>
   )
 }
-

@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { Bell, Shield, User } from "lucide-react"
+import { ProtectedRoute } from "@/components/security/ProtectedRoute"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
-import { ProtectedRoute } from "@/components/security/ProtectedRoute"
 import { PERMISSIONS } from "@/lib/constants/permissions"
 
 export const Route = createFileRoute("/settings")({

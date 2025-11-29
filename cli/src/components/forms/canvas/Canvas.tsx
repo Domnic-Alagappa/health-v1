@@ -1,8 +1,8 @@
 import { Box } from "@/components/ui/box"
 import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
-import { CanvasGrid } from "./CanvasGrid"
 import { CanvasField } from "./CanvasField"
+import { CanvasGrid } from "./CanvasGrid"
 import type { CanvasField as CanvasFieldType, CanvasGroup, CanvasSection } from "./types"
 
 interface CanvasProps {
@@ -199,4 +199,3 @@ export function Canvas({
     </Box>
   )
 }
-
