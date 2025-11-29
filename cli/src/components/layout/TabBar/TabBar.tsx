@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button"
 import { Box } from "@/components/ui/box"
 import { Flex } from "@/components/ui/flex"
 import { TooltipProvider } from "@/components/ui/tooltip"
-import { useTabs } from "@/contexts/TabContext"
+import { useNavigate } from "@tanstack/react-router"
+import { useTabs, useActiveTabId, useSetActiveTab, useCloseTab } from "@/stores/tabStore"
 import { cn } from "@/lib/utils"
 import { TabItem } from "./TabItem"
 import { TabUserMenu } from "./TabUserMenu"
@@ -18,7 +19,11 @@ interface TabBarProps {
 const DASHBOARD_ID = "dashboard"
 
 export const TabBar = memo(function TabBar({ onMobileMenuClick }: TabBarProps) {
-  const { tabs, activeTabId, setActiveTab, closeTab } = useTabs()
+  const navigate = useNavigate()
+  const tabs = useTabs()
+  const activeTabId = useActiveTabId()
+  const setActiveTab = useSetActiveTab()
+  const closeTab = useCloseTab()
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const tabBarRef = useRef<HTMLDivElement>(null)
 
@@ -131,8 +136,8 @@ export const TabBar = memo(function TabBar({ onMobileMenuClick }: TabBarProps) {
                     isActive={tab.id === activeTabId}
                     isDragging={false}
                     isDragOver={false}
-                    onSelect={() => setActiveTab(tab.id)}
-                    onClose={() => closeTab(tab.id)}
+                    onSelect={() => setActiveTab(tab.id, (path) => navigate({ to: path as "/" | (string & {}) }))}
+                    onClose={() => closeTab(tab.id, (path) => navigate({ to: path as "/" | (string & {}) }))}
                     onDragStart={(e) => handleDragStart(e, tab.id)}
                   />
                 )}

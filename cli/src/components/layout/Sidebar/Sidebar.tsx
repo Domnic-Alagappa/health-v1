@@ -6,7 +6,7 @@ import { SidebarHeader } from "./SidebarHeader"
 import { SidebarNavigation, type SidebarItem } from "./SidebarNavigation"
 import { SidebarFooter } from "./SidebarFooter"
 import { SidebarCollapseButton } from "./SidebarCollapseButton"
-import { useSidebar } from "@/hooks/ui/useSidebar"
+import { useSidebarExpandedItems, useToggleSidebarExpand } from "@/stores/uiStore"
 
 interface SidebarProps {
   isCollapsed: boolean
@@ -21,7 +21,8 @@ export const Sidebar = memo(function Sidebar({
   items,
   onNavAction,
 }: SidebarProps) {
-  const { expandedItems, toggleExpand } = useSidebar()
+  const expandedItems = useSidebarExpandedItems()
+  const toggleExpand = useToggleSidebarExpand()
 
   const handleNavAction = (actionId: string, navPath: string) => {
     if (onNavAction) {

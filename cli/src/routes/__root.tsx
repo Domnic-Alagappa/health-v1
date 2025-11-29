@@ -13,16 +13,19 @@ import {
   Stethoscope,
   Users,
 } from "lucide-react"
-import { useEffect, useState, useMemo } from "react"
+import { useCallback, useEffect, useMemo } from "react"
+import { useNavigate } from "@tanstack/react-router"
 import { ActionRibbon } from "@/components/ActionRibbon"
 import { Sidebar } from "@/components/layout/Sidebar"
 import { TabBar } from "@/components/layout/TabBar"
 import { Box } from "@/components/ui/box"
 import { Container } from "@/components/ui/container"
 import { Flex } from "@/components/ui/flex"
-import { TabProvider, useTabs } from "@/contexts/TabContext"
 import { SkipToMainContent } from "@/lib/accessibility"
 import { useAuthStore } from "@/stores/authStore"
+import { useTabs, useActiveTabId, useOpenTab, useSetActiveTab } from "@/stores/tabStore"
+import { useSidebarCollapsed, useSetSidebarCollapsed } from "@/stores/uiStore"
+import { useDisclosure } from "@/hooks/ui/useDisclosure"
 import { PERMISSIONS, type Permission } from "@/lib/constants/permissions"
 
 export const Route = createRootRoute({
@@ -57,9 +60,14 @@ function getIconForPath(path: string): React.ReactNode {
 
 function RootComponentInner() {
   const location = useLocation()
-  const { tabs, activeTabId, openTab, setActiveTab } = useTabs()
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
-  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false)
+  const navigate = useNavigate()
+  const tabs = useTabs()
+  const activeTabId = useActiveTabId()
+  const openTab = useOpenTab()
+  const setActiveTab = useSetActiveTab()
+  const isSidebarCollapsed = useSidebarCollapsed()
+  const setIsSidebarCollapsed = useSetSidebarCollapsed()
+  const { isOpen: isMobileSidebarOpen, onClose: onMobileSidebarClose, onToggle: onMobileSidebarToggle } = useDisclosure('mobile-sidebar')
 
   // Check for standalone tab on mount (when window is opened from drag-out)
   useEffect(() => {
@@ -107,7 +115,7 @@ function RootComponentInner() {
           icon: getIconForPath(tabData.path || location.pathname),
           closable: tabData.closable !== false && (tabData.path || location.pathname) !== "/",
           allowDuplicate: tabData.allowDuplicate || false,
-        })
+        }, (path) => navigate({ to: path as "/" | (string & {}) }))
 
         // Immediately delete the token (single-use security measure)
         // This prevents token reuse if URL is shared or bookmarked
@@ -129,15 +137,15 @@ function RootComponentInner() {
         }
       }
     }
-  }, [location.search, location.pathname, openTab]) // Run when location changes or on mount
+  }, [location.search, location.pathname, openTab, navigate]) // Run when location changes or on mount
 
   // Sync active tab with router location when navigating via browser back/forward
   useEffect(() => {
     const currentTab = tabs.find((t) => t.path === location.pathname)
     if (currentTab && currentTab.id !== activeTabId) {
-      setActiveTab(currentTab.id)
+      setActiveTab(currentTab.id, (path) => navigate({ to: path as "/" | (string & {}) }))
     }
-  }, [location.pathname, tabs, activeTabId, setActiveTab])
+  }, [location.pathname, tabs, activeTabId, setActiveTab, navigate])
 
   // Update browser tab title when active tab changes
   useEffect(() => {
@@ -149,9 +157,22 @@ function RootComponentInner() {
     }
   }, [tabs, activeTabId])
 
-  const handleNavClick = (path: string, label: string, icon: React.ReactNode) => {
-    // Get required permission for this route
-    const requiredPermission = allNavigationItems.find(item => item.path === path)?.permission
+  const handleNavClick = useCallback((path: string, label: string, icon: React.ReactNode) => {
+    // Get required permission for this route - use static map to avoid circular dependency
+    const routePermissionMap: Record<string, Permission | undefined> = {
+      '/': undefined,
+      '/patients': PERMISSIONS.PATIENTS.VIEW,
+      '/clinical': PERMISSIONS.CLINICAL.VIEW,
+      '/orders': PERMISSIONS.ORDERS.VIEW,
+      '/results': PERMISSIONS.RESULTS.VIEW,
+      '/scheduling': PERMISSIONS.SCHEDULING.VIEW,
+      '/pharmacy': PERMISSIONS.PHARMACY.VIEW,
+      '/revenue': PERMISSIONS.REVENUE.VIEW,
+      '/analytics': PERMISSIONS.ANALYTICS.VIEW,
+      '/form-builder': undefined,
+      '/settings': PERMISSIONS.SETTINGS.VIEW,
+    }
+    const requiredPermission = routePermissionMap[path]
     
     openTab({
       label,
@@ -159,10 +180,10 @@ function RootComponentInner() {
       icon,
       closable: path !== "/",
       requiredPermission,
-    })
+    }, (path) => navigate({ to: path as "/" | (string & {}) }))
     // Close mobile sidebar after navigation
-    setIsMobileSidebarOpen(false)
-  }
+    onMobileSidebarClose()
+  }, [openTab, navigate, onMobileSidebarClose])
 
   const handleTabAction = (actionId: string, tabPath: string) => {
     // Handle different actions
@@ -180,7 +201,7 @@ function RootComponentInner() {
             path: tabPath,
             icon: tabToDuplicate.icon,
             closable: true,
-          })
+          }, (path) => navigate({ to: path as "/" | (string & {}) }))
         }
         break
       }
@@ -208,14 +229,14 @@ function RootComponentInner() {
   }
 
   // Define navigation items with permissions
-  const allNavigationItems: Array<{
+  const allNavigationItems = useMemo<Array<{
     path: string;
     label: string;
     icon: React.ReactNode;
     onClick: () => void;
     isActive: boolean;
     permission?: Permission;
-  }> = [
+  }>>(() => [
     {
       path: "/",
       label: "Dashboard",
@@ -305,7 +326,7 @@ function RootComponentInner() {
       isActive: location.pathname.startsWith("/settings"),
       permission: PERMISSIONS.SETTINGS.VIEW,
     },
-  ]
+  ], [location.pathname, handleNavClick])
 
   // Filter navigation items based on permissions
   // Use direct store access to avoid hook re-render issues
@@ -315,7 +336,7 @@ function RootComponentInner() {
       if (!item.permission) return true // No permission required
       return state.permissions.includes(item.permission)
     })
-  }, [location.pathname]) // Only depend on pathname, not hasPermission
+  }, [allNavigationItems]) // Filter based on navigation items and permissions
 
   return (
     <Flex className="h-screen overflow-hidden bg-background">
@@ -336,18 +357,18 @@ function RootComponentInner() {
             role="button"
             tabIndex={0}
             className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-            onClick={() => setIsMobileSidebarOpen(false)}
+            onClick={onMobileSidebarClose}
             onKeyDown={(e) => {
               if (e.key === "Enter" || e.key === " " || e.key === "Escape") {
                 e.preventDefault()
-                setIsMobileSidebarOpen(false)
+                onMobileSidebarClose()
               }
             }}
           />
           <aside className="fixed left-0 top-0 h-screen z-50 lg:hidden">
             <Sidebar
               isCollapsed={false}
-              onToggle={() => setIsMobileSidebarOpen(false)}
+              onToggle={onMobileSidebarClose}
               items={navigationItems}
             />
           </aside>
@@ -357,7 +378,7 @@ function RootComponentInner() {
       {/* Main Content Area */}
       <Flex direction="column" className="flex-1 overflow-hidden">
         {/* Tab Bar */}
-        <TabBar onMobileMenuClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)} />
+        <TabBar onMobileMenuClick={onMobileSidebarToggle} />
 
         {/* Action Ribbon - shows actions for active tab */}
         <ActionRibbon onAction={handleTabAction} />
@@ -375,11 +396,7 @@ function RootComponentInner() {
   )
 }
 
-// Wrap with TabProvider inside router context
+// Root component - no longer needs TabProvider
 function RootComponent() {
-  return (
-    <TabProvider>
-      <RootComponentInner />
-    </TabProvider>
-  )
+  return <RootComponentInner />
 }

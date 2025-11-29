@@ -13,14 +13,16 @@ import { Box } from "@/components/ui/box"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Flex } from "@/components/ui/flex"
 import { Stack } from "@/components/ui/stack"
-import { useTabs } from "@/contexts/TabContext"
+import { useNavigate } from "@tanstack/react-router"
+import { useOpenTab } from "@/stores/tabStore"
 
 export const Route = createFileRoute("/")({
   component: DashboardComponent,
 })
 
 function DashboardComponent() {
-  const { openTab } = useTabs()
+  const navigate = useNavigate()
+  const openTab = useOpenTab()
 
   const handleOpenModule = (path: string, label: string, icon: React.ReactNode) => {
     // Forms and multi-step processes allow duplicates (paths ending with /new, /create, etc.)
@@ -31,7 +33,7 @@ function DashboardComponent() {
       icon,
       closable: path !== "/",
       allowDuplicate: isFormPath, // Allow multiple instances of forms
-    })
+    }, (path) => navigate({ to: path as "/" | (string & {}) }))
   }
   const stats = [
     {

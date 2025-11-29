@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import { useTabs } from "@/contexts/TabContext"
+import { useCloseTab, useReorderTabs } from "@/stores/tabStore"
 import { createMouseHandlers } from "./mouseHandlers"
 
 const DASHBOARD_ID = "dashboard"
@@ -11,7 +11,8 @@ interface UseTabBarDragOptions {
 }
 
 export function useTabBarDrag({ sortedTabs, scrollContainerRef, tabBarRef }: UseTabBarDragOptions) {
-  const { closeTab, reorderTabs } = useTabs()
+  const closeTab = useCloseTab()
+  const reorderTabs = useReorderTabs()
   const [draggedTabId, setDraggedTabId] = useState<string | null>(null)
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
   const [dragPosition, setDragPosition] = useState<{ x: number; y: number } | null>(null)

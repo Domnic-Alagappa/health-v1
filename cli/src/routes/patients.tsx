@@ -7,7 +7,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Flex } from "@/components/ui/flex"
 import { Input } from "@/components/ui/input"
 import { Stack } from "@/components/ui/stack"
-import { useTabs } from "@/contexts/TabContext"
+import { useNavigate } from "@tanstack/react-router"
+import { useOpenTab } from "@/stores/tabStore"
 import { ProtectedRoute } from "@/components/security/ProtectedRoute"
 import { PERMISSIONS } from "@/lib/constants/permissions"
 
@@ -24,7 +25,8 @@ function PatientsComponent() {
 }
 
 function PatientsComponentInner() {
-  const { openTab } = useTabs()
+  const navigate = useNavigate()
+  const openTab = useOpenTab()
 
   // Mock patient data
   const patients = [
@@ -64,7 +66,7 @@ function PatientsComponentInner() {
       icon: <Users className="h-4 w-4" />,
       closable: true,
       requiredPermission: PERMISSIONS.PATIENTS.VIEW,
-    })
+    }, (path) => navigate({ to: path as "/" | (string & {}) }))
   }
 
   return (

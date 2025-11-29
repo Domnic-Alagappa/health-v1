@@ -3,7 +3,7 @@ import { Box } from "@/components/ui/box"
 import { Button } from "@/components/ui/button"
 import { Flex } from "@/components/ui/flex"
 import { Separator } from "@/components/ui/separator"
-import { useTabs } from "@/contexts/TabContext"
+import { useTabs, useActiveTabId } from "@/stores/tabStore"
 import { getTabActions } from "@/lib/tab-actions"
 
 interface ActionRibbonProps {
@@ -11,7 +11,8 @@ interface ActionRibbonProps {
 }
 
 export const ActionRibbon = memo(function ActionRibbon({ onAction }: ActionRibbonProps) {
-  const { tabs, activeTabId } = useTabs()
+  const tabs = useTabs()
+  const activeTabId = useActiveTabId()
 
   const activeTab = useMemo(() => tabs.find((t) => t.id === activeTabId), [tabs, activeTabId])
 
