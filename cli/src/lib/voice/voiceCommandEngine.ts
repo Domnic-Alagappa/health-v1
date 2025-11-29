@@ -232,6 +232,7 @@ export class TextToSpeechEngine {
       pitch?: number
       rate?: number
       volume?: number
+      voiceName?: string | null
     }
   ): void {
     if (!this.isSupported || !this.synth) {
@@ -244,12 +245,26 @@ export class TextToSpeechEngine {
 
     const utterance = new SpeechSynthesisUtterance(text)
 
-    if (options) {
-      if (options.lang) utterance.lang = options.lang
-      if (options.pitch !== undefined) utterance.pitch = options.pitch
-      if (options.rate !== undefined) utterance.rate = options.rate
-      if (options.volume !== undefined) utterance.volume = options.volume
+    // Get preferences from store
+    const preferences = useAccessibilityStore.getState().preferences
+
+    // Set voice if specified or from preferences
+    if (options?.voiceName || preferences.voiceName) {
+      const voices = this.synth.getVoices()
+      const voiceName = options?.voiceName || preferences.voiceName
+      const selectedVoice = voices.find((v) => v.name === voiceName)
+      if (selectedVoice) {
+        utterance.voice = selectedVoice
+      }
     }
+
+    // Set language
+    utterance.lang = options?.lang || preferences.voiceCommandsLanguage || "en-US"
+
+    // Set pitch, rate, volume from options or preferences
+    utterance.pitch = options?.pitch ?? preferences.voicePitch ?? 1.0
+    utterance.rate = options?.rate ?? preferences.voiceRate ?? 1.0
+    utterance.volume = options?.volume ?? preferences.voiceVolume ?? 1.0
 
     this.synth.speak(utterance)
   }

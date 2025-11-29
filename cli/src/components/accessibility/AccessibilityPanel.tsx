@@ -21,6 +21,7 @@ import { ColorBlindModeSelector } from "./ColorBlindModeSelector"
 import { FontSizeSelector } from "./FontSizeSelector"
 import { HighContrastToggle } from "./HighContrastToggle"
 import { VoiceCommandButton } from "./VoiceCommandButton"
+import { VoiceSelector } from "./VoiceSelector"
 
 interface AccessibilityPanelProps {
   showTrigger?: boolean
@@ -66,7 +67,7 @@ export function AccessibilityPanel({ showTrigger = false }: AccessibilityPanelPr
           {/* Voice Commands */}
           <Box>
             <h3 className="text-lg font-semibold mb-4">Voice Commands</h3>
-            <Stack spacing="sm">
+            <Stack spacing="md">
               <Box className="flex items-center justify-between">
                 <label htmlFor="voice-enabled" className="text-sm">
                   Enable Voice Commands
@@ -84,12 +85,16 @@ export function AccessibilityPanel({ showTrigger = false }: AccessibilityPanelPr
                 />
               </Box>
               {preferences.voiceCommandsEnabled && (
-                <Box className="flex items-center gap-2">
-                  <VoiceCommandButton />
-                  <span className="text-xs text-muted-foreground">
-                    Click to start/stop voice recognition
-                  </span>
-                </Box>
+                <>
+                  <Box className="flex items-center gap-2">
+                    <VoiceCommandButton />
+                    <span className="text-xs text-muted-foreground">
+                      Click to start/stop voice recognition
+                    </span>
+                  </Box>
+                  <Separator />
+                  <VoiceSelector />
+                </>
               )}
             </Stack>
           </Box>

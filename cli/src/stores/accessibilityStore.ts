@@ -38,6 +38,10 @@ export interface AccessibilityPreferences {
   voiceCommandsEnabled: boolean
   voiceCommandsLanguage: string // e.g., 'en-US', 'en-GB'
   voiceCommandsFeedback: boolean // Audio/visual feedback when command recognized
+  voiceName: string | null // Selected voice name from available voices
+  voicePitch: number // 0.0 to 2.0, default 1.0
+  voiceRate: number // 0.1 to 10.0, default 1.0
+  voiceVolume: number // 0.0 to 1.0, default 1.0
 
   // Screen Reader
   screenReaderOptimized: boolean
@@ -101,6 +105,10 @@ const defaultPreferences: AccessibilityPreferences = {
   voiceCommandsEnabled: false,
   voiceCommandsLanguage: "en-US",
   voiceCommandsFeedback: true,
+  voiceName: null, // Will be set to default system voice
+  voicePitch: 1.0,
+  voiceRate: 1.0,
+  voiceVolume: 1.0,
 
   // Screen Reader
   screenReaderOptimized: false,
