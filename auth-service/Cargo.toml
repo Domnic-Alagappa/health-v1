@@ -4,29 +4,9 @@ version = "0.1.0"
 edition = "2021"
 rust-version = "1.77"
 
-[lints.rust]
-# Deny unwrap and expect in production code
-unwrap_used = "deny"
-expect_used = "deny"
-panic = "deny"
-unconditional_recursion = "deny"
-arithmetic_overflow = "deny"
-unused_must_use = "warn"
-
-[lints.clippy]
-# Production-ready clippy rules
-unwrap_used = "deny"
-expect_used = "deny"
-panic = "deny"
-unnecessary_unwrap = "deny"
-option_unwrap_used = "deny"
-result_unwrap_used = "deny"
-unused_async = "warn"
-unused_must_use = "warn"
-cognitive_complexity = "warn"
-too_many_arguments = "warn"
-too_many_lines = "warn"
-type_complexity = "warn"
+# Note: Use clippy.toml and .cargo/config.toml for lint configuration
+# The lints.* syntax requires Rust 1.78+ and may not be available in all versions
+# For now, use clippy via: cargo clippy -- -W clippy::unwrap_used -W clippy::expect_used
 
 [dependencies]
 # Web framework

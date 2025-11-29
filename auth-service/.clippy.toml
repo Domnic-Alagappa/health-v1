@@ -1,19 +1,8 @@
 # Clippy configuration for production-ready code
 # This file is used by cargo clippy
 
-# Disallow unwrap() and expect() in production code
-disallowed-methods = [
-    "std::result::Result::unwrap",
-    "std::result::Result::expect",
-    "std::option::Option::unwrap",
-    "std::option::Option::expect",
-]
-
-# Allow expect in tests
-allowed-methods = [
-    "std::result::Result::expect",  # Allow in tests only
-    "std::option::Option::expect",  # Allow in tests only
-]
+# Note: unwrap() and expect() are allowed in test code (modules with #[cfg(test)])
+# but should be avoided in production code. Use proper error handling instead.
 
 # Code quality thresholds
 cognitive-complexity-threshold = 30

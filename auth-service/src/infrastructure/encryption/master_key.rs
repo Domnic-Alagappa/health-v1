@@ -24,6 +24,9 @@ impl MasterKey {
     }
 
     /// Generate a new master key (for initial setup)
+    /// 
+    /// # Errors
+    /// Returns an error if the random number generator fails
     pub fn generate() -> AppResult<Self> {
         use ring::rand::{SecureRandom, SystemRandom};
         let rng = SystemRandom::new();
