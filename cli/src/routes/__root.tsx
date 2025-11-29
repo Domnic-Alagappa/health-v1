@@ -10,6 +10,8 @@ import {
   Pill,
   Stethoscope,
   Users,
+  Settings,
+  FileEdit,
 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { ActionRibbon } from "@/components/ActionRibbon"
@@ -40,6 +42,8 @@ function RootComponentInner() {
       "/pharmacy": <Pill className="h-4 w-4" />,
       "/revenue": <CreditCard className="h-4 w-4" />,
       "/analytics": <BarChart3 className="h-4 w-4" />,
+      "/form-builder": <FileEdit className="h-4 w-4" />,
+      "/settings": <Settings className="h-4 w-4" />,
     }
 
     // Find matching icon by path prefix
@@ -257,6 +261,20 @@ function RootComponentInner() {
       icon: <BarChart3 className="h-5 w-5" />,
       onClick: () => handleNavClick("/analytics", "Analytics", <BarChart3 className="h-4 w-4" />),
       isActive: location.pathname.startsWith("/analytics"),
+    },
+    {
+      path: "/form-builder",
+      label: "Form Builder",
+      icon: <FileEdit className="h-5 w-5" />,
+      onClick: () => handleNavClick("/form-builder", "Form Builder", <FileEdit className="h-4 w-4" />),
+      isActive: location.pathname.startsWith("/form-builder"),
+    },
+    {
+      path: "/settings",
+      label: "Settings",
+      icon: <Settings className="h-5 w-5" />,
+      onClick: () => handleNavClick("/settings", "Settings", <Settings className="h-4 w-4" />),
+      isActive: location.pathname.startsWith("/settings"),
     },
   ]
 
