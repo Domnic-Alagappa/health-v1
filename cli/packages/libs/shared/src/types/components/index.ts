@@ -2,7 +2,6 @@
  * Component types index
  */
 
-export * from "./form"
-export * from "./ui"
-export * from "./registry"
-
+export * from "./form";
+export * from "./ui";
+export * from "./registry";

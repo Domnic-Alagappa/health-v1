@@ -1,45 +1,55 @@
-import { useNavigate } from "@tanstack/react-router"
-import { AlertCircle, Loader2 } from "lucide-react"
-import { useEffect, useState } from "react"
-import { Button, Input, Label, Card, CardContent, CardDescription, CardHeader, CardTitle, Flex, Stack } from "@health-v1/ui-components"
-
+import {
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  Flex,
+  Input,
+  Label,
+  Stack,
+} from "@health-v1/ui-components";
+import { useNavigate } from "@tanstack/react-router";
+import { AlertCircle, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export function LoginPage() {
-  const navigate = useNavigate()
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError(null)
-    setIsLoading(true)
+    e.preventDefault();
+    setError(null);
+    setIsLoading(true);
 
     // Basic validation
     if (!email || !password) {
-      setError("Email and password are required")
-      setIsLoading(false)
-      return
+      setError("Email and password are required");
+      setIsLoading(false);
+      return;
     }
 
     if (!email.includes("@")) {
-      setError("Please enter a valid email address")
-      setIsLoading(false)
-      return
+      setError("Please enter a valid email address");
+      setIsLoading(false);
+      return;
     }
 
     try {
       // TODO: Implement admin login API call
       // For now, just redirect to dashboard
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-      navigate({ to: "/" })
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      navigate({ to: "/" });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed")
+      setError(err instanceof Error ? err.message : "Login failed");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <Flex
@@ -108,6 +118,5 @@ export function LoginPage() {
         </CardContent>
       </Card>
     </Flex>
-  )
+  );
 }
-

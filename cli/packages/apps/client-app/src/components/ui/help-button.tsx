@@ -1,14 +1,14 @@
-import { HelpCircle } from "lucide-react"
-import * as React from "react"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { cn } from "@/lib/utils"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+import { HelpCircle } from "lucide-react";
+import * as React from "react";
 
 export interface HelpButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  content: string | React.ReactNode
-  title?: string
-  variant?: "default" | "subtle" | "icon-only"
-  size?: "sm" | "md" | "lg"
-  id?: string
+  content: string | React.ReactNode;
+  title?: string;
+  variant?: "default" | "subtle" | "icon-only";
+  size?: "sm" | "md" | "lg";
+  id?: string;
 }
 
 const HelpButton = React.forwardRef<HTMLButtonElement, HelpButtonProps>(
@@ -17,13 +17,13 @@ const HelpButton = React.forwardRef<HTMLButtonElement, HelpButtonProps>(
       sm: "h-4 w-4",
       md: "h-[18px] w-[18px]",
       lg: "h-5 w-5",
-    }
+    };
 
     const variantClasses = {
       default: "text-[#4A4A4E] hover:text-primary",
       subtle: "text-muted-foreground hover:text-foreground opacity-60 hover:opacity-100",
       "icon-only": "text-[#4A4A4E] hover:text-primary",
-    }
+    };
 
     return (
       <TooltipProvider delayDuration={200}>
@@ -52,9 +52,9 @@ const HelpButton = React.forwardRef<HTMLButtonElement, HelpButtonProps>(
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
-    )
+    );
   }
-)
-HelpButton.displayName = "HelpButton"
+);
+HelpButton.displayName = "HelpButton";
 
-export { HelpButton }
+export { HelpButton };

@@ -1,11 +1,11 @@
-import type * as React from "react"
-import { cn } from "../lib/utils"
-import { Input } from "./input"
-import { Label } from "./label"
-import type { FormFieldProps } from "@health-v1/shared/types/components/form"
+import type { FormFieldProps } from "@health-v1/shared/types/components/form";
+import type * as React from "react";
+import { cn } from "../lib/utils";
+import { Input } from "./input";
+import { Label } from "./label";
 
 // Re-export from shared
-export type { FormFieldProps }
+export type { FormFieldProps };
 
 /**
  * Individual form field component
@@ -26,7 +26,7 @@ export function FormField({
   help,
   className,
 }: FormFieldProps) {
-  const hasError = Boolean(error)
+  const hasError = Boolean(error);
 
   return (
     <div className={cn("space-y-2", className)}>
@@ -60,5 +60,5 @@ export function FormField({
         </p>
       )}
     </div>
-  )
+  );
 }

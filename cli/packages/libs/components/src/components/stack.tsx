@@ -1,13 +1,13 @@
-import { Slot } from "@radix-ui/react-slot"
-import * as React from "react"
-import { cn } from "../lib/utils"
+import { Slot } from "@radix-ui/react-slot";
+import * as React from "react";
+import { cn } from "../lib/utils";
 
 export interface StackProps extends React.HTMLAttributes<HTMLDivElement> {
-  asChild?: boolean
-  direction?: "row" | "column"
-  spacing?: "none" | "xs" | "sm" | "md" | "lg" | "xl"
-  align?: "start" | "center" | "end" | "stretch"
-  justify?: "start" | "center" | "end" | "between" | "around" | "evenly"
+  asChild?: boolean;
+  direction?: "row" | "column";
+  spacing?: "none" | "xs" | "sm" | "md" | "lg" | "xl";
+  align?: "start" | "center" | "end" | "stretch";
+  justify?: "start" | "center" | "end" | "between" | "around" | "evenly";
 }
 
 const Stack = React.forwardRef<HTMLDivElement, StackProps>(
@@ -15,7 +15,7 @@ const Stack = React.forwardRef<HTMLDivElement, StackProps>(
     { className, asChild = false, direction = "column", spacing = "md", align, justify, ...props },
     ref
   ) => {
-    const Comp = asChild ? Slot : "div"
+    const Comp = asChild ? Slot : "div";
 
     const spacingClasses = {
       none: "gap-0",
@@ -24,14 +24,14 @@ const Stack = React.forwardRef<HTMLDivElement, StackProps>(
       md: "gap-4",
       lg: "gap-6",
       xl: "gap-8",
-    }
+    };
 
     const alignClasses = {
       start: "items-start",
       center: "items-center",
       end: "items-end",
       stretch: "items-stretch",
-    }
+    };
 
     const justifyClasses = {
       start: "justify-start",
@@ -40,7 +40,7 @@ const Stack = React.forwardRef<HTMLDivElement, StackProps>(
       between: "justify-between",
       around: "justify-around",
       evenly: "justify-evenly",
-    }
+    };
 
     return (
       <Comp
@@ -55,9 +55,9 @@ const Stack = React.forwardRef<HTMLDivElement, StackProps>(
         )}
         {...props}
       />
-    )
+    );
   }
-)
-Stack.displayName = "Stack"
+);
+Stack.displayName = "Stack";
 
-export { Stack }
+export { Stack };

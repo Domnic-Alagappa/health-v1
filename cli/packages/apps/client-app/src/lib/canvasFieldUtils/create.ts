@@ -1,5 +1,5 @@
-import type { CanvasField } from "@/components/forms/canvas/types"
-import type { FieldType } from "@/components/ui/form-builder"
+import type { CanvasField } from "@/components/forms/canvas/types";
+import type { FieldType } from "@/components/ui/form-builder";
 
 export function createCanvasField(
   type: FieldType | "image" | "line-horizontal" | "line-vertical" | "box",
@@ -17,7 +17,7 @@ export function createCanvasField(
       width: 200,
       height: 100,
       imageUrl: "",
-    }
+    };
   }
 
   if (type === "line-horizontal") {
@@ -33,7 +33,7 @@ export function createCanvasField(
       lineDirection: "horizontal",
       borderWidth: 1,
       borderColor: "#1C1C1E",
-    }
+    };
   }
 
   if (type === "line-vertical") {
@@ -49,7 +49,7 @@ export function createCanvasField(
       lineDirection: "vertical",
       borderWidth: 1,
       borderColor: "#1C1C1E",
-    }
+    };
   }
 
   if (type === "box") {
@@ -65,7 +65,7 @@ export function createCanvasField(
       borderStyle: "solid",
       borderWidth: 1,
       borderColor: "#1C1C1E",
-    }
+    };
   }
 
   return {
@@ -83,5 +83,5 @@ export function createCanvasField(
       colSpan: 12,
       size: "md",
     },
-  }
+  };
 }

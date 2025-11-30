@@ -1,10 +1,10 @@
-import { Box } from "@/components/ui/box"
-import { Button } from "@/components/ui/button"
-import { Flex } from "@/components/ui/flex"
-import type { FormBuilderProps, FormField } from "@/components/ui/form-builder"
-import { Label } from "@/components/ui/label"
-import { Stack } from "@/components/ui/stack"
-import { useFormBuilder } from "@/hooks/forms/useFormBuilder"
+import { Box } from "@/components/ui/box";
+import { Button } from "@/components/ui/button";
+import { Flex } from "@/components/ui/flex";
+import type { FormBuilderProps, FormField } from "@/components/ui/form-builder";
+import { Label } from "@/components/ui/label";
+import { Stack } from "@/components/ui/stack";
+import { useFormBuilder } from "@/hooks/forms/useFormBuilder";
 import {
   getAlignmentClasses,
   getFieldSizeClasses,
@@ -14,11 +14,11 @@ import {
   getMarginClasses,
   getPaddingClasses,
   getWidthClasses,
-} from "@/lib/formLayoutUtils"
-import { cn } from "@/lib/utils"
-import { FormFieldGroupComponent } from "./FormFieldGroup"
-import { FormFieldRenderer } from "./FormFieldRenderer"
-import { FormFieldSection } from "./FormFieldSection"
+} from "@/lib/formLayoutUtils";
+import { cn } from "@/lib/utils";
+import { FormFieldGroupComponent } from "./FormFieldGroup";
+import { FormFieldRenderer } from "./FormFieldRenderer";
+import { FormFieldSection } from "./FormFieldSection";
 
 export function FormBuilder({
   config,
@@ -38,31 +38,31 @@ export function FormBuilder({
     validateForm,
     isFieldVisible,
     sortedFields,
-  } = useFormBuilder({ config, initialValues })
+  } = useFormBuilder({ config, initialValues });
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!validateForm()) return
-    setIsSubmitting(true)
+    e.preventDefault();
+    if (!validateForm()) return;
+    setIsSubmitting(true);
     try {
-      await onSubmit(formData)
+      await onSubmit(formData);
     } catch (error) {
-      console.error("Form submission error:", error)
+      console.error("Form submission error:", error);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const renderField = (field: FormField) => {
-    if (!isFieldVisible(field)) return null
+    if (!isFieldVisible(field)) return null;
 
-    const value = formData[field.id] ?? field.defaultValue ?? ""
-    const error = errors[field.id]
-    const hasError = touched[field.id] && error
-    const layout = field.layout || {}
+    const value = formData[field.id] ?? field.defaultValue ?? "";
+    const error = errors[field.id];
+    const hasError = touched[field.id] && error;
+    const layout = field.layout || {};
 
     if (field.type === "separator" || field.type === "display-text") {
-      return <FormFieldSection key={field.id} field={field} />
+      return <FormFieldSection key={field.id} field={field} />;
     }
 
     const fieldContainerClasses = cn(
@@ -72,7 +72,7 @@ export function FormBuilder({
       getPaddingClasses(layout.padding),
       getAlignmentClasses(layout.alignment),
       layout.order && `order-${layout.order}`
-    )
+    );
 
     return (
       <Stack
@@ -96,9 +96,7 @@ export function FormBuilder({
         <FormFieldRenderer
           field={field}
           value={value}
-          error={error}
           hasError={hasError}
-          touched={touched[field.id] || false}
           layout={layout}
           onChange={(value) => handleChange(field.id, value)}
           onBlur={() => handleBlur(field.id)}
@@ -112,14 +110,14 @@ export function FormBuilder({
           </p>
         )}
       </Stack>
-    )
-  }
+    );
+  };
 
   const renderFieldsWithGroups = () => {
     if (config.groups && config.groups.length > 0) {
       return config.groups.map((group) => {
-        const groupFields = sortedFields.filter((f) => f.groupId === group.id)
-        if (groupFields.length === 0) return null
+        const groupFields = sortedFields.filter((f) => f.groupId === group.id);
+        if (groupFields.length === 0) return null;
 
         return (
           <FormFieldGroupComponent
@@ -129,11 +127,11 @@ export function FormBuilder({
             getGridLayoutClasses={() => getGridLayoutClasses(config)}
             getGapClasses={() => getGapClasses(config)}
           />
-        )
-      })
+        );
+      });
     }
-    return sortedFields.map(renderField)
-  }
+    return sortedFields.map(renderField);
+  };
 
   return (
     <form onSubmit={handleSubmit} className={cn("overflow-auto", className)} noValidate>
@@ -170,5 +168,5 @@ export function FormBuilder({
         </Flex>
       </Stack>
     </form>
-  )
+  );
 }

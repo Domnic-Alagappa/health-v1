@@ -3,23 +3,23 @@
  * Toggle high contrast mode
  */
 
-import { useEffect } from "react"
-import { Box } from "@/components/ui/box"
-import { useAccessibilityStore } from "@/stores/accessibilityStore"
+import { Box } from "@/components/ui/box";
+import { useAccessibilityStore } from "@/stores/accessibilityStore";
+import { useEffect } from "react";
 
 export function HighContrastToggle() {
-  const highContrast = useAccessibilityStore((state) => state.preferences.highContrast)
-  const updatePreference = useAccessibilityStore((state) => state.updatePreference)
+  const highContrast = useAccessibilityStore((state) => state.preferences.highContrast);
+  const updatePreference = useAccessibilityStore((state) => state.updatePreference);
 
   useEffect(() => {
     if (typeof document !== "undefined") {
       if (highContrast) {
-        document.documentElement.classList.add("high-contrast")
+        document.documentElement.classList.add("high-contrast");
       } else {
-        document.documentElement.classList.remove("high-contrast")
+        document.documentElement.classList.remove("high-contrast");
       }
     }
-  }, [highContrast])
+  }, [highContrast]);
 
   return (
     <Box className="flex items-center justify-between">
@@ -35,5 +35,5 @@ export function HighContrastToggle() {
         aria-label="Toggle high contrast mode"
       />
     </Box>
-  )
+  );
 }

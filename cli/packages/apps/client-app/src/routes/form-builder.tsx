@@ -1,19 +1,19 @@
-import { createFileRoute } from "@tanstack/react-router"
-import { FileText, Layout } from "lucide-react"
-import { useState } from "react"
-import { FormCanvasBuilder } from "@/components/forms/canvas"
-import { Box } from "@/components/ui/box"
-import { Button } from "@/components/ui/button"
-import { Flex } from "@/components/ui/flex"
-import { FormPlaygroundWithResizer } from "@/components/ui/form-playground-with-resizer"
-import { Stack } from "@/components/ui/stack"
+import { FormCanvasBuilder } from "@/components/forms/canvas";
+import { Box } from "@/components/ui/box";
+import { Button } from "@/components/ui/button";
+import { Flex } from "@/components/ui/flex";
+import { FormPlaygroundWithResizer } from "@/components/ui/form-playground-with-resizer";
+import { Stack } from "@/components/ui/stack";
+import { createFileRoute } from "@tanstack/react-router";
+import { FileText, Layout } from "lucide-react";
+import { useState } from "react";
 
 export const Route = createFileRoute("/form-builder")({
   component: FormBuilderPage,
-})
+});
 
 function FormBuilderPage() {
-  const [builderType, setBuilderType] = useState<"canvas" | "ui">("ui")
+  const [builderType, setBuilderType] = useState<"canvas" | "ui">("ui");
 
   return (
     <Flex direction="column" className="h-screen">
@@ -54,5 +54,5 @@ function FormBuilderPage() {
         {builderType === "canvas" ? <FormCanvasBuilder /> : <FormPlaygroundWithResizer />}
       </Box>
     </Flex>
-  )
+  );
 }

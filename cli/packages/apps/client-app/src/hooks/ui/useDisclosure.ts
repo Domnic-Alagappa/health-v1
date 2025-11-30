@@ -4,14 +4,14 @@
  * Uses Zustand UI store internally to avoid useState boilerplate
  */
 
-import { useCallback } from "react"
-import { useUIStore } from "@/stores/uiStore"
+import { useUIStore } from "@/stores/uiStore";
+import { useCallback } from "react";
 
 export interface UseDisclosureReturn {
-  isOpen: boolean
-  onOpen: () => void
-  onClose: () => void
-  onToggle: () => void
+  isOpen: boolean;
+  onOpen: () => void;
+  onClose: () => void;
+  onToggle: () => void;
 }
 
 /**
@@ -30,28 +30,28 @@ export interface UseDisclosureReturn {
  * const modal2 = useDisclosure('modal-2');
  * ```
  */
-export function useDisclosure(id: string = "default"): UseDisclosureReturn {
-  const isOpen = useUIStore((state) => state.disclosures[id] ?? false)
-  const openDisclosure = useUIStore((state) => state.openDisclosure)
-  const closeDisclosure = useUIStore((state) => state.closeDisclosure)
-  const toggleDisclosure = useUIStore((state) => state.toggleDisclosure)
+export function useDisclosure(id = "default"): UseDisclosureReturn {
+  const isOpen = useUIStore((state) => state.disclosures[id] ?? false);
+  const openDisclosure = useUIStore((state) => state.openDisclosure);
+  const closeDisclosure = useUIStore((state) => state.closeDisclosure);
+  const toggleDisclosure = useUIStore((state) => state.toggleDisclosure);
 
   const onOpen = useCallback(() => {
-    openDisclosure(id)
-  }, [id, openDisclosure])
+    openDisclosure(id);
+  }, [id, openDisclosure]);
 
   const onClose = useCallback(() => {
-    closeDisclosure(id)
-  }, [id, closeDisclosure])
+    closeDisclosure(id);
+  }, [id, closeDisclosure]);
 
   const onToggle = useCallback(() => {
-    toggleDisclosure(id)
-  }, [id, toggleDisclosure])
+    toggleDisclosure(id);
+  }, [id, toggleDisclosure]);
 
   return {
     isOpen,
     onOpen,
     onClose,
     onToggle,
-  }
+  };
 }

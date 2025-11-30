@@ -1,16 +1,16 @@
-import { useState } from "react"
-import { Box } from "@/components/ui/box"
-import { Flex } from "@/components/ui/flex"
-import { FormCanvasPreview } from "@/components/ui/form-canvas-preview"
-import { useCanvasOperations } from "@/hooks/forms/useCanvasOperations"
-import { useFormCanvas } from "@/hooks/forms/useFormCanvas"
-import { useCanvasDrag } from "@/hooks/ui/useCanvasDrag"
-import { useCanvasResize } from "@/hooks/ui/useCanvasResize"
-import { Canvas } from "./Canvas"
-import { CanvasFieldLibrary } from "./CanvasFieldLibrary"
-import { CanvasPropertyPanel } from "./CanvasPropertyPanel"
-import { CanvasToolbar } from "./CanvasToolbar"
-import { FIELD_CATEGORIES } from "./constants"
+import { Box } from "@/components/ui/box";
+import { Flex } from "@/components/ui/flex";
+import { FormCanvasPreview } from "@/components/ui/form-canvas-preview";
+import { useCanvasOperations } from "@/hooks/forms/useCanvasOperations";
+import { useFormCanvas } from "@/hooks/forms/useFormCanvas";
+import { useCanvasDrag } from "@/hooks/ui/useCanvasDrag";
+import { useCanvasResize } from "@/hooks/ui/useCanvasResize";
+import { useState } from "react";
+import { Canvas } from "./Canvas";
+import { CanvasFieldLibrary } from "./CanvasFieldLibrary";
+import { CanvasPropertyPanel } from "./CanvasPropertyPanel";
+import { CanvasToolbar } from "./CanvasToolbar";
+import { FIELD_CATEGORIES } from "./constants";
 
 export function FormCanvasBuilder() {
   const {
@@ -33,14 +33,14 @@ export function FormCanvasBuilder() {
     removeField,
     removeGroup,
     removeSection,
-  } = useFormCanvas()
+  } = useFormCanvas();
 
-  const [showGrid, setShowGrid] = useState(true)
-  const [snapToGrid, setSnapToGrid] = useState(true)
-  const [gridSize, setGridSize] = useState(10)
-  const [wrapOverflow, setWrapOverflow] = useState(true)
-  const [selectedSheetSize, setSelectedSheetSize] = useState<string>("a4")
-  const [viewMode, setViewMode] = useState<"edit" | "preview">("edit")
+  const [showGrid, setShowGrid] = useState(true);
+  const [snapToGrid, setSnapToGrid] = useState(true);
+  const [gridSize, setGridSize] = useState(10);
+  const [wrapOverflow, setWrapOverflow] = useState(true);
+  const [selectedSheetSize, setSelectedSheetSize] = useState<string>("a4");
+  const [viewMode, setViewMode] = useState<"edit" | "preview">("edit");
 
   const { copied, addField, exportConfig, importConfig, copyCode } = useCanvasOperations({
     fields,
@@ -54,12 +54,12 @@ export function FormCanvasBuilder() {
     setSelectedField,
     setSelectedGroup,
     setSelectedSection,
-  })
+  });
 
   const snap = (value: number) => {
-    if (!snapToGrid) return value
-    return Math.round(value / gridSize) * gridSize
-  }
+    if (!snapToGrid) return value;
+    return Math.round(value / gridSize) * gridSize;
+  };
 
   const {
     draggedField,
@@ -80,7 +80,7 @@ export function FormCanvasBuilder() {
     updateField,
     setGroups,
     setSections,
-  })
+  });
 
   const { handleResizeStart, handleGroupResizeStart } = useCanvasResize({
     fields,
@@ -90,11 +90,11 @@ export function FormCanvasBuilder() {
     gridSize,
     updateField,
     setGroups,
-  })
+  });
 
-  const selectedFieldData = fields.find((f) => f.id === selectedField)
-  const selectedGroupData = groups.find((g) => g.id === selectedGroup)
-  const selectedSectionData = sections.find((s) => s.id === selectedSection)
+  const selectedFieldData = fields.find((f) => f.id === selectedField);
+  const selectedGroupData = groups.find((g) => g.id === selectedGroup);
+  const selectedSectionData = sections.find((s) => s.id === selectedSection);
 
   return (
     <Flex className="h-screen overflow-hidden bg-background">
@@ -165,15 +165,15 @@ export function FormCanvasBuilder() {
               onFieldResizeStart={handleResizeStart}
               onGroupResizeStart={handleGroupResizeStart}
               onSectionResizeStart={(e, sectionId) => {
-                const section = sections.find((s) => s.id === sectionId)
+                const section = sections.find((s) => s.id === sectionId);
                 if (section) {
-                  handleGroupResizeStart(e, sectionId)
+                  handleGroupResizeStart(e, sectionId);
                 }
               }}
               onCanvasClick={() => {
-                setSelectedField(null)
-                setSelectedGroup(null)
-                setSelectedSection(null)
+                setSelectedField(null);
+                setSelectedGroup(null);
+                setSelectedSection(null);
               }}
             />
           </Box>
@@ -197,5 +197,5 @@ export function FormCanvasBuilder() {
         onRemoveSection={removeSection}
       />
     </Flex>
-  )
+  );
 }

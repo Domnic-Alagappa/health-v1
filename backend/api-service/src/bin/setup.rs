@@ -53,13 +53,21 @@ async fn main() {
         }
     }
 
-    // Run migrations
+    // Run migrations using sqlx's built-in migrator
     println!("Running database migrations...");
-    let migrations_dir = std::path::Path::new("./migrations");
-    match shared::infrastructure::database::migrations::run_migrations(&pool, migrations_dir).await {
-        Ok(_) => println!("✓ Migrations completed\n"),
+    let migrations_path = std::path::Path::new("./migrations");
+    match sqlx::migrate::Migrator::new(migrations_path).await {
+        Ok(migrator) => {
+            match migrator.run(&pool).await {
+                Ok(_) => println!("✓ Migrations completed\n"),
+                Err(e) => {
+                    eprintln!("Failed to run migrations: {}", e);
+                    process::exit(1);
+                }
+            }
+        }
         Err(e) => {
-            eprintln!("Failed to run migrations: {}", e);
+            eprintln!("Failed to initialize migrator: {}", e);
             process::exit(1);
         }
     }

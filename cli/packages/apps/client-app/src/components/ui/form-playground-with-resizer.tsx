@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import {
   Check,
   Code,
@@ -12,14 +13,13 @@ import {
   Settings,
   Trash2,
   Upload,
-} from "lucide-react"
-import * as React from "react"
-import { cn } from "@/lib/utils"
-import { Button } from "./button"
-import { Card, CardContent, CardHeader, CardTitle } from "./card"
-import { type FieldType, FormBuilder, type FormConfig, type FormField } from "./form-builder"
-import { Input } from "./input"
-import { Label } from "./label"
+} from "lucide-react";
+import * as React from "react";
+import { Button } from "./button";
+import { Card, CardContent, CardHeader, CardTitle } from "./card";
+import { type FieldType, FormBuilder, type FormConfig, type FormField } from "./form-builder";
+import { Input } from "./input";
+import { Label } from "./label";
 
 /**
  * Enhanced Form Builder with Drag & Drop, Resizers, and Visual Placement
@@ -30,23 +30,23 @@ import { Label } from "./label"
  * - Real-time preview
  */
 export function FormPlaygroundWithResizer() {
-  const [fields, setFields] = React.useState<FormField[]>([])
-  const [selectedField, setSelectedField] = React.useState<string | null>(null)
-  const [activeTab, setActiveTab] = React.useState<"edit" | "code" | "preview">("edit")
-  const [draggedField, setDraggedField] = React.useState<string | null>(null)
-  const [dragOverIndex, setDragOverIndex] = React.useState<number | null>(null)
-  const [showGrid, setShowGrid] = React.useState(false)
-  const [resizingField, setResizingField] = React.useState<string | null>(null)
-  const [resizeStartX, setResizeStartX] = React.useState(0)
-  const [resizeStartColSpan, setResizeStartColSpan] = React.useState(12)
+  const [fields, setFields] = React.useState<FormField[]>([]);
+  const [selectedField, setSelectedField] = React.useState<string | null>(null);
+  const [activeTab, setActiveTab] = React.useState<"edit" | "code" | "preview">("edit");
+  const [draggedField, setDraggedField] = React.useState<string | null>(null);
+  const [dragOverIndex, setDragOverIndex] = React.useState<number | null>(null);
+  const [showGrid, setShowGrid] = React.useState(false);
+  const [resizingField, setResizingField] = React.useState<string | null>(null);
+  const [resizeStartX, setResizeStartX] = React.useState(0);
+  const [resizeStartColSpan, setResizeStartColSpan] = React.useState(12);
   const [formConfig, setFormConfig] = React.useState<Partial<FormConfig>>({
     id: "form-1",
     title: "New Form",
     description: "Build your form by adding fields",
     layout: "two-column",
     gap: "md",
-  })
-  const [copied, setCopied] = React.useState(false)
+  });
+  const [copied, setCopied] = React.useState(false);
 
   // Field categories
   const fieldCategories = {
@@ -67,7 +67,7 @@ export function FormPlaygroundWithResizer() {
       { type: "display-text" as FieldType, label: "Text", icon: "📝" },
       { type: "separator" as FieldType, label: "Separator", icon: "➖" },
     ],
-  }
+  };
 
   // Add new field
   const addField = (type: FieldType) => {
@@ -95,7 +95,7 @@ export function FormPlaygroundWithResizer() {
       combobox: { options: [{ label: "Option 1", value: "option1" }] },
       "display-text": { label: "Display Text", description: "This is a text element" },
       separator: { label: "" },
-    }
+    };
 
     const newField: FormField = {
       id: `field-${Date.now()}`,
@@ -112,109 +112,109 @@ export function FormPlaygroundWithResizer() {
         colSpan: type === "separator" || type === "display-text" ? 12 : 12,
         size: "md",
       },
-    }
-    setFields([...fields, newField])
-    setSelectedField(newField.id)
-  }
+    };
+    setFields([...fields, newField]);
+    setSelectedField(newField.id);
+  };
 
   // Remove field
   const removeField = (fieldId: string) => {
-    setFields(fields.filter((f) => f.id !== fieldId))
+    setFields(fields.filter((f) => f.id !== fieldId));
     if (selectedField === fieldId) {
-      setSelectedField(null)
+      setSelectedField(null);
     }
-  }
+  };
 
   // Update field
   const updateField = (fieldId: string, updates: Partial<FormField>) => {
-    setFields(fields.map((f) => (f.id === fieldId ? { ...f, ...updates } : f)))
-  }
+    setFields(fields.map((f) => (f.id === fieldId ? { ...f, ...updates } : f)));
+  };
 
   // Duplicate field
   const duplicateField = (fieldId: string) => {
-    const field = fields.find((f) => f.id === fieldId)
-    if (!field) return
+    const field = fields.find((f) => f.id === fieldId);
+    if (!field) return;
     const newField: FormField = {
       ...field,
       id: `field-${Date.now()}`,
       name: `${field.name}_copy`,
       label: `${field.label} (Copy)`,
-    }
-    const index = fields.findIndex((f) => f.id === fieldId)
-    const newFields = [...fields]
-    newFields.splice(index + 1, 0, newField)
-    setFields(newFields)
-    setSelectedField(newField.id)
-  }
+    };
+    const index = fields.findIndex((f) => f.id === fieldId);
+    const newFields = [...fields];
+    newFields.splice(index + 1, 0, newField);
+    setFields(newFields);
+    setSelectedField(newField.id);
+  };
 
   // Drag handlers
   const handleDragStart = (e: React.DragEvent, fieldId: string) => {
-    setDraggedField(fieldId)
-    e.dataTransfer.effectAllowed = "move"
-    e.dataTransfer.setData("text/plain", fieldId)
-  }
+    setDraggedField(fieldId);
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", fieldId);
+  };
 
   const handleDragOver = (e: React.DragEvent, index: number) => {
-    e.preventDefault()
-    e.dataTransfer.dropEffect = "move"
-    setDragOverIndex(index)
-  }
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    setDragOverIndex(index);
+  };
 
   const handleDragLeave = () => {
-    setDragOverIndex(null)
-  }
+    setDragOverIndex(null);
+  };
 
   const handleDrop = (e: React.DragEvent, dropIndex: number) => {
-    e.preventDefault()
-    if (!draggedField) return
+    e.preventDefault();
+    if (!draggedField) return;
 
-    const draggedIndex = fields.findIndex((f) => f.id === draggedField)
-    if (draggedIndex === -1) return
+    const draggedIndex = fields.findIndex((f) => f.id === draggedField);
+    if (draggedIndex === -1) return;
 
-    const newFields = [...fields]
-    const [removed] = newFields.splice(draggedIndex, 1)
-    newFields.splice(dropIndex, 0, removed!)
+    const newFields = [...fields];
+    const [removed] = newFields.splice(draggedIndex, 1);
+    newFields.splice(dropIndex, 0, removed!);
 
-    setFields(newFields)
-    setDraggedField(null)
-    setDragOverIndex(null)
-  }
+    setFields(newFields);
+    setDraggedField(null);
+    setDragOverIndex(null);
+  };
 
   // Resize handlers
   const handleResizeStart = (e: React.MouseEvent, fieldId: string) => {
-    e.preventDefault()
-    e.stopPropagation()
-    const field = fields.find((f) => f.id === fieldId)
-    if (!field) return
+    e.preventDefault();
+    e.stopPropagation();
+    const field = fields.find((f) => f.id === fieldId);
+    if (!field) return;
 
-    setResizingField(fieldId)
-    setResizeStartX(e.clientX)
-    setResizeStartColSpan(field.layout?.colSpan || 12)
+    setResizingField(fieldId);
+    setResizeStartX(e.clientX);
+    setResizeStartColSpan(field.layout?.colSpan || 12);
 
     const handleMouseMove = (moveEvent: MouseEvent) => {
-      if (!resizingField) return
-      const deltaX = moveEvent.clientX - resizeStartX
-      const pixelsPerColumn = 50 // Approximate pixels per column
-      const columnDelta = Math.round(deltaX / pixelsPerColumn)
-      const newColSpan = Math.max(1, Math.min(12, resizeStartColSpan + columnDelta))
+      if (!resizingField) return;
+      const deltaX = moveEvent.clientX - resizeStartX;
+      const pixelsPerColumn = 50; // Approximate pixels per column
+      const columnDelta = Math.round(deltaX / pixelsPerColumn);
+      const newColSpan = Math.max(1, Math.min(12, resizeStartColSpan + columnDelta));
 
       updateField(fieldId, {
         layout: {
           ...field.layout,
           colSpan: newColSpan as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12,
         },
-      })
-    }
+      });
+    };
 
     const handleMouseUp = () => {
-      setResizingField(null)
-      document.removeEventListener("mousemove", handleMouseMove)
-      document.removeEventListener("mouseup", handleMouseUp)
-    }
+      setResizingField(null);
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+    };
 
-    document.addEventListener("mousemove", handleMouseMove)
-    document.addEventListener("mouseup", handleMouseUp)
-  }
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+  };
 
   // Export/Import
   const exportConfig = () => {
@@ -222,33 +222,33 @@ export function FormPlaygroundWithResizer() {
       id: formConfig.id || "form-1",
       ...formConfig,
       fields,
-    }
-    const blob = new Blob([JSON.stringify(config, null, 2)], { type: "application/json" })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement("a")
-    a.href = url
-    a.download = `${config.id}.json`
-    a.click()
-    URL.revokeObjectURL(url)
-  }
+    };
+    const blob = new Blob([JSON.stringify(config, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${config.id}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   const importConfig = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (!file) return
+    const file = event.target.files?.[0];
+    if (!file) return;
 
-    const reader = new FileReader()
+    const reader = new FileReader();
     reader.onload = (e) => {
       try {
-        const config = JSON.parse(e.target?.result as string) as FormConfig
-        setFormConfig(config)
-        setFields(config.fields)
+        const config = JSON.parse(e.target?.result as string) as FormConfig;
+        setFormConfig(config);
+        setFields(config.fields);
       } catch (error) {
-        console.error("Error importing config:", error)
-        alert("Error importing form config. Please check the file format.")
+        console.error("Error importing config:", error);
+        alert("Error importing form config. Please check the file format.");
       }
-    }
-    reader.readAsText(file)
-  }
+    };
+    reader.readAsText(file);
+  };
 
   // Generate code
   const generateCode = () => {
@@ -256,7 +256,7 @@ export function FormPlaygroundWithResizer() {
       id: formConfig.id || "form-1",
       ...formConfig,
       fields,
-    }
+    };
     return `import { FormBuilder, FormConfig } from "@/components/ui/form-builder"
 
 const formConfig: FormConfig = ${JSON.stringify(config, null, 2)}
@@ -267,20 +267,20 @@ export function MyForm() {
   }
 
   return <FormBuilder config={formConfig} onSubmit={handleSubmit} />
-}`
-  }
+}`;
+  };
 
   const copyCode = async () => {
     try {
-      await navigator.clipboard.writeText(generateCode())
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+      await navigator.clipboard.writeText(generateCode());
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      console.error("Failed to copy:", error)
+      console.error("Failed to copy:", error);
     }
-  }
+  };
 
-  const selectedFieldData = fields.find((f) => f.id === selectedField)
+  const selectedFieldData = fields.find((f) => f.id === selectedField);
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
@@ -441,8 +441,8 @@ export function MyForm() {
                 ) : (
                   <div className="space-y-3">
                     {fields.map((field, index) => {
-                      const colSpan = field.layout?.colSpan || 12
-                      const colWidth = (colSpan / 12) * 100
+                      const colSpan = field.layout?.colSpan || 12;
+                      const colWidth = (colSpan / 12) * 100;
 
                       return (
                         <div
@@ -507,8 +507,8 @@ export function MyForm() {
                                   size="icon"
                                   className="h-7 w-7"
                                   onClick={(e) => {
-                                    e.stopPropagation()
-                                    duplicateField(field.id)
+                                    e.stopPropagation();
+                                    duplicateField(field.id);
                                   }}
                                 >
                                   <Copy className="h-3 w-3" />
@@ -518,8 +518,8 @@ export function MyForm() {
                                   size="icon"
                                   className="h-7 w-7 text-destructive"
                                   onClick={(e) => {
-                                    e.stopPropagation()
-                                    removeField(field.id)
+                                    e.stopPropagation();
+                                    removeField(field.id);
                                   }}
                                 >
                                   <Trash2 className="h-3 w-3" />
@@ -528,7 +528,7 @@ export function MyForm() {
                             </div>
                           </div>
                         </div>
-                      )
+                      );
                     })}
                   </div>
                 )}
@@ -574,8 +574,8 @@ export function MyForm() {
                     } as FormConfig
                   }
                   onSubmit={(data) => {
-                    console.log("Form submitted:", data)
-                    alert("Form submitted! Check console.")
+                    console.log("Form submitted:", data);
+                    alert("Form submitted! Check console.");
                   }}
                   onCancel={() => setActiveTab("edit")}
                 />
@@ -717,5 +717,5 @@ export function MyForm() {
         </div>
       )}
     </div>
-  )
+  );
 }

@@ -1,5 +1,5 @@
-import { Activity, FileText, Plus } from "lucide-react"
-import type { NavAction } from "./types"
+import { Activity, FileText, Plus } from "lucide-react";
+import type { NavAction } from "./types";
 
 export function getOrdersActions(
   path: string,
@@ -24,5 +24,5 @@ export function getOrdersActions(
       icon: <FileText className="h-4 w-4" />,
       onClick: () => onAction("order-history", path),
     },
-  ]
+  ];
 }

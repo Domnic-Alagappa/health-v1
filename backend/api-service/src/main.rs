@@ -42,10 +42,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .map_err(|e| format!("Database health check failed: {}", e))?;
     info!("Database health check passed");
     
-    // Run migrations
+    // Run migrations using sqlx's built-in migrator
     info!("Running database migrations...");
-    let migrations_dir = std::path::Path::new("./migrations");
-    shared::infrastructure::database::migrations::run_migrations(&pool, migrations_dir).await
+    let migrations_path = std::path::Path::new("./migrations");
+    let migrator = sqlx::migrate::Migrator::new(migrations_path)
+        .await
+        .map_err(|e| format!("Failed to initialize migrator: {}", e))?;
+    migrator
+        .run(&pool)
+        .await
         .map_err(|e| format!("Failed to run migrations: {}", e))?;
     
     info!("Database migrations completed");
@@ -163,9 +168,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/auth/token", axum::routing::post(crate::presentation::api::handlers::refresh_token))
         .route("/auth/userinfo", axum::routing::get(crate::presentation::api::handlers::userinfo))
         .route("/users", axum::routing::post(admin_service::handlers::create_user))
-        .route("/users/:id", axum::routing::get(admin_service::handlers::get_user))
-        .route("/users/:id", axum::routing::post(admin_service::handlers::update_user))
-        .route("/users/:id", axum::routing::delete(admin_service::handlers::delete_user))
+        .route("/users/{id}", axum::routing::get(admin_service::handlers::get_user))
+        .route("/users/{id}", axum::routing::post(admin_service::handlers::update_user))
+        .route("/users/{id}", axum::routing::delete(admin_service::handlers::delete_user))
         .with_state(app_state_arc.clone())
         .layer(axum::middleware::from_fn_with_state(
             app_state_arc.clone(),

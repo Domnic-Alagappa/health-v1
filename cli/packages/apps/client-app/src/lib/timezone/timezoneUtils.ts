@@ -3,23 +3,23 @@
  * Timezone conversion and formatting utilities
  */
 
-import { useTimezoneStore } from "@/stores/timezoneStore"
+import { useTimezoneStore } from "@/stores/timezoneStore";
 
 export function formatDateInTimezone(
   date: Date | string | number,
   options?: Intl.DateTimeFormatOptions
 ): string {
-  const timezone = useTimezoneStore.getState().timezone
-  const dateObj = typeof date === "string" || typeof date === "number" ? new Date(date) : date
+  const timezone = useTimezoneStore.getState().timezone;
+  const dateObj = typeof date === "string" || typeof date === "number" ? new Date(date) : date;
 
   return new Intl.DateTimeFormat("en-US", {
     timeZone: timezone,
     ...options,
-  }).format(dateObj)
+  }).format(dateObj);
 }
 
 export function convertToTimezone(date: Date | string | number, targetTimezone: string): Date {
-  const dateObj = typeof date === "string" || typeof date === "number" ? new Date(date) : date
+  const dateObj = typeof date === "string" || typeof date === "number" ? new Date(date) : date;
 
   // Get date string in target timezone
   const dateString = new Intl.DateTimeFormat("en-US", {
@@ -31,15 +31,15 @@ export function convertToTimezone(date: Date | string | number, targetTimezone: 
     minute: "2-digit",
     second: "2-digit",
     hour12: false,
-  }).format(dateObj)
+  }).format(dateObj);
 
   // Parse back to Date object
-  return new Date(dateString)
+  return new Date(dateString);
 }
 
 export function getCurrentTimeInTimezone(timezone?: string): Date {
-  const tz = timezone || useTimezoneStore.getState().timezone
-  return convertToTimezone(new Date(), tz)
+  const tz = timezone || useTimezoneStore.getState().timezone;
+  return convertToTimezone(new Date(), tz);
 }
 
 export function getAllTimezones(): Array<{ value: string; label: string }> {
@@ -59,5 +59,5 @@ export function getAllTimezones(): Array<{ value: string; label: string }> {
     { value: "Asia/Shanghai", label: "Shanghai (CST)" },
     { value: "Asia/Dubai", label: "Dubai (GST)" },
     { value: "Australia/Sydney", label: "Sydney (AEST)" },
-  ]
+  ];
 }

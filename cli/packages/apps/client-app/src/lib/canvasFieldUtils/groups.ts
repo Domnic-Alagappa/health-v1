@@ -1,4 +1,4 @@
-import type { CanvasGroup, CanvasSection } from "@/components/forms/canvas/types"
+import type { CanvasGroup, CanvasSection } from "@/components/forms/canvas/types";
 
 export function createCanvasGroup(index: number): CanvasGroup {
   return {
@@ -11,7 +11,7 @@ export function createCanvasGroup(index: number): CanvasGroup {
     fields: [],
     collapsible: true,
     collapsed: false,
-  }
+  };
 }
 
 export function createCanvasSection(index: number, canvasWidth?: number): CanvasSection {
@@ -22,5 +22,5 @@ export function createCanvasSection(index: number, canvasWidth?: number): Canvas
     y: 50 + index * 150,
     width: canvasWidth ? canvasWidth - 100 : 1100,
     height: 80,
-  }
+  };
 }

@@ -3,31 +3,31 @@
  * Catches errors and displays sanitized error messages (no PHI)
  */
 
-import { AlertCircle } from "lucide-react"
-import { Component, type ReactNode } from "react"
-import { Box } from "@/components/ui/box"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Stack } from "@/components/ui/stack"
+import { Box } from "@/components/ui/box";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Stack } from "@/components/ui/stack";
+import { AlertCircle } from "lucide-react";
+import { Component, type ReactNode } from "react";
 
 interface Props {
-  children: ReactNode
-  fallback?: ReactNode
+  children: ReactNode;
+  fallback?: ReactNode;
 }
 
 interface State {
-  hasError: boolean
-  error: Error | null
+  hasError: boolean;
+  error: Error | null;
 }
 
 export class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
-    super(props)
-    this.state = { hasError: false, error: null }
+    super(props);
+    this.state = { hasError: false, error: null };
   }
 
   static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error }
+    return { hasError: true, error };
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
@@ -36,30 +36,30 @@ export class ErrorBoundary extends Component<Props, State> {
       message: this.sanitizeError(error.message),
       stack: error.stack ? this.sanitizeError(error.stack) : undefined,
       componentStack: errorInfo.componentStack,
-    })
+    });
   }
 
   sanitizeError(message: string): string {
     // Remove email patterns
-    message = message.replace(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g, "[EMAIL]")
+    message = message.replace(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g, "[EMAIL]");
 
     // Remove SSN patterns
-    message = message.replace(/\b\d{3}-\d{2}-\d{4}\b/g, "[SSN]")
+    message = message.replace(/\b\d{3}-\d{2}-\d{4}\b/g, "[SSN]");
 
     // Remove phone patterns
-    message = message.replace(/\b\d{3}-\d{3}-\d{4}\b/g, "[PHONE]")
+    message = message.replace(/\b\d{3}-\d{3}-\d{4}\b/g, "[PHONE]");
 
-    return message
+    return message;
   }
 
   handleReset = () => {
-    this.setState({ hasError: false, error: null })
-  }
+    this.setState({ hasError: false, error: null });
+  };
 
   render() {
     if (this.state.hasError) {
       if (this.props.fallback) {
-        return this.props.fallback
+        return this.props.fallback;
       }
 
       return (
@@ -86,9 +86,9 @@ export class ErrorBoundary extends Component<Props, State> {
             </Button>
           </Stack>
         </Card>
-      )
+      );
     }
 
-    return this.props.children
+    return this.props.children;
   }
 }

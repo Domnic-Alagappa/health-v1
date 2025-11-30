@@ -1,2 +1,2 @@
-export { Sidebar } from "./Sidebar"
-export type { SidebarItem } from "./SidebarItem"
+export { Sidebar } from "./Sidebar";
+export type { SidebarItem } from "./SidebarItem";

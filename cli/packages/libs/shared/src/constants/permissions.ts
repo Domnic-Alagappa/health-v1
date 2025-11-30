@@ -81,7 +81,7 @@ export const PERMISSIONS = {
     VIEW: "settings:view",
     UPDATE: "settings:update",
   },
-} as const
+} as const;
 
 export type Permission =
   | (typeof PERMISSIONS.PATIENTS)[keyof typeof PERMISSIONS.PATIENTS]
@@ -93,7 +93,7 @@ export type Permission =
   | (typeof PERMISSIONS.SCHEDULING)[keyof typeof PERMISSIONS.SCHEDULING]
   | (typeof PERMISSIONS.REVENUE)[keyof typeof PERMISSIONS.REVENUE]
   | (typeof PERMISSIONS.ANALYTICS)[keyof typeof PERMISSIONS.ANALYTICS]
-  | (typeof PERMISSIONS.SETTINGS)[keyof typeof PERMISSIONS.SETTINGS]
+  | (typeof PERMISSIONS.SETTINGS)[keyof typeof PERMISSIONS.SETTINGS];
 
 // Role-based permission mappings
 export const ROLE_PERMISSIONS: Record<string, Permission[]> = {
@@ -124,5 +124,4 @@ export const ROLE_PERMISSIONS: Record<string, Permission[]> = {
     PERMISSIONS.SCHEDULING.CREATE,
     PERMISSIONS.SCHEDULING.UPDATE,
   ],
-}
-
+};

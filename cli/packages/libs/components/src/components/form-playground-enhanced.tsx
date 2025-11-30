@@ -11,31 +11,31 @@ import {
   Settings,
   Trash2,
   Upload,
-} from "lucide-react"
-import * as React from "react"
-import { cn } from "../lib/utils"
-import { Button } from "./button"
-import { Card, CardContent, CardHeader, CardTitle } from "./card"
-import { type FieldType, FormBuilder, type FormConfig, type FormField } from "./form-builder"
-import { Input } from "./input"
-import { Label } from "./label"
+} from "lucide-react";
+import * as React from "react";
+import { cn } from "../lib/utils";
+import { Button } from "./button";
+import { Card, CardContent, CardHeader, CardTitle } from "./card";
+import { type FieldType, FormBuilder, type FormConfig, type FormField } from "./form-builder";
+import { Input } from "./input";
+import { Label } from "./label";
 
 /**
  * Enhanced Visual Form Builder Playground
  * Inspired by formcn.dev and shadcn-builder.com with advanced features
  */
 export function FormPlaygroundEnhanced() {
-  const [fields, setFields] = React.useState<FormField[]>([])
-  const [selectedField, setSelectedField] = React.useState<string | null>(null)
-  const [activeTab, setActiveTab] = React.useState<"edit" | "code" | "preview">("edit")
+  const [fields, setFields] = React.useState<FormField[]>([]);
+  const [selectedField, setSelectedField] = React.useState<string | null>(null);
+  const [activeTab, setActiveTab] = React.useState<"edit" | "code" | "preview">("edit");
   const [formConfig, setFormConfig] = React.useState<Partial<FormConfig>>({
     id: "form-1",
     title: "New Form",
     description: "Build your form by adding fields",
     layout: "two-column",
     gap: "md",
-  })
-  const [copied, setCopied] = React.useState(false)
+  });
+  const [copied, setCopied] = React.useState(false);
 
   // Field categories
   const fieldCategories = {
@@ -63,7 +63,7 @@ export function FormPlaygroundEnhanced() {
       { type: "display-text" as FieldType, label: "Text", icon: "📝" },
       { type: "separator" as FieldType, label: "Separator", icon: "➖" },
     ],
-  }
+  };
 
   // Add new field
   const addField = (type: FieldType) => {
@@ -91,7 +91,7 @@ export function FormPlaygroundEnhanced() {
       combobox: { options: [{ label: "Option 1", value: "option1" }] },
       "display-text": { label: "Display Text", description: "This is a text element" },
       separator: { label: "" },
-    }
+    };
 
     const newField: FormField = {
       id: `field-${Date.now()}`,
@@ -108,54 +108,54 @@ export function FormPlaygroundEnhanced() {
         colSpan: type === "separator" || type === "display-text" ? 12 : 12,
         size: "md",
       },
-    }
-    setFields([...fields, newField])
-    setSelectedField(newField.id)
-  }
+    };
+    setFields([...fields, newField]);
+    setSelectedField(newField.id);
+  };
 
   // Remove field
   const removeField = (fieldId: string) => {
-    setFields(fields.filter((f) => f.id !== fieldId))
+    setFields(fields.filter((f) => f.id !== fieldId));
     if (selectedField === fieldId) {
-      setSelectedField(null)
+      setSelectedField(null);
     }
-  }
+  };
 
   // Update field
   const updateField = (fieldId: string, updates: Partial<FormField>) => {
-    setFields(fields.map((f) => (f.id === fieldId ? { ...f, ...updates } : f)))
-  }
+    setFields(fields.map((f) => (f.id === fieldId ? { ...f, ...updates } : f)));
+  };
 
   // Duplicate field
   const duplicateField = (fieldId: string) => {
-    const field = fields.find((f) => f.id === fieldId)
-    if (!field) return
+    const field = fields.find((f) => f.id === fieldId);
+    if (!field) return;
     const newField: FormField = {
       ...field,
       id: `field-${Date.now()}`,
       name: `${field.name}_copy`,
       label: `${field.label} (Copy)`,
-    }
-    const index = fields.findIndex((f) => f.id === fieldId)
-    const newFields = [...fields]
-    newFields.splice(index + 1, 0, newField)
-    setFields(newFields)
-    setSelectedField(newField.id)
-  }
+    };
+    const index = fields.findIndex((f) => f.id === fieldId);
+    const newFields = [...fields];
+    newFields.splice(index + 1, 0, newField);
+    setFields(newFields);
+    setSelectedField(newField.id);
+  };
 
   // Move field
   const moveField = (fieldId: string, direction: "up" | "down") => {
-    const index = fields.findIndex((f) => f.id === fieldId)
-    if (index === -1) return
+    const index = fields.findIndex((f) => f.id === fieldId);
+    if (index === -1) return;
 
-    const newFields = [...fields]
+    const newFields = [...fields];
     if (direction === "up" && index > 0) {
-      ;[newFields[index - 1], newFields[index]] = [newFields[index]!, newFields[index - 1]!]
+      [newFields[index - 1], newFields[index]] = [newFields[index]!, newFields[index - 1]!];
     } else if (direction === "down" && index < fields.length - 1) {
-      ;[newFields[index], newFields[index + 1]] = [newFields[index + 1]!, newFields[index]!]
+      [newFields[index], newFields[index + 1]] = [newFields[index + 1]!, newFields[index]!];
     }
-    setFields(newFields)
-  }
+    setFields(newFields);
+  };
 
   // Export form config
   const exportConfig = () => {
@@ -163,34 +163,34 @@ export function FormPlaygroundEnhanced() {
       id: formConfig.id || "form-1",
       ...formConfig,
       fields,
-    }
-    const blob = new Blob([JSON.stringify(config, null, 2)], { type: "application/json" })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement("a")
-    a.href = url
-    a.download = `${config.id}.json`
-    a.click()
-    URL.revokeObjectURL(url)
-  }
+    };
+    const blob = new Blob([JSON.stringify(config, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${config.id}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   // Import form config
   const importConfig = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (!file) return
+    const file = event.target.files?.[0];
+    if (!file) return;
 
-    const reader = new FileReader()
+    const reader = new FileReader();
     reader.onload = (e) => {
       try {
-        const config = JSON.parse(e.target?.result as string) as FormConfig
-        setFormConfig(config)
-        setFields(config.fields)
+        const config = JSON.parse(e.target?.result as string) as FormConfig;
+        setFormConfig(config);
+        setFields(config.fields);
       } catch (error) {
-        console.error("Error importing config:", error)
-        alert("Error importing form config. Please check the file format.")
+        console.error("Error importing config:", error);
+        alert("Error importing form config. Please check the file format.");
       }
-    }
-    reader.readAsText(file)
-  }
+    };
+    reader.readAsText(file);
+  };
 
   // Generate code
   const generateCode = () => {
@@ -198,7 +198,7 @@ export function FormPlaygroundEnhanced() {
       id: formConfig.id || "form-1",
       ...formConfig,
       fields,
-    }
+    };
     return `import { FormBuilder, FormConfig } from "./form-builder"
 
 const formConfig: FormConfig = ${JSON.stringify(config, null, 2)}
@@ -215,21 +215,21 @@ export function MyForm() {
       onSubmit={handleSubmit}
     />
   )
-}`
-  }
+}`;
+  };
 
   // Copy code to clipboard
   const copyCode = async () => {
     try {
-      await navigator.clipboard.writeText(generateCode())
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+      await navigator.clipboard.writeText(generateCode());
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      console.error("Failed to copy:", error)
+      console.error("Failed to copy:", error);
     }
-  }
+  };
 
-  const selectedFieldData = fields.find((f) => f.id === selectedField)
+  const selectedFieldData = fields.find((f) => f.id === selectedField);
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
@@ -355,10 +355,7 @@ export function MyForm() {
           </div>
 
           {/* Edit Tab */}
-          <TabsContent
-            value="edit"
-            className="flex-1 overflow-y-auto p-6 m-0 bg-[#F4F6F8]"
-          >
+          <TabsContent value="edit" className="flex-1 overflow-y-auto p-6 m-0 bg-[#F4F6F8]">
             <Card className="max-w-5xl mx-auto">
               <CardContent className="p-6">
                 {fields.length === 0 ? (
@@ -407,8 +404,8 @@ export function MyForm() {
                                 size="icon"
                                 className="h-7 w-7"
                                 onClick={(e) => {
-                                  e.stopPropagation()
-                                  moveField(field.id, "up")
+                                  e.stopPropagation();
+                                  moveField(field.id, "up");
                                 }}
                               >
                                 ↑
@@ -420,8 +417,8 @@ export function MyForm() {
                                 size="icon"
                                 className="h-7 w-7"
                                 onClick={(e) => {
-                                  e.stopPropagation()
-                                  moveField(field.id, "down")
+                                  e.stopPropagation();
+                                  moveField(field.id, "down");
                                 }}
                               >
                                 ↓
@@ -432,8 +429,8 @@ export function MyForm() {
                               size="icon"
                               className="h-7 w-7"
                               onClick={(e) => {
-                                e.stopPropagation()
-                                duplicateField(field.id)
+                                e.stopPropagation();
+                                duplicateField(field.id);
                               }}
                             >
                               <Copy className="h-3 w-3" />
@@ -443,8 +440,8 @@ export function MyForm() {
                               size="icon"
                               className="h-7 w-7 text-destructive"
                               onClick={(e) => {
-                                e.stopPropagation()
-                                removeField(field.id)
+                                e.stopPropagation();
+                                removeField(field.id);
                               }}
                             >
                               <Trash2 className="h-3 w-3" />
@@ -460,10 +457,7 @@ export function MyForm() {
           </TabsContent>
 
           {/* Code Tab */}
-          <TabsContent
-            value="code"
-            className="flex-1 overflow-y-auto p-6 m-0 bg-[#F4F6F8]"
-          >
+          <TabsContent value="code" className="flex-1 overflow-y-auto p-6 m-0 bg-[#F4F6F8]">
             <Card className="max-w-5xl mx-auto">
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>Generated Code</CardTitle>
@@ -490,10 +484,7 @@ export function MyForm() {
           </TabsContent>
 
           {/* Preview Tab */}
-          <TabsContent
-            value="preview"
-            className="flex-1 overflow-y-auto p-6 m-0 bg-[#F4F6F8]"
-          >
+          <TabsContent value="preview" className="flex-1 overflow-y-auto p-6 m-0 bg-[#F4F6F8]">
             <Card className="max-w-5xl mx-auto">
               <CardContent className="p-6">
                 <FormBuilder
@@ -505,8 +496,8 @@ export function MyForm() {
                     } as FormConfig
                   }
                   onSubmit={(data) => {
-                    console.log("Form submitted:", data)
-                    alert("Form submitted! Check console for data.")
+                    console.log("Form submitted:", data);
+                    alert("Form submitted! Check console for data.");
                   }}
                   onCancel={() => setActiveTab("edit")}
                 />
@@ -668,5 +659,5 @@ export function MyForm() {
         </div>
       )}
     </div>
-  )
+  );
 }

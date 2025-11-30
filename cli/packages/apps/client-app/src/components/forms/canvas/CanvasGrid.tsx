@@ -1,12 +1,12 @@
-import { Box } from "@/components/ui/box"
+import { Box } from "@/components/ui/box";
 
 interface CanvasGridProps {
-  showGrid: boolean
-  gridSize: number
+  showGrid: boolean;
+  gridSize: number;
 }
 
 export function CanvasGrid({ showGrid, gridSize }: CanvasGridProps) {
-  if (!showGrid) return null
+  if (!showGrid) return null;
 
   return (
     <Box
@@ -17,5 +17,5 @@ export function CanvasGrid({ showGrid, gridSize }: CanvasGridProps) {
         backgroundSize: `${gridSize}px ${gridSize}px`,
       }}
     />
-  )
+  );
 }

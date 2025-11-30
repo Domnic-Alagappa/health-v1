@@ -20,11 +20,14 @@ CREATE TABLE IF NOT EXISTS setup_status (
     setup_completed_at TIMESTAMPTZ,
     setup_completed_by UUID REFERENCES users(id) ON DELETE SET NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    CONSTRAINT single_setup_status CHECK (
-        (SELECT COUNT(*) FROM setup_status WHERE setup_completed = true) <= 1
-    )
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+-- Use a unique partial index to ensure only one row has setup_completed = true
+-- PostgreSQL doesn't allow subqueries in CHECK constraints
+CREATE UNIQUE INDEX IF NOT EXISTS idx_setup_status_single_completed 
+    ON setup_status((1)) 
+    WHERE setup_completed = true;
 
 -- Insert initial setup status record (not completed)
 INSERT INTO setup_status (setup_completed) VALUES (false)

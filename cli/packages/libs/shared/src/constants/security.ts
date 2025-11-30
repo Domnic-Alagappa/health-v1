@@ -53,8 +53,7 @@ export const SECURITY_CONFIG = {
     RETENTION_DAYS: 2555, // 7 years (HIPAA requirement)
     MASK_IN_LOGS: true,
   },
-} as const
+} as const;
 
-export type MaskingLevel = "partial" | "complete"
-export type ImmutableField = (typeof SECURITY_CONFIG.IMMUTABLE_FIELDS)[number]
-
+export type MaskingLevel = "partial" | "complete";
+export type ImmutableField = (typeof SECURITY_CONFIG.IMMUTABLE_FIELDS)[number];

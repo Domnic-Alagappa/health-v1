@@ -3,16 +3,16 @@
  * Admin component for timezone selection
  */
 
-import { Box } from "@/components/ui/box"
-import { useTimezoneStore } from "@/stores/timezoneStore"
-import { getAllTimezones } from "./timezoneUtils"
+import { Box } from "@/components/ui/box";
+import { useTimezoneStore } from "@/stores/timezoneStore";
+import { getAllTimezones } from "./timezoneUtils";
 
 export function TimezoneSelector() {
-  const timezone = useTimezoneStore((state) => state.timezone)
-  const setTimezone = useTimezoneStore((state) => state.setTimezone)
-  const resetToSystemTimezone = useTimezoneStore((state) => state.resetToSystemTimezone)
-  const isAutoDetected = useTimezoneStore((state) => state.autoDetected)
-  const timezones = getAllTimezones()
+  const timezone = useTimezoneStore((state) => state.timezone);
+  const setTimezone = useTimezoneStore((state) => state.setTimezone);
+  const resetToSystemTimezone = useTimezoneStore((state) => state.resetToSystemTimezone);
+  const isAutoDetected = useTimezoneStore((state) => state.autoDetected);
+  const timezones = getAllTimezones();
 
   return (
     <Box>
@@ -46,5 +46,5 @@ export function TimezoneSelector() {
         </button>
       )}
     </Box>
-  )
+  );
 }

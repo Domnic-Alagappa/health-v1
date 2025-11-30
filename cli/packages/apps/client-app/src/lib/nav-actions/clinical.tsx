@@ -1,5 +1,5 @@
-import { FileText, Plus } from "lucide-react"
-import type { NavAction } from "./types"
+import { FileText, Plus } from "lucide-react";
+import type { NavAction } from "./types";
 
 export function getClinicalActions(
   path: string,
@@ -24,5 +24,5 @@ export function getClinicalActions(
       icon: <FileText className="h-4 w-4" />,
       onClick: () => onAction("clinical-reports", path),
     },
-  ]
+  ];
 }

@@ -174,8 +174,6 @@ services:
     networks:
       - health-network
     restart: unless-stopped
-    profiles:
-      - client
 
   # LocalStack - Local AWS Services (S3, KMS, etc.)
   localstack:

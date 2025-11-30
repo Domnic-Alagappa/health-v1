@@ -1,15 +1,15 @@
-import type { CanvasField } from "@/components/forms/canvas/types"
-import type { FormConfig } from "@/components/ui/form-builder"
+import type { CanvasField } from "@/components/forms/canvas/types";
+import type { FormConfig } from "@/components/ui/form-builder";
 
 export function exportCanvasConfig(
   fields: CanvasField[],
   canvasConfig: {
-    id?: string
-    title?: string
-    description?: string
-    layout?: string
-    gap?: "none" | "sm" | "md" | "lg" | "xl"
-    canvasWidth?: number
+    id?: string;
+    title?: string;
+    description?: string;
+    layout?: string;
+    gap?: "none" | "sm" | "md" | "lg" | "xl";
+    canvasWidth?: number;
   }
 ): FormConfig {
   return {
@@ -28,24 +28,24 @@ export function exportCanvasConfig(
     })),
     layout: canvasConfig.layout as "single" | "two-column" | "three-column" | undefined,
     gap: canvasConfig.gap,
-  }
+  };
 }
 
 export function generateFormCode(
   fields: CanvasField[],
   canvasConfig: {
-    id?: string
-    title?: string
-    description?: string
-    layout?: string
-    gap?: "none" | "sm" | "md" | "lg" | "xl"
+    id?: string;
+    title?: string;
+    description?: string;
+    layout?: string;
+    gap?: "none" | "sm" | "md" | "lg" | "xl";
   }
 ): string {
   const config: FormConfig = {
     id: canvasConfig.id || "form-1",
     ...canvasConfig,
     fields: fields.map(({ x, y, width, height, selected, ...field }) => field),
-  }
+  };
   return `import { FormBuilder, FormConfig } from "@/components/ui/form-builder"
 
 const formConfig: FormConfig = ${JSON.stringify(config, null, 2)}
@@ -56,5 +56,5 @@ export function MyForm() {
   }
 
   return <FormBuilder config={formConfig} onSubmit={handleSubmit} />
-}`
+}`;
 }

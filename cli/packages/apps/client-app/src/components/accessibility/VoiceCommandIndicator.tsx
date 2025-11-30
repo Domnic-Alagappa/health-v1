@@ -3,17 +3,17 @@
  * Show when listening for voice commands
  */
 
-import { Mic } from "lucide-react"
-import { Box } from "@/components/ui/box"
-import { cn } from "@/lib/utils"
-import { useVoiceCommandStore } from "@/stores/voiceCommandStore"
+import { Box } from "@/components/ui/box";
+import { cn } from "@/lib/utils";
+import { useVoiceCommandStore } from "@/stores/voiceCommandStore";
+import { Mic } from "lucide-react";
 
 export function VoiceCommandIndicator() {
-  const isListening = useVoiceCommandStore((state) => state.isListening)
-  const isProcessing = useVoiceCommandStore((state) => state.isProcessing)
+  const isListening = useVoiceCommandStore((state) => state.isListening);
+  const isProcessing = useVoiceCommandStore((state) => state.isProcessing);
 
   if (!isListening && !isProcessing) {
-    return null
+    return null;
   }
 
   return (
@@ -29,5 +29,5 @@ export function VoiceCommandIndicator() {
       <Mic className={cn("h-4 w-4", isListening && "animate-pulse")} />
       <span className="text-sm font-medium">{isListening ? "Listening..." : "Processing..."}</span>
     </Box>
-  )
+  );
 }

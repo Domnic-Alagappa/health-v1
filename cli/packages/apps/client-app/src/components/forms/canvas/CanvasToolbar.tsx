@@ -1,12 +1,11 @@
-import { Eye, Settings } from "lucide-react"
-import { Box } from "@/components/ui/box"
-import { Button } from "@/components/ui/button"
-import { Flex } from "@/components/ui/flex"
+import { Button } from "@/components/ui/button";
+import { Flex } from "@/components/ui/flex";
+import { Eye, Settings } from "lucide-react";
 
 interface CanvasToolbarProps {
-  viewMode: "edit" | "preview"
-  fieldCount: number
-  onViewModeChange: (mode: "edit" | "preview") => void
+  viewMode: "edit" | "preview";
+  fieldCount: number;
+  onViewModeChange: (mode: "edit" | "preview") => void;
 }
 
 export function CanvasToolbar({ viewMode, fieldCount, onViewModeChange }: CanvasToolbarProps) {
@@ -39,5 +38,5 @@ export function CanvasToolbar({ viewMode, fieldCount, onViewModeChange }: Canvas
         </span>
       </Flex>
     </Flex>
-  )
+  );
 }

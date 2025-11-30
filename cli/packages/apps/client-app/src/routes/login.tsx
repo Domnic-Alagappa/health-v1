@@ -1,60 +1,60 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router"
-import { AlertCircle, Loader2 } from "lucide-react"
-import { useEffect, useState } from "react"
-import { Box } from "@/components/ui/box"
-import { Button } from "@/components/ui/button"
-import { Flex } from "@/components/ui/flex"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Stack } from "@/components/ui/stack"
-import { useAuthStore } from "@/stores/authStore"
+import { Box } from "@/components/ui/box";
+import { Button } from "@/components/ui/button";
+import { Flex } from "@/components/ui/flex";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Stack } from "@/components/ui/stack";
+import { useAuthStore } from "@/stores/authStore";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { AlertCircle, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
-})
+});
 
 function LoginPage() {
-  const navigate = useNavigate()
-  const { login, isLoading, error, isAuthenticated } = useAuthStore()
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [localError, setLocalError] = useState<string | null>(null)
+  const navigate = useNavigate();
+  const { login, isLoading, error, isAuthenticated } = useAuthStore();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [localError, setLocalError] = useState<string | null>(null);
 
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      const redirectTo = new URLSearchParams(window.location.search).get("redirect") || "/"
-      navigate({ to: redirectTo as "/" })
+      const redirectTo = new URLSearchParams(window.location.search).get("redirect") || "/";
+      navigate({ to: redirectTo as "/" });
     }
-  }, [isAuthenticated, navigate])
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLocalError(null)
+    e.preventDefault();
+    setLocalError(null);
 
     // Basic validation
     if (!email || !password) {
-      setLocalError("Email and password are required")
-      return
+      setLocalError("Email and password are required");
+      return;
     }
 
     if (!email.includes("@")) {
-      setLocalError("Please enter a valid email address")
-      return
+      setLocalError("Please enter a valid email address");
+      return;
     }
 
     try {
-      await login(email, password)
+      await login(email, password);
       // Navigation will happen via useEffect when isAuthenticated becomes true
-      const redirectTo = new URLSearchParams(window.location.search).get("redirect") || "/"
-      navigate({ to: redirectTo as "/" })
+      const redirectTo = new URLSearchParams(window.location.search).get("redirect") || "/";
+      navigate({ to: redirectTo as "/" });
     } catch (err) {
       // Error is handled by auth store
-      setLocalError(err instanceof Error ? err.message : "Login failed")
+      setLocalError(err instanceof Error ? err.message : "Login failed");
     }
-  }
+  };
 
-  const displayError = error || localError
+  const displayError = error || localError;
 
   return (
     <Flex
@@ -130,5 +130,5 @@ function LoginPage() {
         </Stack>
       </Box>
     </Flex>
-  )
+  );
 }

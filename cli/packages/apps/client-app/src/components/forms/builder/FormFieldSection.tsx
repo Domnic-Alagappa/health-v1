@@ -1,15 +1,15 @@
-import { Box } from "@/components/ui/box"
-import { Flex } from "@/components/ui/flex"
-import type { FormField } from "@/components/ui/form-builder"
-import { cn } from "@/lib/utils"
+import { Box } from "@/components/ui/box";
+import { Flex } from "@/components/ui/flex";
+import type { FormField } from "@/components/ui/form-builder";
+import { cn } from "@/lib/utils";
 
 interface FormFieldSectionProps {
-  field: FormField
-  className?: string
+  field: FormField;
+  className?: string;
 }
 
 export function FormFieldSection({ field, className }: FormFieldSectionProps) {
-  if (field.type !== "separator" && field.type !== "display-text") return null
+  if (field.type !== "separator" && field.type !== "display-text") return null;
 
   if (field.type === "separator") {
     return (
@@ -25,7 +25,7 @@ export function FormFieldSection({ field, className }: FormFieldSectionProps) {
           )}
         </Box>
       </Box>
-    )
+    );
   }
 
   return (
@@ -33,5 +33,5 @@ export function FormFieldSection({ field, className }: FormFieldSectionProps) {
       {field.label && <h3 className="text-base font-semibold">{field.label}</h3>}
       {field.description && <p className="text-sm text-muted-foreground">{field.description}</p>}
     </Box>
-  )
+  );
 }

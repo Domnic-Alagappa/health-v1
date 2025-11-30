@@ -3,4 +3,4 @@
  * Re-export all keyboard utilities
  */
 
-export * from "./shortcuts"
+export * from "./shortcuts";

@@ -1,20 +1,20 @@
-import { createFileRoute } from "@tanstack/react-router"
-import { Calendar, Plus } from "lucide-react"
-import { ProtectedRoute } from "@/components/security/ProtectedRoute"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { PERMISSIONS } from "@health-v1/shared/constants/permissions"
+import { ProtectedRoute } from "@/components/security/ProtectedRoute";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { PERMISSIONS } from "@health-v1/shared/constants/permissions";
+import { createFileRoute } from "@tanstack/react-router";
+import { Calendar, Plus } from "lucide-react";
 
 export const Route = createFileRoute("/scheduling")({
   component: SchedulingComponent,
-})
+});
 
 function SchedulingComponent() {
   return (
     <ProtectedRoute requiredPermission={PERMISSIONS.SCHEDULING.VIEW} resource="scheduling">
       <SchedulingComponentInner />
     </ProtectedRoute>
-  )
+  );
 }
 
 function SchedulingComponentInner() {
@@ -44,5 +44,5 @@ function SchedulingComponentInner() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

@@ -1,5 +1,5 @@
-import { Copy, RefreshCw } from "lucide-react"
-import type { TabAction } from "./types"
+import { Copy, RefreshCw } from "lucide-react";
+import type { TabAction } from "./types";
 
 export function getBaseTabActions(
   path: string,
@@ -20,5 +20,5 @@ export function getBaseTabActions(
       onClick: () => onAction("duplicate", path),
       shortcut: "Ctrl+D",
     },
-  ]
+  ];
 }

@@ -1,26 +1,26 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router"
-import { AlertCircle, CheckCircle2, Loader2 } from "lucide-react"
-import { useEffect, useState } from "react"
-import { Box } from "@/components/ui/box"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Flex } from "@/components/ui/flex"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Stack } from "@/components/ui/stack"
-import { checkSetupStatus, initializeSetup } from "@/lib/api/setup"
-import type { SetupRequest } from "@/lib/api/setup"
+import { Box } from "@/components/ui/box";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Flex } from "@/components/ui/flex";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Stack } from "@/components/ui/stack";
+import { checkSetupStatus, initializeSetup } from "@/lib/api/setup";
+import type { SetupRequest } from "@/lib/api/setup";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/setup")({
   component: SetupPage,
-})
+});
 
 function SetupPage() {
-  const navigate = useNavigate()
-  const [isChecking, setIsChecking] = useState(true)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState(false)
+  const navigate = useNavigate();
+  const [isChecking, setIsChecking] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
   const [formData, setFormData] = useState<SetupRequest>({
     organization_name: "",
@@ -29,98 +29,98 @@ function SetupPage() {
     admin_email: "",
     admin_username: "",
     admin_password: "",
-  })
+  });
 
-  const [confirmPassword, setConfirmPassword] = useState("")
-  const [passwordStrength, setPasswordStrength] = useState(0)
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordStrength, setPasswordStrength] = useState(0);
 
   // Check setup status on mount
   useEffect(() => {
     const checkStatus = async () => {
       try {
-        const status = await checkSetupStatus()
+        const status = await checkSetupStatus();
         if (status.setup_completed) {
           // Setup already completed, redirect to login
-          navigate({ to: "/login" })
+          navigate({ to: "/login" });
         } else {
-          setIsChecking(false)
+          setIsChecking(false);
         }
       } catch (err) {
         // If API is not available, allow setup to proceed
-        console.warn("Could not check setup status:", err)
-        setIsChecking(false)
+        console.warn("Could not check setup status:", err);
+        setIsChecking(false);
       }
-    }
+    };
 
-    checkStatus()
-  }, [navigate])
+    checkStatus();
+  }, [navigate]);
 
   // Calculate password strength
   useEffect(() => {
-    const password = formData.admin_password
+    const password = formData.admin_password;
     if (!password) {
-      setPasswordStrength(0)
-      return
+      setPasswordStrength(0);
+      return;
     }
 
-    let strength = 0
-    if (password.length >= 8) strength++
-    if (password.length >= 12) strength++
-    if (/[a-z]/.test(password)) strength++
-    if (/[A-Z]/.test(password)) strength++
-    if (/[0-9]/.test(password)) strength++
-    if (/[^a-zA-Z0-9]/.test(password)) strength++
+    let strength = 0;
+    if (password.length >= 8) strength++;
+    if (password.length >= 12) strength++;
+    if (/[a-z]/.test(password)) strength++;
+    if (/[A-Z]/.test(password)) strength++;
+    if (/[0-9]/.test(password)) strength++;
+    if (/[^a-zA-Z0-9]/.test(password)) strength++;
 
-    setPasswordStrength(strength)
-  }, [formData.admin_password])
+    setPasswordStrength(strength);
+  }, [formData.admin_password]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError(null)
-    setSuccess(false)
+    e.preventDefault();
+    setError(null);
+    setSuccess(false);
 
     // Validation
     if (!formData.organization_name.trim()) {
-      setError("Organization name is required")
-      return
+      setError("Organization name is required");
+      return;
     }
 
     if (!formData.organization_slug.trim()) {
-      setError("Organization slug is required")
-      return
+      setError("Organization slug is required");
+      return;
     }
 
     if (!/^[a-z0-9-]+$/.test(formData.organization_slug)) {
-      setError("Organization slug must contain only lowercase letters, numbers, and hyphens")
-      return
+      setError("Organization slug must contain only lowercase letters, numbers, and hyphens");
+      return;
     }
 
     if (!formData.admin_email.trim() || !formData.admin_email.includes("@")) {
-      setError("Valid admin email is required")
-      return
+      setError("Valid admin email is required");
+      return;
     }
 
     if (!formData.admin_username.trim()) {
-      setError("Admin username is required")
-      return
+      setError("Admin username is required");
+      return;
     }
 
     if (formData.admin_password.length < 8) {
-      setError("Password must be at least 8 characters long")
-      return
+      setError("Password must be at least 8 characters long");
+      return;
     }
 
     if (formData.admin_password !== confirmPassword) {
-      setError("Passwords do not match")
-      return
+      setError("Passwords do not match");
+      return;
     }
 
     if (passwordStrength < 3) {
-      setError("Password is too weak. Please use a stronger password.")
-      return
+      setError("Password is too weak. Please use a stronger password.");
+      return;
     }
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
 
     try {
       const request: SetupRequest = {
@@ -130,41 +130,41 @@ function SetupPage() {
         admin_email: formData.admin_email.trim(),
         admin_username: formData.admin_username.trim(),
         admin_password: formData.admin_password,
-      }
+      };
 
-      await initializeSetup(request)
-      setSuccess(true)
+      await initializeSetup(request);
+      setSuccess(true);
 
       // Redirect to login after 2 seconds
       setTimeout(() => {
-        navigate({ to: "/login" })
-      }, 2000)
+        navigate({ to: "/login" });
+      }, 2000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Setup failed. Please try again.")
+      setError(err instanceof Error ? err.message : "Setup failed. Please try again.");
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const getPasswordStrengthLabel = () => {
-    if (passwordStrength === 0) return ""
-    if (passwordStrength <= 2) return "Weak"
-    if (passwordStrength <= 4) return "Medium"
-    return "Strong"
-  }
+    if (passwordStrength === 0) return "";
+    if (passwordStrength <= 2) return "Weak";
+    if (passwordStrength <= 4) return "Medium";
+    return "Strong";
+  };
 
   const getPasswordStrengthColor = () => {
-    if (passwordStrength <= 2) return "bg-destructive"
-    if (passwordStrength <= 4) return "bg-warning"
-    return "bg-success"
-  }
+    if (passwordStrength <= 2) return "bg-destructive";
+    if (passwordStrength <= 4) return "bg-warning";
+    return "bg-success";
+  };
 
   if (isChecking) {
     return (
       <Flex className="min-h-screen items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </Flex>
-    )
+    );
   }
 
   if (success) {
@@ -179,13 +179,11 @@ function SetupPage() {
             <CardDescription>Your system has been initialized successfully.</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground">
-              Redirecting to login page...
-            </p>
+            <p className="text-sm text-muted-foreground">Redirecting to login page...</p>
           </CardContent>
         </Card>
       </Flex>
-    )
+    );
   }
 
   return (
@@ -230,7 +228,10 @@ function SetupPage() {
                       placeholder="acme-healthcare"
                       value={formData.organization_slug}
                       onChange={(e) =>
-                        setFormData({ ...formData, organization_slug: e.target.value.toLowerCase() })
+                        setFormData({
+                          ...formData,
+                          organization_slug: e.target.value.toLowerCase(),
+                        })
                       }
                       disabled={isSubmitting}
                       required
@@ -267,9 +268,7 @@ function SetupPage() {
                       type="email"
                       placeholder="admin@example.com"
                       value={formData.admin_email}
-                      onChange={(e) =>
-                        setFormData({ ...formData, admin_email: e.target.value })
-                      }
+                      onChange={(e) => setFormData({ ...formData, admin_email: e.target.value })}
                       disabled={isSubmitting}
                       required
                       autoComplete="email"
@@ -283,9 +282,7 @@ function SetupPage() {
                       type="text"
                       placeholder="admin"
                       value={formData.admin_username}
-                      onChange={(e) =>
-                        setFormData({ ...formData, admin_username: e.target.value })
-                      }
+                      onChange={(e) => setFormData({ ...formData, admin_username: e.target.value })}
                       disabled={isSubmitting}
                       required
                       autoComplete="username"
@@ -299,9 +296,7 @@ function SetupPage() {
                       type="password"
                       placeholder="Enter a strong password"
                       value={formData.admin_password}
-                      onChange={(e) =>
-                        setFormData({ ...formData, admin_password: e.target.value })
-                      }
+                      onChange={(e) => setFormData({ ...formData, admin_password: e.target.value })}
                       disabled={isSubmitting}
                       required
                       autoComplete="new-password"
@@ -313,9 +308,7 @@ function SetupPage() {
                             <div
                               key={level}
                               className={`h-full flex-1 rounded ${
-                                level <= passwordStrength
-                                  ? getPasswordStrengthColor()
-                                  : "bg-muted"
+                                level <= passwordStrength ? getPasswordStrengthColor() : "bg-muted"
                               }`}
                             />
                           ))}
@@ -368,6 +361,5 @@ function SetupPage() {
         </CardContent>
       </Card>
     </Flex>
-  )
+  );
 }
-

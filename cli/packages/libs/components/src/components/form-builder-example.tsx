@@ -3,7 +3,7 @@
  * This demonstrates all layout options available
  */
 
-import { FormBuilder, type FormConfig } from "./form-builder"
+import { FormBuilder, type FormConfig } from "./form-builder";
 
 // Example: Patient Registration Form with custom layout
 export const patientRegistrationForm: FormConfig = {
@@ -180,7 +180,7 @@ export const patientRegistrationForm: FormConfig = {
   submitLabel: "Register Patient",
   cancelLabel: "Cancel",
   showCancel: true,
-}
+};
 
 // Example usage in a component:
 /*

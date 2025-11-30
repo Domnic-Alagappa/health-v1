@@ -8,11 +8,30 @@
   "exports": {
     ".": "./src/index.ts",
     "./api": "./src/api/index.ts",
+    "./api/routes": "./src/api/routes.ts",
+    "./api/config": "./src/api/config.ts",
     "./api/types": "./src/api/types.ts",
     "./constants": "./src/constants/index.ts",
+    "./constants/permissions": "./src/constants/permissions.ts",
+    "./constants/security": "./src/constants/security.ts",
+    "./constants/fields": "./src/constants/fields.ts",
+    "./constants/oidc": "./src/constants/oidc.ts",
     "./types": "./src/types/index.ts",
+    "./types/user": "./src/types/user.ts",
+    "./types/patient": "./src/types/patient.ts",
+    "./types/audit": "./src/types/audit.ts",
+    "./types/common": "./src/types/common.ts",
+    "./types/stores": "./src/types/stores/index.ts",
+    "./types/stores/voice": "./src/types/stores/voice.ts",
+    "./types/stores/ui": "./src/types/stores/ui.ts",
+    "./types/stores/tab": "./src/types/stores/tab.ts",
+    "./types/stores/accessibility": "./src/types/stores/accessibility.ts",
+    "./types/stores/audit": "./src/types/stores/audit.ts",
+    "./types/stores/auth": "./src/types/stores/auth.ts",
     "./types/components/registry": "./src/types/components/registry.ts",
-    "./i18n": "./src/i18n/index.ts"
+    "./i18n": "./src/i18n/index.ts",
+    "./i18n/types": "./src/i18n/types.ts",
+    "./i18n/locales": "./src/i18n/locales.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"
@@ -22,4 +41,3 @@
     "typescript": "^5.0.0"
   }
 }
-

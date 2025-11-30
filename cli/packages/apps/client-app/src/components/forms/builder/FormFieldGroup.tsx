@@ -1,17 +1,17 @@
-import { ChevronDown, ChevronUp } from "lucide-react"
-import { useState } from "react"
-import { Box } from "@/components/ui/box"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Flex } from "@/components/ui/flex"
-import type { FormFieldGroup } from "@/components/ui/form-builder"
-import { cn } from "@/lib/utils"
+import { Box } from "@/components/ui/box";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Flex } from "@/components/ui/flex";
+import type { FormFieldGroup } from "@/components/ui/form-builder";
+import { cn } from "@/lib/utils";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import { useState } from "react";
 
 interface FormFieldGroupProps {
-  group: FormFieldGroup
-  fields: Array<{ field: any; render: () => React.ReactNode }>
-  getGridLayoutClasses: () => string
-  getGapClasses: () => string
+  group: FormFieldGroup;
+  fields: Array<{ field: any; render: () => React.ReactNode }>;
+  getGridLayoutClasses: () => string;
+  getGapClasses: () => string;
 }
 
 export function FormFieldGroupComponent({
@@ -20,7 +20,7 @@ export function FormFieldGroupComponent({
   getGridLayoutClasses,
   getGapClasses,
 }: FormFieldGroupProps) {
-  const [isCollapsed, setIsCollapsed] = useState(group.defaultCollapsed || false)
+  const [isCollapsed, setIsCollapsed] = useState(group.defaultCollapsed || false);
 
   return (
     <Box className="col-span-12">
@@ -61,5 +61,5 @@ export function FormFieldGroupComponent({
         )}
       </Card>
     </Box>
-  )
+  );
 }

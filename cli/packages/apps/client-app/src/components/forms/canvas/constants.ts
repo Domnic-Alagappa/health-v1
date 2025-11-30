@@ -1,5 +1,5 @@
-import type { FieldType } from "@/components/ui/form-builder"
-import type { FieldCategory } from "./types"
+import type { FieldType } from "@/components/ui/form-builder";
+import type { FieldCategory } from "./types";
 
 export const FIELD_CATEGORIES: FieldCategory = {
   "Field Elements": [
@@ -27,4 +27,4 @@ export const FIELD_CATEGORIES: FieldCategory = {
     { type: "group" as any, label: "Group", icon: "📦" },
     { type: "section" as any, label: "Section", icon: "📑" },
   ],
-}
+};

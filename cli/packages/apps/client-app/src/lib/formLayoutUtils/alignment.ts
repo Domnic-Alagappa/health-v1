@@ -1,39 +1,39 @@
-import type { FieldLayout } from "@/components/ui/form-builder"
+import type { FieldLayout } from "@/components/ui/form-builder";
 
 export function getAlignmentClasses(alignment?: FieldLayout["alignment"]): string {
-  if (!alignment) return ""
-  const classes: string[] = []
+  if (!alignment) return "";
+  const classes: string[] = [];
   if (alignment.horizontal) {
     switch (alignment.horizontal) {
       case "left":
-        classes.push("text-left")
-        break
+        classes.push("text-left");
+        break;
       case "center":
-        classes.push("text-center")
-        break
+        classes.push("text-center");
+        break;
       case "right":
-        classes.push("text-right")
-        break
+        classes.push("text-right");
+        break;
       case "stretch":
-        classes.push("w-full")
-        break
+        classes.push("w-full");
+        break;
     }
   }
   if (alignment.vertical) {
     switch (alignment.vertical) {
       case "top":
-        classes.push("items-start")
-        break
+        classes.push("items-start");
+        break;
       case "center":
-        classes.push("items-center")
-        break
+        classes.push("items-center");
+        break;
       case "bottom":
-        classes.push("items-end")
-        break
+        classes.push("items-end");
+        break;
       case "stretch":
-        classes.push("items-stretch")
-        break
+        classes.push("items-stretch");
+        break;
     }
   }
-  return classes.join(" ")
+  return classes.join(" ");
 }

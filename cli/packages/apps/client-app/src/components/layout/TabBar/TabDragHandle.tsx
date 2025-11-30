@@ -1,4 +1,4 @@
-import { GripVertical } from "lucide-react"
+import { GripVertical } from "lucide-react";
 
 export function TabDragHandle() {
   return (
@@ -8,5 +8,5 @@ export function TabDragHandle() {
     >
       <GripVertical className="h-3 w-3 text-muted-foreground" />
     </div>
-  )
+  );
 }

@@ -1,13 +1,13 @@
-import { Info } from "lucide-react"
-import type * as React from "react"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./tooltip"
-import { cn } from "../lib/utils"
+import { Info } from "lucide-react";
+import type * as React from "react";
+import { cn } from "../lib/utils";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./tooltip";
 
 export interface HoverHelpProps {
-  content: string | React.ReactNode
-  title?: string
-  position?: "top-right" | "top-left" | "bottom-right" | "bottom-left"
-  className?: string
+  content: string | React.ReactNode;
+  title?: string;
+  position?: "top-right" | "top-left" | "bottom-right" | "bottom-left";
+  className?: string;
 }
 
 /**
@@ -20,7 +20,7 @@ export function HoverHelp({ content, title, position = "top-right", className }:
     "top-left": "absolute top-1 left-1",
     "bottom-right": "absolute bottom-1 right-1",
     "bottom-left": "absolute bottom-1 left-1",
-  }
+  };
 
   return (
     <TooltipProvider delayDuration={300}>
@@ -50,5 +50,5 @@ export function HoverHelp({ content, title, position = "top-right", className }:
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
-  )
+  );
 }

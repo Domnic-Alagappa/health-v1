@@ -1,5 +1,14 @@
-import { Building2, Plus, Search } from "lucide-react"
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Stack } from "@health-v1/ui-components"
+import {
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  Input,
+  Stack,
+} from "@health-v1/ui-components";
+import { Building2, Plus, Search } from "lucide-react";
 
 export function OrganizationsPage() {
   return (
@@ -26,10 +35,7 @@ export function OrganizationsPage() {
               <div className="flex items-center gap-2">
                 <div className="relative">
                   <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search organizations..."
-                    className="pl-8 w-64"
-                  />
+                  <Input placeholder="Search organizations..." className="pl-8 w-64" />
                 </div>
               </div>
             </div>
@@ -50,6 +56,5 @@ export function OrganizationsPage() {
         </Card>
       </Stack>
     </div>
-  )
+  );
 }
-

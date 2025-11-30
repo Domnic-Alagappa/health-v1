@@ -4,17 +4,17 @@
  */
 
 interface MockWindow {
-  closed: boolean
+  closed: boolean;
   document: {
-    title: string
-  }
-  focus: () => Promise<void>
-  close: () => Promise<void>
+    title: string;
+  };
+  focus: () => Promise<void>;
+  close: () => Promise<void>;
 }
 
 // Check if running in Tauri
 export function isTauri(): boolean {
-  return typeof window !== "undefined" && "__TAURI__" in window
+  return typeof window !== "undefined" && "__TAURI__" in window;
 }
 
 /**
@@ -24,19 +24,19 @@ export async function openNewWindow(
   url: string,
   label: string,
   options?: {
-    width?: number
-    height?: number
-    x?: number
-    y?: number
+    width?: number;
+    height?: number;
+    x?: number;
+    y?: number;
   }
 ): Promise<Window | null> {
   if (isTauri()) {
     try {
       // Dynamic import to avoid errors when not in Tauri
-      const { WebviewWindow } = await import("@tauri-apps/api/window")
+      const { WebviewWindow } = await import("@tauri-apps/api/window");
 
       // Generate a unique label for the window
-      const windowLabel = `tab-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
+      const windowLabel = `tab-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 
       // Create new Tauri window
       const webview = new WebviewWindow(windowLabel, {
@@ -52,11 +52,11 @@ export async function openNewWindow(
         maximizable: true,
         closable: true,
         visible: true,
-      })
+      });
 
       // Wait for window to be created and focused
-      await webview.once("tauri://created")
-      await webview.setFocus()
+      await webview.once("tauri://created");
+      await webview.setFocus();
 
       // Return a mock window-like object for compatibility
       const mockWindow: MockWindow = {
@@ -65,16 +65,16 @@ export async function openNewWindow(
           title: `${label} - Salk Commons Health`,
         },
         focus: async () => {
-          await webview.setFocus()
+          await webview.setFocus();
         },
         close: async () => {
-          await webview.close()
+          await webview.close();
         },
-      }
-      return mockWindow as Window
+      };
+      return mockWindow as Window;
     } catch (error) {
-      console.error("Error creating Tauri window:", error)
-      return null
+      console.error("Error creating Tauri window:", error);
+      return null;
     }
   } else {
     // Browser environment - use window.open
@@ -87,8 +87,8 @@ export async function openNewWindow(
       "scrollbars=yes",
     ]
       .filter(Boolean)
-      .join(",")
+      .join(",");
 
-    return window.open(url, `tab-${Date.now()}`, windowFeatures)
+    return window.open(url, `tab-${Date.now()}`, windowFeatures);
   }
 }

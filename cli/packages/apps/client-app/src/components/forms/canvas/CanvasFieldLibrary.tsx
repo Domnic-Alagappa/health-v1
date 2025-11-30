@@ -1,37 +1,37 @@
-import { Check, Code, Download, Grid3x3, Settings, Upload } from "lucide-react"
-import { Box } from "@/components/ui/box"
-import { Button } from "@/components/ui/button"
-import { Flex } from "@/components/ui/flex"
-import type { FieldType } from "@/components/ui/form-builder"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Stack } from "@/components/ui/stack"
-import type { FieldCategory, FieldCategoryItem, SheetSize } from "./types"
-import { SHEET_SIZES } from "./types"
+import { Box } from "@/components/ui/box";
+import { Button } from "@/components/ui/button";
+import { Flex } from "@/components/ui/flex";
+import type { FieldType } from "@/components/ui/form-builder";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Stack } from "@/components/ui/stack";
+import { Check, Code, Download, Grid3x3, Settings, Upload } from "lucide-react";
+import type { FieldCategory } from "./types";
+import { SHEET_SIZES } from "./types";
 
 interface CanvasFieldLibraryProps {
-  fieldCategories: FieldCategory
-  selectedSheetSize: string
-  canvasWidth: number
-  canvasHeight: number
-  gridSize: number
-  showGrid: boolean
-  snapToGrid: boolean
-  wrapOverflow: boolean
-  copied: boolean
+  fieldCategories: FieldCategory;
+  selectedSheetSize: string;
+  canvasWidth: number;
+  canvasHeight: number;
+  gridSize: number;
+  showGrid: boolean;
+  snapToGrid: boolean;
+  wrapOverflow: boolean;
+  copied: boolean;
   onAddField: (
     type: FieldType | "group" | "section" | "image" | "line-horizontal" | "line-vertical" | "box"
-  ) => void
-  onSheetSizeChange: (size: string) => void
-  onCanvasWidthChange: (width: number) => void
-  onCanvasHeightChange: (height: number) => void
-  onGridSizeChange: (size: number) => void
-  onShowGridChange: (show: boolean) => void
-  onSnapToGridChange: (snap: boolean) => void
-  onWrapOverflowChange: (wrap: boolean) => void
-  onExport: () => void
-  onImport: (event: React.ChangeEvent<HTMLInputElement>) => void
-  onCopyCode: () => void
+  ) => void;
+  onSheetSizeChange: (size: string) => void;
+  onCanvasWidthChange: (width: number) => void;
+  onCanvasHeightChange: (height: number) => void;
+  onGridSizeChange: (size: number) => void;
+  onShowGridChange: (show: boolean) => void;
+  onSnapToGridChange: (snap: boolean) => void;
+  onWrapOverflowChange: (wrap: boolean) => void;
+  onExport: () => void;
+  onImport: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onCopyCode: () => void;
 }
 
 export function CanvasFieldLibrary({
@@ -59,7 +59,7 @@ export function CanvasFieldLibrary({
   const sheetSizes = {
     ...SHEET_SIZES,
     custom: { name: "Custom", width: canvasWidth, height: canvasHeight },
-  }
+  };
 
   return (
     <Box className="w-72 border-r bg-[#F4F6F8]">
@@ -79,12 +79,12 @@ export function CanvasFieldLibrary({
                 id="sheet-size"
                 value={selectedSheetSize}
                 onChange={(e) => {
-                  onSheetSizeChange(e.target.value)
+                  onSheetSizeChange(e.target.value);
                   if (e.target.value !== "custom") {
-                    const size = sheetSizes[e.target.value as keyof typeof sheetSizes]
+                    const size = sheetSizes[e.target.value as keyof typeof sheetSizes];
                     if (size) {
-                      onCanvasWidthChange(size.width)
-                      onCanvasHeightChange(size.height)
+                      onCanvasWidthChange(size.width);
+                      onCanvasHeightChange(size.height);
                     }
                   }
                 }}
@@ -230,5 +230,5 @@ export function CanvasFieldLibrary({
         </Box>
       </Stack>
     </Box>
-  )
+  );
 }

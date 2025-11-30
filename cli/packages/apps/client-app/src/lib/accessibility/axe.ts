@@ -3,10 +3,10 @@
  * Integrates @axe-core/react for accessibility testing in development
  */
 
-import React from "react"
-import ReactDOM from "react-dom/client"
+import React from "react";
+import ReactDOM from "react-dom/client";
 
-let axeInitialized = false
+let axeInitialized = false;
 
 export function initializeAxe() {
   if (import.meta.env.DEV && typeof window !== "undefined" && !axeInitialized) {
@@ -14,13 +14,13 @@ export function initializeAxe() {
     import("@axe-core/react")
       .then((axe) => {
         if (axe.default) {
-          axe.default(React, ReactDOM, 1000)
-          axeInitialized = true
-          console.log("Axe accessibility testing initialized")
+          axe.default(React, ReactDOM, 1000);
+          axeInitialized = true;
+          console.log("Axe accessibility testing initialized");
         }
       })
       .catch((err) => {
-        console.warn("Failed to load axe-core:", err)
-      })
+        console.warn("Failed to load axe-core:", err);
+      });
   }
 }

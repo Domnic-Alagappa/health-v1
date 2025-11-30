@@ -1,13 +1,13 @@
-import { getAnalyticsActions } from "./analytics"
-import { getClinicalActions } from "./clinical"
-import { getDashboardActions } from "./dashboard"
-import { getOrdersActions } from "./orders"
-import { getPatientsActions } from "./patients"
-import { getPharmacyActions } from "./pharmacy"
-import { getResultsActions } from "./results"
-import { getRevenueActions } from "./revenue"
-import { getSchedulingActions } from "./scheduling"
-import type { NavAction } from "./types"
+import { getAnalyticsActions } from "./analytics";
+import { getClinicalActions } from "./clinical";
+import { getDashboardActions } from "./dashboard";
+import { getOrdersActions } from "./orders";
+import { getPatientsActions } from "./patients";
+import { getPharmacyActions } from "./pharmacy";
+import { getResultsActions } from "./results";
+import { getRevenueActions } from "./revenue";
+import { getSchedulingActions } from "./scheduling";
+import type { NavAction } from "./types";
 
 /**
  * Get action items for navigation items
@@ -18,42 +18,42 @@ export function getNavActions(
   onAction: (actionId: string, navPath: string) => void
 ): NavAction[] {
   if (path === "/") {
-    return getDashboardActions(path, onAction)
+    return getDashboardActions(path, onAction);
   }
 
   if (path.startsWith("/patients")) {
-    return getPatientsActions(path, onAction)
+    return getPatientsActions(path, onAction);
   }
 
   if (path.startsWith("/clinical")) {
-    return getClinicalActions(path, onAction)
+    return getClinicalActions(path, onAction);
   }
 
   if (path.startsWith("/orders")) {
-    return getOrdersActions(path, onAction)
+    return getOrdersActions(path, onAction);
   }
 
   if (path.startsWith("/results")) {
-    return getResultsActions(path, onAction)
+    return getResultsActions(path, onAction);
   }
 
   if (path.startsWith("/scheduling")) {
-    return getSchedulingActions(path, onAction)
+    return getSchedulingActions(path, onAction);
   }
 
   if (path.startsWith("/pharmacy")) {
-    return getPharmacyActions(path, onAction)
+    return getPharmacyActions(path, onAction);
   }
 
   if (path.startsWith("/revenue")) {
-    return getRevenueActions(path, onAction)
+    return getRevenueActions(path, onAction);
   }
 
   if (path.startsWith("/analytics")) {
-    return getAnalyticsActions(path, onAction)
+    return getAnalyticsActions(path, onAction);
   }
 
-  return []
+  return [];
 }
 
 /**
@@ -79,7 +79,7 @@ export function getNavContextActions(
       label: "Refresh",
       onClick: () => onAction("refresh", path),
     },
-  ]
+  ];
 }
 
-export type { NavAction } from "./types"
+export type { NavAction } from "./types";

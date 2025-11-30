@@ -1,25 +1,25 @@
-import { useEffect, useState } from "react"
 import type {
   CanvasField,
   CanvasFormConfig,
   CanvasGroup,
   CanvasSection,
-} from "@/components/forms/canvas/types"
-import { createDragHandlers } from "./handlers"
-import { handleMouseMove } from "./move"
+} from "@/components/forms/canvas/types";
+import { useEffect, useState } from "react";
+import { createDragHandlers } from "./handlers";
+import { handleMouseMove } from "./move";
 
 interface UseCanvasDragOptions {
-  fields: CanvasField[]
-  groups: CanvasGroup[]
-  sections: CanvasSection[]
-  canvasConfig: CanvasFormConfig
-  canvasRef: React.RefObject<HTMLDivElement>
-  snapToGrid: boolean
-  gridSize: number
-  wrapOverflow: boolean
-  updateField: (fieldId: string, updates: Partial<CanvasField>) => void
-  setGroups: React.Dispatch<React.SetStateAction<CanvasGroup[]>>
-  setSections: React.Dispatch<React.SetStateAction<CanvasSection[]>>
+  fields: CanvasField[];
+  groups: CanvasGroup[];
+  sections: CanvasSection[];
+  canvasConfig: CanvasFormConfig;
+  canvasRef: React.RefObject<HTMLDivElement | null>;
+  snapToGrid: boolean;
+  gridSize: number;
+  wrapOverflow: boolean;
+  updateField: (fieldId: string, updates: Partial<CanvasField>) => void;
+  setGroups: React.Dispatch<React.SetStateAction<CanvasGroup[]>>;
+  setSections: React.Dispatch<React.SetStateAction<CanvasSection[]>>;
 }
 
 export function useCanvasDrag({
@@ -35,10 +35,10 @@ export function useCanvasDrag({
   setGroups,
   setSections,
 }: UseCanvasDragOptions) {
-  const [draggedField, setDraggedField] = useState<string | null>(null)
-  const [draggedGroup, setDraggedGroup] = useState<string | null>(null)
-  const [draggedSection, setDraggedSection] = useState<string | null>(null)
-  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
+  const [draggedField, setDraggedField] = useState<string | null>(null);
+  const [draggedGroup, setDraggedGroup] = useState<string | null>(null);
+  const [draggedSection, setDraggedSection] = useState<string | null>(null);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     const handleMouseMoveEvent = (e: MouseEvent) => {
@@ -58,24 +58,24 @@ export function useCanvasDrag({
         updateField,
         setGroups,
         setSections,
-      })
-    }
+      });
+    };
 
     const handleMouseUp = () => {
-      setDraggedField(null)
-      setDraggedGroup(null)
-      setDraggedSection(null)
-    }
+      setDraggedField(null);
+      setDraggedGroup(null);
+      setDraggedSection(null);
+    };
 
     if (draggedField || draggedGroup || draggedSection) {
-      document.addEventListener("mousemove", handleMouseMoveEvent)
-      document.addEventListener("mouseup", handleMouseUp)
+      document.addEventListener("mousemove", handleMouseMoveEvent);
+      document.addEventListener("mouseup", handleMouseUp);
     }
 
     return () => {
-      document.removeEventListener("mousemove", handleMouseMoveEvent)
-      document.removeEventListener("mouseup", handleMouseUp)
-    }
+      document.removeEventListener("mousemove", handleMouseMoveEvent);
+      document.removeEventListener("mouseup", handleMouseUp);
+    };
   }, [
     draggedField,
     draggedGroup,
@@ -92,7 +92,7 @@ export function useCanvasDrag({
     updateField,
     setGroups,
     setSections,
-  ])
+  ]);
 
   const { handleFieldDragStart, handleGroupDragStart, handleSectionDragStart } = createDragHandlers(
     {
@@ -105,7 +105,7 @@ export function useCanvasDrag({
       setDraggedSection,
       setDragOffset,
     }
-  )
+  );
 
   return {
     draggedField,
@@ -114,5 +114,5 @@ export function useCanvasDrag({
     handleFieldDragStart,
     handleGroupDragStart,
     handleSectionDragStart,
-  }
+  };
 }

@@ -1,19 +1,19 @@
-import { createFileRoute } from "@tanstack/react-router"
-import { Activity, Users } from "lucide-react"
-import { ProtectedRoute } from "@/components/security/ProtectedRoute"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { PERMISSIONS } from "@health-v1/shared/constants/permissions"
+import { ProtectedRoute } from "@/components/security/ProtectedRoute";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PERMISSIONS } from "@health-v1/shared/constants/permissions";
+import { createFileRoute } from "@tanstack/react-router";
+import { Activity, Users } from "lucide-react";
 
 export const Route = createFileRoute("/analytics")({
   component: AnalyticsComponent,
-})
+});
 
 function AnalyticsComponent() {
   return (
     <ProtectedRoute requiredPermission={PERMISSIONS.ANALYTICS.VIEW} resource="analytics">
       <AnalyticsComponentInner />
     </ProtectedRoute>
-  )
+  );
 }
 
 function AnalyticsComponentInner() {
@@ -50,5 +50,5 @@ function AnalyticsComponentInner() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

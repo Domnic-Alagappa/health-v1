@@ -1,9 +1,9 @@
-import type { ReactNode } from "react"
+import type { ReactNode } from "react";
 
 export interface NavAction {
-  id: string
-  label: string
-  icon?: ReactNode
-  onClick: () => void
-  disabled?: boolean
+  id: string;
+  label: string;
+  icon?: ReactNode;
+  onClick: () => void;
+  disabled?: boolean;
 }

@@ -1,31 +1,31 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router"
-import { ArrowRight, Filter, Plus, Search, Users } from "lucide-react"
-import { ProtectedRoute } from "@/components/security/ProtectedRoute"
-import { Badge } from "@/components/ui/badge"
-import { Box } from "@/components/ui/box"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Flex } from "@/components/ui/flex"
-import { Input } from "@/components/ui/input"
-import { Stack } from "@/components/ui/stack"
-import { PERMISSIONS } from "@health-v1/shared/constants/permissions"
-import { useOpenTab } from "@/stores/tabStore"
+import { ProtectedRoute } from "@/components/security/ProtectedRoute";
+import { Badge } from "@/components/ui/badge";
+import { Box } from "@/components/ui/box";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Flex } from "@/components/ui/flex";
+import { Input } from "@/components/ui/input";
+import { Stack } from "@/components/ui/stack";
+import { useOpenTab } from "@/stores/tabStore";
+import { PERMISSIONS } from "@health-v1/shared/constants/permissions";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { ArrowRight, Filter, Plus, Search, Users } from "lucide-react";
 
 export const Route = createFileRoute("/patients")({
   component: PatientsComponent,
-})
+});
 
 function PatientsComponent() {
   return (
     <ProtectedRoute requiredPermission={PERMISSIONS.PATIENTS.VIEW} resource="patients">
       <PatientsComponentInner />
     </ProtectedRoute>
-  )
+  );
 }
 
 function PatientsComponentInner() {
-  const navigate = useNavigate()
-  const openTab = useOpenTab()
+  const navigate = useNavigate();
+  const openTab = useOpenTab();
 
   // Mock patient data - including John Doe for demo
   const patients = [
@@ -66,7 +66,7 @@ function PatientsComponentInner() {
       status: "Active",
       lastVisit: "2023-12-20",
     },
-  ]
+  ];
 
   const handleOpenPatient = (patient: (typeof patients)[0]) => {
     openTab(
@@ -78,8 +78,8 @@ function PatientsComponentInner() {
         requiredPermission: PERMISSIONS.PATIENTS.VIEW,
       },
       (path) => navigate({ to: path as "/" | (string & {}) })
-    )
-  }
+    );
+  };
 
   return (
     <Stack spacing="lg">
@@ -129,8 +129,8 @@ function PatientsComponentInner() {
                 onClick={() => handleOpenPatient(patient)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault()
-                    handleOpenPatient(patient)
+                    e.preventDefault();
+                    handleOpenPatient(patient);
                   }
                 }}
               >
@@ -155,5 +155,5 @@ function PatientsComponentInner() {
         </CardContent>
       </Card>
     </Stack>
-  )
+  );
 }

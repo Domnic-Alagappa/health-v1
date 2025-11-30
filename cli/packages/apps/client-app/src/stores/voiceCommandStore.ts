@@ -3,20 +3,16 @@
  * Manages voice command state and recognition
  */
 
-import { create } from "zustand"
+import { create } from "zustand";
 
 import type {
-  VoiceCommandState,
   VoiceCommandActions,
+  VoiceCommandState,
   VoiceCommandStore,
-} from "@health-v1/shared/types/stores/voice"
+} from "@health-v1/shared/types/stores/voice";
 
 // Re-export types
-export type {
-  VoiceCommandState,
-  VoiceCommandActions,
-  VoiceCommandStore,
-}
+export type { VoiceCommandState, VoiceCommandActions, VoiceCommandStore };
 
 const initialState: VoiceCommandState = {
   isListening: false,
@@ -26,33 +22,33 @@ const initialState: VoiceCommandState = {
   error: null,
   commandHistory: [],
   currentWorkflow: null,
-}
+};
 
 export const useVoiceCommandStore = create<VoiceCommandStore>()((set) => ({
   ...initialState,
 
   startListening: () => {
-    set({ isListening: true, error: null })
+    set({ isListening: true, error: null });
   },
 
   stopListening: () => {
-    set({ isListening: false })
+    set({ isListening: false });
   },
 
   setProcessing: (processing: boolean) => {
-    set({ isProcessing: processing })
+    set({ isProcessing: processing });
   },
 
   setLastCommand: (command: string | null) => {
-    set({ lastCommand: command })
+    set({ lastCommand: command });
   },
 
   setLastIntent: (intent: string | null) => {
-    set({ lastIntent: intent })
+    set({ lastIntent: intent });
   },
 
   setError: (error: string | null) => {
-    set({ error })
+    set({ error });
   },
 
   addToHistory: (command: string, intent: string, success: boolean) => {
@@ -66,25 +62,25 @@ export const useVoiceCommandStore = create<VoiceCommandStore>()((set) => ({
         },
         ...state.commandHistory.slice(0, 49), // Keep last 50 commands
       ],
-    }))
+    }));
   },
 
   setCurrentWorkflow: (workflow: VoiceCommandState["currentWorkflow"]) => {
-    set({ currentWorkflow: workflow })
+    set({ currentWorkflow: workflow });
   },
 
   clearHistory: () => {
-    set({ commandHistory: [] })
+    set({ commandHistory: [] });
   },
-}))
+}));
 
 // Atomic selectors
-export const useIsListening = () => useVoiceCommandStore((state) => state.isListening)
-export const useIsProcessing = () => useVoiceCommandStore((state) => state.isProcessing)
-export const useLastCommand = () => useVoiceCommandStore((state) => state.lastCommand)
-export const useLastIntent = () => useVoiceCommandStore((state) => state.lastIntent)
-export const useVoiceCommandError = () => useVoiceCommandStore((state) => state.error)
-export const useCommandHistory = () => useVoiceCommandStore((state) => state.commandHistory)
-export const useCurrentWorkflow = () => useVoiceCommandStore((state) => state.currentWorkflow)
-export const useStartListening = () => useVoiceCommandStore((state) => state.startListening)
-export const useStopListening = () => useVoiceCommandStore((state) => state.stopListening)
+export const useIsListening = () => useVoiceCommandStore((state) => state.isListening);
+export const useIsProcessing = () => useVoiceCommandStore((state) => state.isProcessing);
+export const useLastCommand = () => useVoiceCommandStore((state) => state.lastCommand);
+export const useLastIntent = () => useVoiceCommandStore((state) => state.lastIntent);
+export const useVoiceCommandError = () => useVoiceCommandStore((state) => state.error);
+export const useCommandHistory = () => useVoiceCommandStore((state) => state.commandHistory);
+export const useCurrentWorkflow = () => useVoiceCommandStore((state) => state.currentWorkflow);
+export const useStartListening = () => useVoiceCommandStore((state) => state.startListening);
+export const useStopListening = () => useVoiceCommandStore((state) => state.stopListening);

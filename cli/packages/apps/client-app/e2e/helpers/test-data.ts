@@ -6,22 +6,22 @@
 /**
  * Generate a random email address for testing
  */
-export function generateTestEmail(prefix: string = "test"): string {
-  const timestamp = Date.now()
-  const random = Math.floor(Math.random() * 10000)
-  return `${prefix}-${timestamp}-${random}@example.com`
+export function generateTestEmail(prefix = "test"): string {
+  const timestamp = Date.now();
+  const random = Math.floor(Math.random() * 10000);
+  return `${prefix}-${timestamp}-${random}@example.com`;
 }
 
 /**
  * Generate a random string of specified length
  */
-export function generateRandomString(length: number = 10): string {
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-  let result = ""
+export function generateRandomString(length = 10): string {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
   for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length))
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
-  return result
+  return result;
 }
 
 /**
@@ -35,7 +35,7 @@ export function generateTestUser(overrides?: Partial<TestUser>): TestUser {
     lastName: "User",
     role: "doctor",
     ...overrides,
-  }
+  };
 }
 
 /**
@@ -49,23 +49,23 @@ export function generateTestPatient(overrides?: Partial<TestPatient>): TestPatie
     email: generateTestEmail("patient"),
     phone: "555-0100",
     ...overrides,
-  }
+  };
 }
 
 export interface TestUser {
-  email: string
-  password: string
-  firstName: string
-  lastName: string
-  role: string
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  role: string;
 }
 
 export interface TestPatient {
-  firstName: string
-  lastName: string
-  dateOfBirth: string
-  email: string
-  phone: string
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+  email: string;
+  phone: string;
 }
 
 /**
@@ -88,4 +88,4 @@ export const DEFAULT_TEST_CREDENTIALS = {
     email: process.env.TEST_RECEPTIONIST_EMAIL || "receptionist@example.com",
     password: process.env.TEST_RECEPTIONIST_PASSWORD || "receptionist123",
   },
-}
+};

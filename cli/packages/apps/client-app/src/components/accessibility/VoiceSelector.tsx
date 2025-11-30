@@ -3,101 +3,101 @@
  * Select TTS voice with accent/quality options
  */
 
-import { useEffect, useState } from "react"
-import { Box } from "@/components/ui/box"
-import { Stack } from "@/components/ui/stack"
-import { useAccessibilityStore } from "@/stores/accessibilityStore"
+import { Box } from "@/components/ui/box";
+import { Stack } from "@/components/ui/stack";
+import { useAccessibilityStore } from "@/stores/accessibilityStore";
+import { useEffect, useState } from "react";
 
 interface Voice {
-  name: string
-  lang: string
-  default?: boolean
-  localService?: boolean
-  voiceURI: string
+  name: string;
+  lang: string;
+  default?: boolean;
+  localService?: boolean;
+  voiceURI: string;
 }
 
 export function VoiceSelector() {
-  const preferences = useAccessibilityStore((state) => state.preferences)
-  const updatePreference = useAccessibilityStore((state) => state.updatePreference)
-  const [voices, setVoices] = useState<Voice[]>([])
-  const [loading, setLoading] = useState(true)
+  const preferences = useAccessibilityStore((state) => state.preferences);
+  const updatePreference = useAccessibilityStore((state) => state.updatePreference);
+  const [voices, setVoices] = useState<Voice[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Load available voices
     const loadVoices = () => {
       if (typeof window === "undefined" || !window.speechSynthesis) {
-        setLoading(false)
-        return
+        setLoading(false);
+        return;
       }
 
       // Voices may not be immediately available, so we need to wait
-      const synth = window.speechSynthesis
-      let voicesList = synth.getVoices()
+      const synth = window.speechSynthesis;
+      let voicesList = synth.getVoices();
 
       if (voicesList.length === 0) {
         // Voices might load asynchronously
         synth.onvoiceschanged = () => {
-          voicesList = synth.getVoices()
-          setVoices(voicesList)
-          setLoading(false)
-        }
+          voicesList = synth.getVoices();
+          setVoices(voicesList);
+          setLoading(false);
+        };
       } else {
-        setVoices(voicesList)
-        setLoading(false)
+        setVoices(voicesList);
+        setLoading(false);
       }
-    }
+    };
 
-    loadVoices()
-  }, [])
+    loadVoices();
+  }, []);
 
   // Filter voices by language and quality
   const filteredVoices = voices.filter((voice) => {
     // Filter by language if specified
     if (preferences.voiceCommandsLanguage) {
-      const langPrefix = preferences.voiceCommandsLanguage.split("-")[0]
-      return voice.lang.toLowerCase().startsWith(langPrefix.toLowerCase())
+      const langPrefix = preferences.voiceCommandsLanguage.split("-")[0];
+      return voice.lang.toLowerCase().startsWith(langPrefix.toLowerCase());
     }
-    return true
-  })
+    return true;
+  });
 
   // Group voices by accent/quality
   const groupedVoices = filteredVoices.reduce(
     (acc, voice) => {
       // Extract accent/quality from voice name
-      const name = voice.name.toLowerCase()
-      let category = "Other"
+      const name = voice.name.toLowerCase();
+      let category = "Other";
 
       // Categorize voices by common patterns
       if (name.includes("premium") || name.includes("enhanced") || name.includes("neural")) {
-        category = "Premium"
+        category = "Premium";
       } else if (name.includes("us") || name.includes("american")) {
-        category = "American English"
+        category = "American English";
       } else if (name.includes("gb") || name.includes("british") || name.includes("uk")) {
-        category = "British English"
+        category = "British English";
       } else if (name.includes("australian") || name.includes("au")) {
-        category = "Australian English"
+        category = "Australian English";
       } else if (name.includes("canadian") || name.includes("ca")) {
-        category = "Canadian English"
+        category = "Canadian English";
       } else if (name.includes("indian") || name.includes("in")) {
-        category = "Indian English"
+        category = "Indian English";
       } else if (name.includes("irish") || name.includes("ie")) {
-        category = "Irish English"
+        category = "Irish English";
       } else if (name.includes("south african") || name.includes("za")) {
-        category = "South African English"
+        category = "South African English";
       } else if (name.includes("female") || name.includes("woman")) {
-        category = "Female Voices"
+        category = "Female Voices";
       } else if (name.includes("male") || name.includes("man")) {
-        category = "Male Voices"
+        category = "Male Voices";
       }
 
       if (!acc[category]) {
-        acc[category] = []
+        acc[category] = [];
       }
-      acc[category].push(voice)
-      return acc
+      acc[category].push(voice);
+      return acc;
     },
     {} as Record<string, Voice[]>
-  )
+  );
 
   // Sort categories by priority
   const categoryOrder = [
@@ -112,9 +112,9 @@ export function VoiceSelector() {
     "Female Voices",
     "Male Voices",
     "Other",
-  ]
+  ];
 
-  const sortedCategories = categoryOrder.filter((cat) => groupedVoices[cat])
+  const sortedCategories = categoryOrder.filter((cat) => groupedVoices[cat]);
 
   // Set default voice if not set
   useEffect(() => {
@@ -125,20 +125,20 @@ export function VoiceSelector() {
         filteredVoices.find((v) => v.name.toLowerCase().includes("premium")) ||
         filteredVoices.find((v) => v.name.toLowerCase().includes("enhanced")) ||
         filteredVoices.find((v) => v.name.toLowerCase().includes("neural")) ||
-        filteredVoices[0]
+        filteredVoices[0];
 
       if (defaultVoice) {
-        updatePreference("voiceName", defaultVoice.name)
+        updatePreference("voiceName", defaultVoice.name);
       }
     }
-  }, [filteredVoices, preferences.voiceName, updatePreference])
+  }, [filteredVoices, preferences.voiceName, updatePreference]);
 
   if (loading) {
     return (
       <Box>
         <p className="text-sm text-muted-foreground">Loading available voices...</p>
       </Box>
-    )
+    );
   }
 
   if (filteredVoices.length === 0) {
@@ -148,7 +148,7 @@ export function VoiceSelector() {
           No voices available for the selected language.
         </p>
       </Box>
-    )
+    );
   }
 
   return (
@@ -190,7 +190,7 @@ export function VoiceSelector() {
           max="2.0"
           step="0.1"
           value={preferences.voiceRate}
-          onChange={(e) => updatePreference("voiceRate", parseFloat(e.target.value))}
+          onChange={(e) => updatePreference("voiceRate", Number.parseFloat(e.target.value))}
           className="w-full"
         />
         <div className="flex justify-between text-xs text-muted-foreground mt-1">
@@ -209,7 +209,7 @@ export function VoiceSelector() {
           max="2.0"
           step="0.1"
           value={preferences.voicePitch}
-          onChange={(e) => updatePreference("voicePitch", parseFloat(e.target.value))}
+          onChange={(e) => updatePreference("voicePitch", Number.parseFloat(e.target.value))}
           className="w-full"
         />
         <div className="flex justify-between text-xs text-muted-foreground mt-1">
@@ -228,7 +228,7 @@ export function VoiceSelector() {
           max="1"
           step="0.1"
           value={preferences.voiceVolume}
-          onChange={(e) => updatePreference("voiceVolume", parseFloat(e.target.value))}
+          onChange={(e) => updatePreference("voiceVolume", Number.parseFloat(e.target.value))}
           className="w-full"
         />
         <div className="flex justify-between text-xs text-muted-foreground mt-1">
@@ -246,24 +246,24 @@ export function VoiceSelector() {
         <button
           type="button"
           onClick={() => {
-            const synth = window.speechSynthesis
+            const synth = window.speechSynthesis;
             const utterance = new SpeechSynthesisUtterance(
               "This is a test of the selected voice. How does it sound?"
-            )
+            );
 
             if (preferences.voiceName) {
-              const selectedVoice = voices.find((v) => v.name === preferences.voiceName)
+              const selectedVoice = voices.find((v) => v.name === preferences.voiceName);
               if (selectedVoice) {
-                utterance.voice = selectedVoice
+                utterance.voice = selectedVoice;
               }
             }
 
-            utterance.pitch = preferences.voicePitch
-            utterance.rate = preferences.voiceRate
-            utterance.volume = preferences.voiceVolume
-            utterance.lang = preferences.voiceCommandsLanguage || "en-US"
+            utterance.pitch = preferences.voicePitch;
+            utterance.rate = preferences.voiceRate;
+            utterance.volume = preferences.voiceVolume;
+            utterance.lang = preferences.voiceCommandsLanguage || "en-US";
 
-            synth.speak(utterance)
+            synth.speak(utterance);
           }}
           className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 text-sm"
         >
@@ -271,5 +271,5 @@ export function VoiceSelector() {
         </button>
       </Box>
     </Stack>
-  )
+  );
 }

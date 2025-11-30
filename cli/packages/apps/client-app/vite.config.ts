@@ -1,10 +1,10 @@
-import { resolve } from "node:path"
-import { fileURLToPath } from "node:url"
-import { tanstackRouter } from "@tanstack/router-plugin/vite"
-import react from "@vitejs/plugin-react"
-import { defineConfig } from "vite"
+import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { tanstackRouter } from "@tanstack/router-plugin/vite";
+import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
 
-const __dirname = fileURLToPath(new URL(".", import.meta.url))
+const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
 export default defineConfig({
   root: __dirname,
@@ -28,4 +28,4 @@ export default defineConfig({
   },
   clearScreen: false,
   envPrefix: ["VITE_", "TAURI_"],
-})
+});

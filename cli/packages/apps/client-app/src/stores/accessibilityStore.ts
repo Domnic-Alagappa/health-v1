@@ -4,15 +4,15 @@
  * WCAG 2.1 AA/AAA compliant
  */
 
-import { create } from "zustand"
-import { persist } from "zustand/middleware"
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 import type {
+  AccessibilityActions,
   AccessibilityPreferences,
   AccessibilityState,
-  AccessibilityActions,
   AccessibilityStore,
-} from "@health-v1/shared/types/stores/accessibility"
+} from "@health-v1/shared/types/stores/accessibility";
 
 // Re-export types
 export type {
@@ -20,7 +20,7 @@ export type {
   AccessibilityState,
   AccessibilityActions,
   AccessibilityStore,
-}
+};
 
 const defaultPreferences: AccessibilityPreferences = {
   // Visual
@@ -66,14 +66,14 @@ const defaultPreferences: AccessibilityPreferences = {
   // Other
   autoSave: false,
   showAccessibilityShortcuts: false,
-}
+};
 
 const initialState: AccessibilityState = {
   preferences: defaultPreferences,
   isVoiceCommandActive: false,
   lastVoiceCommand: null,
   voiceCommandError: null,
-}
+};
 
 export const useAccessibilityStore = create<AccessibilityStore>()(
   persist(
@@ -86,40 +86,40 @@ export const useAccessibilityStore = create<AccessibilityStore>()(
             ...state.preferences,
             [key]: value,
           },
-        }))
+        }));
       },
 
       togglePreference: (key) => {
         set((state) => {
-          const currentValue = state.preferences[key]
+          const currentValue = state.preferences[key];
           if (typeof currentValue === "boolean") {
             return {
               preferences: {
                 ...state.preferences,
                 [key]: !currentValue,
               },
-            }
+            };
           }
-          return state
-        })
+          return state;
+        });
       },
 
       resetPreferences: () => {
         set({
           preferences: defaultPreferences,
-        })
+        });
       },
 
       setVoiceCommandActive: (active) => {
-        set({ isVoiceCommandActive: active })
+        set({ isVoiceCommandActive: active });
       },
 
       setLastVoiceCommand: (command) => {
-        set({ lastVoiceCommand: command })
+        set({ lastVoiceCommand: command });
       },
 
       setVoiceCommandError: (error) => {
-        set({ voiceCommandError: error })
+        set({ voiceCommandError: error });
       },
     }),
     {
@@ -129,17 +129,19 @@ export const useAccessibilityStore = create<AccessibilityStore>()(
       }),
     }
   )
-)
+);
 
 // Atomic selectors
-export const useAccessibilityPreferences = () => useAccessibilityStore((state) => state.preferences)
+export const useAccessibilityPreferences = () =>
+  useAccessibilityStore((state) => state.preferences);
 export const useUpdateAccessibilityPreference = () =>
-  useAccessibilityStore((state) => state.updatePreference)
+  useAccessibilityStore((state) => state.updatePreference);
 export const useToggleAccessibilityPreference = () =>
-  useAccessibilityStore((state) => state.togglePreference)
+  useAccessibilityStore((state) => state.togglePreference);
 export const useResetAccessibilityPreferences = () =>
-  useAccessibilityStore((state) => state.resetPreferences)
+  useAccessibilityStore((state) => state.resetPreferences);
 export const useIsVoiceCommandActive = () =>
-  useAccessibilityStore((state) => state.isVoiceCommandActive)
-export const useLastVoiceCommand = () => useAccessibilityStore((state) => state.lastVoiceCommand)
-export const useVoiceCommandError = () => useAccessibilityStore((state) => state.voiceCommandError)
+  useAccessibilityStore((state) => state.isVoiceCommandActive);
+export const useLastVoiceCommand = () => useAccessibilityStore((state) => state.lastVoiceCommand);
+export const useAccessibilityVoiceCommandError = () =>
+  useAccessibilityStore((state) => state.voiceCommandError);

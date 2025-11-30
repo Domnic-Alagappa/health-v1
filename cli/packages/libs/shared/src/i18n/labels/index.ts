@@ -2,5 +2,4 @@
  * Translation labels index
  */
 
-export * from "./en"
-
+export * from "./en";

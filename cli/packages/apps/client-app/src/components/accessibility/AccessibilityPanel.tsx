@@ -3,34 +3,34 @@
  * Main accessibility settings panel
  */
 
-import { Settings } from "lucide-react"
-import { Box } from "@/components/ui/box"
-import { Button } from "@/components/ui/button"
+import { Box } from "@/components/ui/box";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Separator } from "@/components/ui/separator"
-import { Stack } from "@/components/ui/stack"
-import { useDisclosure } from "@/hooks/ui/useDisclosure"
-import { useAccessibilityStore } from "@/stores/accessibilityStore"
-import { ColorBlindModeSelector } from "./ColorBlindModeSelector"
-import { FontSizeSelector } from "./FontSizeSelector"
-import { HighContrastToggle } from "./HighContrastToggle"
-import { VoiceCommandButton } from "./VoiceCommandButton"
-import { VoiceSelector } from "./VoiceSelector"
+} from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
+import { Stack } from "@/components/ui/stack";
+import { useDisclosure } from "@/hooks/ui/useDisclosure";
+import { useAccessibilityStore } from "@/stores/accessibilityStore";
+import { Settings } from "lucide-react";
+import { ColorBlindModeSelector } from "./ColorBlindModeSelector";
+import { FontSizeSelector } from "./FontSizeSelector";
+import { HighContrastToggle } from "./HighContrastToggle";
+import { VoiceCommandButton } from "./VoiceCommandButton";
+import { VoiceSelector } from "./VoiceSelector";
 
 interface AccessibilityPanelProps {
-  showTrigger?: boolean
+  showTrigger?: boolean;
 }
 
 export function AccessibilityPanel({ showTrigger = false }: AccessibilityPanelProps) {
-  const { isOpen, onOpen, onClose, onToggle } = useDisclosure("accessibility-panel")
-  const preferences = useAccessibilityStore((state) => state.preferences)
-  const resetPreferences = useAccessibilityStore((state) => state.resetPreferences)
+  const { isOpen, onClose, onToggle } = useDisclosure("accessibility-panel");
+  const preferences = useAccessibilityStore((state) => state.preferences);
+  const resetPreferences = useAccessibilityStore((state) => state.resetPreferences);
 
   return (
     <Dialog open={isOpen} onOpenChange={onToggle}>
@@ -152,5 +152,5 @@ export function AccessibilityPanel({ showTrigger = false }: AccessibilityPanelPr
         </Stack>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

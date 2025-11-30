@@ -1,32 +1,32 @@
-import { createFileRoute } from "@tanstack/react-router"
-import { Activity, Calendar, FileText, Pill } from "lucide-react"
-import { useEffect, useRef } from "react"
-import { ProtectedRoute } from "@/components/security/ProtectedRoute"
-import { Badge } from "@/components/ui/badge"
-import { Box } from "@/components/ui/box"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { registerComponent } from "@/components/ui/component-registry"
-import { PERMISSIONS } from "@health-v1/shared/constants/permissions"
+import { ProtectedRoute } from "@/components/security/ProtectedRoute";
+import { Badge } from "@/components/ui/badge";
+import { Box } from "@/components/ui/box";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { registerComponent } from "@/components/ui/component-registry";
+import { PERMISSIONS } from "@health-v1/shared/constants/permissions";
+import { createFileRoute } from "@tanstack/react-router";
+import { Activity, Calendar, FileText, Pill } from "lucide-react";
+import { useEffect, useRef } from "react";
 
 export const Route = createFileRoute("/patients/$patientId")({
   component: PatientDetailComponent,
-})
+});
 
 function PatientDetailComponent() {
   return (
     <ProtectedRoute requiredPermission={PERMISSIONS.PATIENTS.VIEW} resource="patients">
       <PatientDetailComponentInner />
     </ProtectedRoute>
-  )
+  );
 }
 
 function PatientDetailComponentInner() {
-  const { patientId } = Route.useParams()
-  const newNoteButtonRef = useRef<HTMLButtonElement>(null)
-  const scheduleButtonRef = useRef<HTMLButtonElement>(null)
-  const viewResultsButtonRef = useRef<HTMLButtonElement>(null)
-  const medicationsButtonRef = useRef<HTMLButtonElement>(null)
+  const { patientId } = Route.useParams();
+  const newNoteButtonRef = useRef<HTMLButtonElement>(null);
+  const scheduleButtonRef = useRef<HTMLButtonElement>(null);
+  const viewResultsButtonRef = useRef<HTMLButtonElement>(null);
+  const medicationsButtonRef = useRef<HTMLButtonElement>(null);
 
   // Mock patient data
   const patient = {
@@ -39,11 +39,11 @@ function PatientDetailComponentInner() {
     status: "Active",
     primaryCare: "Dr. Jane Smith",
     lastVisit: "2024-01-10",
-  }
+  };
 
   // Register patient detail page with component registry for voice commands
   useEffect(() => {
-    const componentId = `patient-detail-${patientId}`
+    const componentId = `patient-detail-${patientId}`;
 
     registerComponent(componentId, {
       ariaLabel: `Patient Detail: ${patient.name}`,
@@ -83,7 +83,7 @@ function PatientDetailComponentInner() {
           label: "New Note",
           voiceCommand: ["new note", "create note", "add note", "write note"],
           action: () => {
-            newNoteButtonRef.current?.click()
+            newNoteButtonRef.current?.click();
           },
           i18nKey: "actions.newNote",
         },
@@ -92,7 +92,7 @@ function PatientDetailComponentInner() {
           label: "Schedule Appointment",
           voiceCommand: ["schedule", "schedule appointment", "book appointment"],
           action: () => {
-            scheduleButtonRef.current?.click()
+            scheduleButtonRef.current?.click();
           },
           i18nKey: "actions.schedule",
         },
@@ -101,7 +101,7 @@ function PatientDetailComponentInner() {
           label: "View Results",
           voiceCommand: ["view results", "show results", "results"],
           action: () => {
-            viewResultsButtonRef.current?.click()
+            viewResultsButtonRef.current?.click();
           },
           i18nKey: "actions.viewResults",
         },
@@ -110,16 +110,16 @@ function PatientDetailComponentInner() {
           label: "Medications",
           voiceCommand: ["medications", "show medications", "view medications"],
           action: () => {
-            medicationsButtonRef.current?.click()
+            medicationsButtonRef.current?.click();
           },
           i18nKey: "actions.medications",
         },
       ],
-    })
+    });
 
     return () => {
       // Component registry cleanup would go here if we had an unregister function
-    }
+    };
   }, [
     patientId,
     patient.name,
@@ -130,7 +130,7 @@ function PatientDetailComponentInner() {
     patient.primaryCare,
     patient.dob,
     patient.lastVisit,
-  ])
+  ]);
 
   return (
     <Box className="space-y-6" role="main" aria-label={`Patient detail for ${patient.name}`}>
@@ -186,7 +186,7 @@ function PatientDetailComponentInner() {
               aria-label="Create new clinical note"
               onClick={() => {
                 // In a real app, this would open a note creation form
-                console.log("New note clicked")
+                console.log("New note clicked");
               }}
             >
               <FileText className="mr-2 h-4 w-4" aria-hidden="true" />
@@ -198,7 +198,7 @@ function PatientDetailComponentInner() {
               className="w-full justify-start"
               aria-label="Schedule appointment"
               onClick={() => {
-                console.log("Schedule clicked")
+                console.log("Schedule clicked");
               }}
             >
               <Calendar className="mr-2 h-4 w-4" aria-hidden="true" />
@@ -210,7 +210,7 @@ function PatientDetailComponentInner() {
               className="w-full justify-start"
               aria-label="View test results"
               onClick={() => {
-                console.log("View results clicked")
+                console.log("View results clicked");
               }}
             >
               <Activity className="mr-2 h-4 w-4" aria-hidden="true" />
@@ -222,7 +222,7 @@ function PatientDetailComponentInner() {
               className="w-full justify-start"
               aria-label="View medications"
               onClick={() => {
-                console.log("Medications clicked")
+                console.log("Medications clicked");
               }}
             >
               <Pill className="mr-2 h-4 w-4" aria-hidden="true" />
@@ -243,5 +243,5 @@ function PatientDetailComponentInner() {
         </CardContent>
       </Card>
     </Box>
-  )
+  );
 }

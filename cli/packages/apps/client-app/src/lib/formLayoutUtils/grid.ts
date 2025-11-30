@@ -1,7 +1,7 @@
-import type { FieldLayout, FormConfig } from "@/components/ui/form-builder"
+import type { FieldLayout, FormConfig } from "@/components/ui/form-builder";
 
 export function getGridColSpan(colSpan?: FieldLayout["colSpan"]): string {
-  if (!colSpan) return ""
+  if (!colSpan) return "";
   const colSpanMap: Record<number, string> = {
     1: "col-span-1",
     2: "col-span-2",
@@ -15,8 +15,8 @@ export function getGridColSpan(colSpan?: FieldLayout["colSpan"]): string {
     10: "col-span-10",
     11: "col-span-11",
     12: "col-span-12",
-  }
-  return colSpanMap[colSpan] || ""
+  };
+  return colSpanMap[colSpan] || "";
 }
 
 export function getGridLayoutClasses(config: FormConfig): string {
@@ -34,8 +34,8 @@ export function getGridLayoutClasses(config: FormConfig): string {
       10: "grid-cols-10",
       11: "grid-cols-11",
       12: "grid-cols-12",
-    }
-    return customColMap[config.gridColumns] || "grid-cols-1"
+    };
+    return customColMap[config.gridColumns] || "grid-cols-1";
   }
 
   const layoutMap: Record<string, string> = {
@@ -43,9 +43,9 @@ export function getGridLayoutClasses(config: FormConfig): string {
     "two-column": "grid-cols-1 md:grid-cols-2",
     "three-column": "grid-cols-1 md:grid-cols-2 lg:grid-cols-3",
     "four-column": "grid-cols-1 md:grid-cols-2 lg:grid-cols-4",
-  }
+  };
 
-  return layoutMap[config.layout || "single"] ?? layoutMap["single"]
+  return layoutMap[config.layout || "single"] ?? layoutMap["single"];
 }
 
 export function getGapClasses(config: FormConfig): string {
@@ -55,6 +55,6 @@ export function getGapClasses(config: FormConfig): string {
     md: "gap-4",
     lg: "gap-6",
     xl: "gap-8",
-  }
-  return gapMap[config.gap || "md"] ?? gapMap["md"]
+  };
+  return gapMap[config.gap || "md"] ?? gapMap["md"];
 }

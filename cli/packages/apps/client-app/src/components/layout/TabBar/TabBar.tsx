@@ -1,62 +1,61 @@
-import { useNavigate } from "@tanstack/react-router"
-import { Menu } from "lucide-react"
-import { memo, useEffect, useMemo, useRef } from "react"
-import { Box } from "@/components/ui/box"
-import { Button } from "@/components/ui/button"
-import { Flex } from "@/components/ui/flex"
-import { TooltipProvider } from "@/components/ui/tooltip"
-import { useTabBarDrag } from "@/hooks/ui/useTabBarDrag"
-import { cn } from "@/lib/utils"
-import { useActiveTabId, useCloseTab, useSetActiveTab, useTabs } from "@/stores/tabStore"
-import { TabDragPreview } from "./TabDragPreview"
-import { TabItem } from "./TabItem"
-import { TabUserMenu } from "./TabUserMenu"
+import { Box } from "@/components/ui/box";
+import { Button } from "@/components/ui/button";
+import { Flex } from "@/components/ui/flex";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { useTabBarDrag } from "@/hooks/ui/useTabBarDrag";
+import { useActiveTabId, useCloseTab, useSetActiveTab, useTabs } from "@/stores/tabStore";
+import { useNavigate } from "@tanstack/react-router";
+import { Menu } from "lucide-react";
+import { memo, useEffect, useMemo, useRef } from "react";
+import { TabDragPreview } from "./TabDragPreview";
+import { TabItem } from "./TabItem";
+import { TabUserMenu } from "./TabUserMenu";
 
 interface TabBarProps {
-  onMobileMenuClick?: () => void
+  onMobileMenuClick?: () => void;
 }
 
-const DASHBOARD_ID = "dashboard"
+const DASHBOARD_ID = "dashboard";
 
 export const TabBar = memo(function TabBar({ onMobileMenuClick }: TabBarProps) {
-  const navigate = useNavigate()
-  const tabs = useTabs()
-  const activeTabId = useActiveTabId()
-  const setActiveTab = useSetActiveTab()
-  const closeTab = useCloseTab()
-  const scrollContainerRef = useRef<HTMLDivElement>(null)
-  const tabBarRef = useRef<HTMLDivElement>(null)
+  const navigate = useNavigate();
+  const tabs = useTabs();
+  const activeTabId = useActiveTabId();
+  const setActiveTab = useSetActiveTab();
+  const closeTab = useCloseTab();
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const tabBarRef = useRef<HTMLDivElement>(null);
 
   // Optimized tab sorting: Dashboard always first, all others in reverse order (newest first)
   // Uses efficient single-pass algorithm
   const sortedTabs = useMemo(() => {
-    if (tabs.length === 0) return []
+    if (tabs.length === 0) return [];
 
     // Single pass to separate dashboard and other tabs
-    let dashboard: (typeof tabs)[0] | undefined
-    const otherTabs: typeof tabs = []
+    let dashboard: (typeof tabs)[0] | undefined;
+    const otherTabs: typeof tabs = [];
 
     for (let i = 0; i < tabs.length; i++) {
-      const tab = tabs[i]
-      if (!tab) continue
+      const tab = tabs[i];
+      if (!tab) continue;
       if (tab.path === "/" || tab.id === DASHBOARD_ID) {
-        dashboard = tab
+        dashboard = tab;
       } else {
-        otherTabs.push(tab)
+        otherTabs.push(tab);
       }
     }
 
     // Reverse other tabs in-place for efficiency (newest first)
     for (let i = 0, j = otherTabs.length - 1; i < j; i++, j--) {
-      const temp = otherTabs[i]
+      const temp = otherTabs[i];
       if (temp && otherTabs[j]) {
-        otherTabs[i] = otherTabs[j]!
-        otherTabs[j] = temp
+        otherTabs[i] = otherTabs[j]!;
+        otherTabs[j] = temp;
       }
     }
 
-    return dashboard ? [dashboard, ...otherTabs] : otherTabs
-  }, [tabs])
+    return dashboard ? [dashboard, ...otherTabs] : otherTabs;
+  }, [tabs]);
 
   const {
     draggedTabId,
@@ -69,15 +68,15 @@ export const TabBar = memo(function TabBar({ onMobileMenuClick }: TabBarProps) {
     sortedTabs,
     scrollContainerRef,
     tabBarRef,
-  })
+  });
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      document.body.style.userSelect = ""
-      document.body.style.cursor = ""
-    }
-  }, [])
+      document.body.style.userSelect = "";
+      document.body.style.cursor = "";
+    };
+  }, []);
 
   return (
     <TooltipProvider delayDuration={200}>
@@ -106,20 +105,20 @@ export const TabBar = memo(function TabBar({ onMobileMenuClick }: TabBarProps) {
           className="items-center gap-1 px-2 py-1 overflow-x-auto scrollbar-hide flex-1 min-w-0"
         >
           {sortedTabs.map((tab) => {
-            if (!tab) return null
-            const isDashboard = tab.id === DASHBOARD_ID || tab.path === "/"
-            const isDragging = draggedTabId === tab.id
+            if (!tab) return null;
+            const isDashboard = tab.id === DASHBOARD_ID || tab.path === "/";
+            const isDragging = draggedTabId === tab.id;
 
             // Calculate actual non-dashboard index for this tab
-            let nonDashboardIndex = -1
+            let nonDashboardIndex = -1;
             if (!isDashboard) {
-              const nonDashboardTabs = sortedTabs.filter((t) => t && t.id !== DASHBOARD_ID)
-              nonDashboardIndex = nonDashboardTabs.findIndex((t) => t && t.id === tab.id)
+              const nonDashboardTabs = sortedTabs.filter((t) => t && t.id !== DASHBOARD_ID);
+              nonDashboardIndex = nonDashboardTabs.findIndex((t) => t && t.id === tab.id);
             }
 
             // Show placeholder space before this tab if dragOverIndex matches
             const showPlaceholderBefore =
-              dragOverIndex !== null && !isDashboard && dragOverIndex === nonDashboardIndex
+              dragOverIndex !== null && !isDashboard && dragOverIndex === nonDashboardIndex;
 
             return (
               <Box key={tab.id} className="relative">
@@ -160,12 +159,12 @@ export const TabBar = memo(function TabBar({ onMobileMenuClick }: TabBarProps) {
                   </Box>
                 )}
               </Box>
-            )
+            );
           })}
           {/* Show placeholder at the end if dragging to last position */}
           {dragOverIndex !== null &&
             (() => {
-              const nonDashboardCount = sortedTabs.filter((t) => t && t.id !== DASHBOARD_ID).length
+              const nonDashboardCount = sortedTabs.filter((t) => t && t.id !== DASHBOARD_ID).length;
               return (
                 dragOverIndex === nonDashboardCount &&
                 draggedTabId && (
@@ -176,7 +175,7 @@ export const TabBar = memo(function TabBar({ onMobileMenuClick }: TabBarProps) {
                     }}
                   />
                 )
-              )
+              );
             })()}
         </Flex>
 
@@ -184,8 +183,8 @@ export const TabBar = memo(function TabBar({ onMobileMenuClick }: TabBarProps) {
         {draggedTabId &&
           dragPosition &&
           (() => {
-            const draggedTab = sortedTabs.find((t) => t && t.id === draggedTabId)
-            if (!draggedTab) return null
+            const draggedTab = sortedTabs.find((t) => t && t.id === draggedTabId);
+            if (!draggedTab) return null;
 
             return (
               <TabDragPreview
@@ -194,12 +193,12 @@ export const TabBar = memo(function TabBar({ onMobileMenuClick }: TabBarProps) {
                 dragOffset={dragOffsetRef.current}
                 isDraggingOutside={isDraggingOutside}
               />
-            )
+            );
           })()}
 
         {/* Fixed User Menu & Avatar at End - Always visible */}
         <TabUserMenu />
       </Box>
     </TooltipProvider>
-  )
-})
+  );
+});

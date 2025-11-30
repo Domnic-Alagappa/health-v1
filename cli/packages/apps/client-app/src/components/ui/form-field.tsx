@@ -1,25 +1,25 @@
-import type * as React from "react"
-import { cn } from "@/lib/utils"
-import { Input } from "./input"
-import { Label } from "./label"
+import { cn } from "@/lib/utils";
+import type * as React from "react";
+import { Input } from "./input";
+import { Label } from "./label";
 
 export interface FormFieldProps {
-  id: string
-  label: string
-  type?: string
-  value?: unknown
-  onChange?: (value: unknown) => void
-  onBlur?: () => void
-  error?: string
-  required?: boolean
-  disabled?: boolean
-  placeholder?: string
-  description?: string
+  id: string;
+  label: string;
+  type?: string;
+  value?: unknown;
+  onChange?: (value: unknown) => void;
+  onBlur?: () => void;
+  error?: string;
+  required?: boolean;
+  disabled?: boolean;
+  placeholder?: string;
+  description?: string;
   help?: {
-    content: string | React.ReactNode
-    title?: string
-  }
-  className?: string
+    content: string | React.ReactNode;
+    title?: string;
+  };
+  className?: string;
 }
 
 /**
@@ -41,7 +41,7 @@ export function FormField({
   help,
   className,
 }: FormFieldProps) {
-  const hasError = Boolean(error)
+  const hasError = Boolean(error);
 
   return (
     <div className={cn("space-y-2", className)}>
@@ -75,5 +75,5 @@ export function FormField({
         </p>
       )}
     </div>
-  )
+  );
 }

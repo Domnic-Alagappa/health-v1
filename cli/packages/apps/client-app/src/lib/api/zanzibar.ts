@@ -3,53 +3,53 @@
  * Relationship-based permission checking and management
  */
 
-import { apiClient } from "./client"
-import type { ApiResponse } from "./types"
+import { apiClient } from "./client";
+import type { ApiResponse } from "./types";
 
 export interface RelationshipTuple {
-  user: string
-  relation: string
-  object: string
+  user: string;
+  relation: string;
+  object: string;
 }
 
 export interface CheckPermissionRequest {
-  userId: string
-  relation: string
-  resourceId: string
+  userId: string;
+  relation: string;
+  resourceId: string;
 }
 
 export interface CheckPermissionResponse {
-  granted: boolean
+  granted: boolean;
 }
 
 export interface BatchCheckRequest {
   checks: Array<{
-    userId: string
-    relation: string
-    resourceId: string
-  }>
+    userId: string;
+    relation: string;
+    resourceId: string;
+  }>;
 }
 
 export interface BatchCheckResponse {
-  results: boolean[]
+  results: boolean[];
 }
 
 export interface CreateRelationshipRequest {
-  userId: string
-  relation: string
-  resourceId: string
+  userId: string;
+  relation: string;
+  resourceId: string;
 }
 
 export interface Relationship {
-  id: string
-  user: string
-  relation: string
-  object: string
-  createdAt: string
+  id: string;
+  user: string;
+  relation: string;
+  object: string;
+  createdAt: string;
 }
 
 export interface ListRelationshipsResponse {
-  relationships: Relationship[]
+  relationships: Relationship[];
 }
 
 /**
@@ -64,13 +64,13 @@ export async function checkPermission(
     userId,
     relation,
     resourceId,
-  } as CheckPermissionRequest)
+  } as CheckPermissionRequest);
 
   if (response.error) {
-    throw new Error(response.error.message)
+    throw new Error(response.error.message);
   }
 
-  return response.data?.granted ?? false
+  return response.data?.granted ?? false;
 }
 
 /**
@@ -81,26 +81,26 @@ export async function batchCheckPermissions(
 ): Promise<boolean[]> {
   const response = await apiClient.post<BatchCheckResponse>("/relationships/batch-check", {
     checks,
-  } as BatchCheckRequest)
+  } as BatchCheckRequest);
 
   if (response.error) {
-    throw new Error(response.error.message)
+    throw new Error(response.error.message);
   }
 
-  return response.data?.results ?? []
+  return response.data?.results ?? [];
 }
 
 /**
  * Get all relationships for a user
  */
 export async function getUserRelationships(userId: string): Promise<Relationship[]> {
-  const response = await apiClient.get<ListRelationshipsResponse>(`/relationships/user/${userId}`)
+  const response = await apiClient.get<ListRelationshipsResponse>(`/relationships/user/${userId}`);
 
   if (response.error) {
-    throw new Error(response.error.message)
+    throw new Error(response.error.message);
   }
 
-  return response.data?.relationships ?? []
+  return response.data?.relationships ?? [];
 }
 
 /**
@@ -115,26 +115,26 @@ export async function createRelationship(
     userId,
     relation,
     resourceId,
-  } as CreateRelationshipRequest)
+  } as CreateRelationshipRequest);
 
   if (response.error) {
-    throw new Error(response.error.message)
+    throw new Error(response.error.message);
   }
 
   if (!response.data) {
-    throw new Error("No data returned from create relationship")
+    throw new Error("No data returned from create relationship");
   }
 
-  return response.data
+  return response.data;
 }
 
 /**
  * Delete a relationship
  */
 export async function deleteRelationship(relationshipId: string): Promise<void> {
-  const response = await apiClient.delete(`/relationships/${relationshipId}`)
+  const response = await apiClient.delete(`/relationships/${relationshipId}`);
 
   if (response.error) {
-    throw new Error(response.error.message)
+    throw new Error(response.error.message);
   }
 }

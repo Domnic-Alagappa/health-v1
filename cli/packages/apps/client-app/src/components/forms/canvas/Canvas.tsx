@@ -1,35 +1,35 @@
-import { Box } from "@/components/ui/box"
-import { Card } from "@/components/ui/card"
-import { cn } from "@/lib/utils"
-import { CanvasField } from "./CanvasField"
-import { CanvasGrid } from "./CanvasGrid"
-import type { CanvasField as CanvasFieldType, CanvasGroup, CanvasSection } from "./types"
+import { Box } from "@/components/ui/box";
+import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+import { CanvasField } from "./CanvasField";
+import { CanvasGrid } from "./CanvasGrid";
+import type { CanvasField as CanvasFieldType, CanvasGroup, CanvasSection } from "./types";
 
 interface CanvasProps {
-  canvasRef: React.RefObject<HTMLDivElement>
-  canvasWidth: number
-  canvasHeight: number
-  showGrid: boolean
-  gridSize: number
-  fields: CanvasFieldType[]
-  groups: CanvasGroup[]
-  sections: CanvasSection[]
-  selectedField: string | null
-  selectedGroup: string | null
-  selectedSection: string | null
-  draggedField: string | null
-  draggedGroup: string | null
-  draggedSection: string | null
-  onFieldSelect: (fieldId: string) => void
-  onGroupSelect: (groupId: string) => void
-  onSectionSelect: (sectionId: string) => void
-  onFieldDragStart: (e: React.MouseEvent, fieldId: string) => void
-  onGroupDragStart: (e: React.MouseEvent, groupId: string) => void
-  onSectionDragStart: (e: React.MouseEvent, sectionId: string) => void
-  onFieldResizeStart: (e: React.MouseEvent, fieldId: string) => void
-  onGroupResizeStart: (e: React.MouseEvent, groupId: string) => void
-  onSectionResizeStart: (e: React.MouseEvent, sectionId: string) => void
-  onCanvasClick: () => void
+  canvasRef: React.RefObject<HTMLDivElement | null>;
+  canvasWidth: number;
+  canvasHeight: number;
+  showGrid: boolean;
+  gridSize: number;
+  fields: CanvasFieldType[];
+  groups: CanvasGroup[];
+  sections: CanvasSection[];
+  selectedField: string | null;
+  selectedGroup: string | null;
+  selectedSection: string | null;
+  draggedField: string | null;
+  draggedGroup: string | null;
+  draggedSection: string | null;
+  onFieldSelect: (fieldId: string) => void;
+  onGroupSelect: (groupId: string) => void;
+  onSectionSelect: (sectionId: string) => void;
+  onFieldDragStart: (e: React.MouseEvent, fieldId: string) => void;
+  onGroupDragStart: (e: React.MouseEvent, groupId: string) => void;
+  onSectionDragStart: (e: React.MouseEvent, sectionId: string) => void;
+  onFieldResizeStart: (e: React.MouseEvent, fieldId: string) => void;
+  onGroupResizeStart: (e: React.MouseEvent, groupId: string) => void;
+  onSectionResizeStart: (e: React.MouseEvent, sectionId: string) => void;
+  onCanvasClick: () => void;
 }
 
 export function Canvas({
@@ -87,8 +87,8 @@ export function Canvas({
             height: `${section.height}px`,
           }}
           onClick={(e) => {
-            e.stopPropagation()
-            onSectionSelect(section.id)
+            e.stopPropagation();
+            onSectionSelect(section.id);
           }}
           onMouseDown={(e) => onSectionDragStart(e, section.id)}
         >
@@ -99,8 +99,8 @@ export function Canvas({
             <Box
               className="absolute -bottom-1 -right-1 w-4 h-4 bg-primary border-2 border-white"
               onMouseDown={(e) => {
-                e.stopPropagation()
-                onSectionResizeStart(e, section.id)
+                e.stopPropagation();
+                onSectionResizeStart(e, section.id);
               }}
             />
           )}
@@ -124,8 +124,8 @@ export function Canvas({
             height: `${group.height}px`,
           }}
           onClick={(e) => {
-            e.stopPropagation()
-            onGroupSelect(group.id)
+            e.stopPropagation();
+            onGroupSelect(group.id);
           }}
           onMouseDown={(e) => onGroupDragStart(e, group.id)}
         >
@@ -139,29 +139,29 @@ export function Canvas({
             className="p-2 overflow-auto"
             style={{ height: `${group.height - 60}px` }}
             onDrop={(e) => {
-              e.preventDefault()
-              e.stopPropagation()
+              e.preventDefault();
+              e.stopPropagation();
             }}
             onDragOver={(e) => {
-              e.preventDefault()
-              e.stopPropagation()
+              e.preventDefault();
+              e.stopPropagation();
             }}
           >
             {group.fields.map((fieldId) => {
-              const field = fields.find((f) => f.id === fieldId)
-              if (!field) return null
+              const field = fields.find((f) => f.id === fieldId);
+              if (!field) return null;
               return (
                 <Card
                   key={fieldId}
                   className="mb-2 p-2 border border-[#E1E4E8] rounded-xs bg-background cursor-pointer hover:bg-muted"
                   onClick={(e) => {
-                    e.stopPropagation()
-                    onFieldSelect(fieldId)
+                    e.stopPropagation();
+                    onFieldSelect(fieldId);
                   }}
                 >
                   <Box className="text-xs font-medium">{field.label}</Box>
                 </Card>
-              )
+              );
             })}
             {group.fields.length === 0 && (
               <Box className="text-xs text-muted-foreground text-center py-4 border-2 border-dashed border-[#E1E4E8] rounded-xs">
@@ -173,8 +173,8 @@ export function Canvas({
             <Box
               className="absolute -bottom-1 -right-1 w-4 h-4 bg-primary border-2 border-white"
               onMouseDown={(e) => {
-                e.stopPropagation()
-                onGroupResizeStart(e, group.id)
+                e.stopPropagation();
+                onGroupResizeStart(e, group.id);
               }}
             />
           )}
@@ -197,5 +197,5 @@ export function Canvas({
 
       <Box className="absolute inset-0" onClick={onCanvasClick} />
     </Box>
-  )
+  );
 }

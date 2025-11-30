@@ -3,7 +3,7 @@
  * All API request and response types used across the application
  */
 
-import type { User } from "../types/user"
+import type { User } from "../types/user";
 
 export interface ApiError {
   message: string;
@@ -40,13 +40,8 @@ export interface RefreshTokenResponse {
   expiresIn: number;
 }
 
-export interface UserInfo {
-  sub: string;
-  email: string;
-  name?: string;
-  role?: string;
-  permissions?: string[];
-}
+// UserInfo is exported from types/user, not here
+// This was causing duplicate export errors
 
 // Setup types
 export interface SetupRequest {

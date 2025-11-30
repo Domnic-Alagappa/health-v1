@@ -3,18 +3,18 @@
  * Hook for contextual masking based on user role
  */
 
-import { useCallback } from "react"
 import {
-  contextualMask,
   type MaskingLevel,
+  contextualMask,
   maskCreditCard,
   maskEmail,
   maskMRN,
   maskPhone,
   maskSSN,
-} from "@/lib/api/masking"
-import { SECURITY_CONFIG } from "@health-v1/shared/constants/security"
-import { useAuth } from "@/stores/authStore"
+} from "@/lib/api/masking";
+import { useAuth } from "@/stores/authStore";
+import { SECURITY_CONFIG } from "@health-v1/shared/constants/security";
+import { useCallback } from "react";
 
 /**
  * Get masking level for a specific field and role
@@ -22,50 +22,50 @@ import { useAuth } from "@/stores/authStore"
 function getMaskingLevel(field: string, userRole: string): MaskingLevel {
   switch (userRole.toLowerCase()) {
     case "admin":
-      return "partial"
+      return "partial";
     case "doctor":
-      return "partial"
+      return "partial";
     case "nurse":
-      return "partial"
+      return "partial";
     case "receptionist":
-      return "complete"
+      return "complete";
     default:
-      return "complete"
+      return "complete";
   }
 }
 
 export function useMasking() {
-  const { role } = useAuth()
-  const userRole = role || "receptionist" // Default to most restrictive
+  const { role } = useAuth();
+  const userRole = role || "receptionist"; // Default to most restrictive
 
   const mask = useCallback(
     (value: string, field: string, level?: MaskingLevel) => {
-      if (!value) return ""
+      if (!value) return "";
 
       // Use provided level or get contextual level
-      const maskingLevel = level || getMaskingLevel(field, userRole)
+      const maskingLevel = level || getMaskingLevel(field, userRole);
 
       switch (field.toLowerCase()) {
         case "ssn":
-          return maskSSN(value, maskingLevel)
+          return maskSSN(value, maskingLevel);
         case "email":
-          return maskEmail(value, maskingLevel)
+          return maskEmail(value, maskingLevel);
         case "phone":
-          return maskPhone(value, maskingLevel)
+          return maskPhone(value, maskingLevel);
         case "mrn":
-          return maskMRN(value, maskingLevel)
+          return maskMRN(value, maskingLevel);
         case "creditcard":
         case "credit_card":
-          return maskCreditCard(value)
+          return maskCreditCard(value);
         default:
-          return contextualMask(value, field, userRole)
+          return contextualMask(value, field, userRole);
       }
     },
     [userRole]
-  )
+  );
 
   return {
     mask,
     userRole,
-  }
+  };
 }

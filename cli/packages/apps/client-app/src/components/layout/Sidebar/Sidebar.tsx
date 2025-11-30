@@ -1,18 +1,16 @@
-import { memo } from "react"
-import { Box } from "@/components/ui/box"
-import { Stack } from "@/components/ui/stack"
-import { cn } from "@/lib/utils"
-import { useSidebarExpandedItems, useToggleSidebarExpand } from "@/stores/uiStore"
-import { SidebarCollapseButton } from "./SidebarCollapseButton"
-import { SidebarFooter } from "./SidebarFooter"
-import { SidebarHeader } from "./SidebarHeader"
-import { type SidebarItem, SidebarNavigation } from "./SidebarNavigation"
+import { cn } from "@/lib/utils";
+import { useSidebarExpandedItems, useToggleSidebarExpand } from "@/stores/uiStore";
+import { memo } from "react";
+import { SidebarCollapseButton } from "./SidebarCollapseButton";
+import { SidebarFooter } from "./SidebarFooter";
+import { SidebarHeader } from "./SidebarHeader";
+import { type SidebarItem, SidebarNavigation } from "./SidebarNavigation";
 
 interface SidebarProps {
-  isCollapsed: boolean
-  onToggle: () => void
-  items: SidebarItem[]
-  onNavAction?: (actionId: string, navPath: string) => void
+  isCollapsed: boolean;
+  onToggle: () => void;
+  items: SidebarItem[];
+  onNavAction?: (actionId: string, navPath: string) => void;
 }
 
 export const Sidebar = memo(function Sidebar({
@@ -21,16 +19,16 @@ export const Sidebar = memo(function Sidebar({
   items,
   onNavAction,
 }: SidebarProps) {
-  const expandedItems = useSidebarExpandedItems()
-  const toggleExpand = useToggleSidebarExpand()
+  const expandedItems = useSidebarExpandedItems();
+  const toggleExpand = useToggleSidebarExpand();
 
   const handleNavAction = (actionId: string, navPath: string) => {
     if (onNavAction) {
-      onNavAction(actionId, navPath)
+      onNavAction(actionId, navPath);
     } else {
-      console.log(`Nav action: ${actionId} for path: ${navPath}`)
+      console.log(`Nav action: ${actionId} for path: ${navPath}`);
     }
-  }
+  };
 
   return (
     <aside
@@ -55,5 +53,5 @@ export const Sidebar = memo(function Sidebar({
 
       <SidebarFooter isCollapsed={isCollapsed} />
     </aside>
-  )
-})
+  );
+});

@@ -3,51 +3,51 @@
  * Display available keyboard shortcuts
  */
 
-import { Keyboard } from "lucide-react"
-import { Box } from "@/components/ui/box"
-import { Button } from "@/components/ui/button"
+import { Box } from "@/components/ui/box";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Stack } from "@/components/ui/stack"
-import { useDisclosure } from "@/hooks/ui/useDisclosure"
-import { COMMON_SHORTCUTS, keyboardShortcutManager } from "@/lib/keyboard/shortcuts"
+} from "@/components/ui/dialog";
+import { Stack } from "@/components/ui/stack";
+import { useDisclosure } from "@/hooks/ui/useDisclosure";
+import { keyboardShortcutManager } from "@/lib/keyboard/shortcuts";
+import { Keyboard } from "lucide-react";
 
 interface KeyboardShortcutsHelpProps {
-  showTrigger?: boolean
+  showTrigger?: boolean;
 }
 
 export function KeyboardShortcutsHelp({ showTrigger = false }: KeyboardShortcutsHelpProps) {
-  const { isOpen, onOpen, onClose, onToggle } = useDisclosure("keyboard-shortcuts-help")
-  const shortcuts = keyboardShortcutManager.getAllShortcuts()
+  const { isOpen, onToggle } = useDisclosure("keyboard-shortcuts-help");
+  const shortcuts = keyboardShortcutManager.getAllShortcuts();
 
   const formatKeys = (keys: string[]): string => {
     return keys
       .map((k) => {
-        if (k.toLowerCase() === "ctrl") return "Ctrl"
-        if (k.toLowerCase() === "alt") return "Alt"
-        if (k.toLowerCase() === "shift") return "Shift"
-        if (k.toLowerCase() === "meta") return "Cmd"
-        return k
+        if (k.toLowerCase() === "ctrl") return "Ctrl";
+        if (k.toLowerCase() === "alt") return "Alt";
+        if (k.toLowerCase() === "shift") return "Shift";
+        if (k.toLowerCase() === "meta") return "Cmd";
+        return k;
       })
-      .join(" + ")
-  }
+      .join(" + ");
+  };
 
   const groupedShortcuts = shortcuts.reduce(
     (acc, shortcut) => {
-      const category = shortcut.category || "General"
+      const category = shortcut.category || "General";
       if (!acc[category]) {
-        acc[category] = []
+        acc[category] = [];
       }
-      acc[category].push(shortcut)
-      return acc
+      acc[category].push(shortcut);
+      return acc;
     },
     {} as Record<string, typeof shortcuts>
-  )
+  );
 
   return (
     <Dialog open={isOpen} onOpenChange={onToggle}>
@@ -90,5 +90,5 @@ export function KeyboardShortcutsHelp({ showTrigger = false }: KeyboardShortcuts
         </Stack>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

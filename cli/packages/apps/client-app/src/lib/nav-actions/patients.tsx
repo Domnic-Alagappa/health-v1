@@ -1,5 +1,5 @@
-import { FileText, Plus, RefreshCw, Search } from "lucide-react"
-import type { NavAction } from "./types"
+import { FileText, Plus, RefreshCw, Search } from "lucide-react";
+import type { NavAction } from "./types";
 
 export function getPatientsActions(
   path: string,
@@ -30,5 +30,5 @@ export function getPatientsActions(
       icon: <RefreshCw className="h-4 w-4" />,
       onClick: () => onAction("refresh-patients", path),
     },
-  ]
+  ];
 }

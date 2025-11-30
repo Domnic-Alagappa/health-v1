@@ -1,4 +1,10 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router"
+import { Badge } from "@/components/ui/badge";
+import { Box } from "@/components/ui/box";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Flex } from "@/components/ui/flex";
+import { Stack } from "@/components/ui/stack";
+import { useOpenTab } from "@/stores/tabStore";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
   Activity,
   AlertCircle,
@@ -7,25 +13,19 @@ import {
   Clock,
   FileText,
   Users,
-} from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { Box } from "@/components/ui/box"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Flex } from "@/components/ui/flex"
-import { Stack } from "@/components/ui/stack"
-import { useOpenTab } from "@/stores/tabStore"
+} from "lucide-react";
 
 export const Route = createFileRoute("/")({
   component: DashboardComponent,
-})
+});
 
 function DashboardComponent() {
-  const navigate = useNavigate()
-  const openTab = useOpenTab()
+  const navigate = useNavigate();
+  const openTab = useOpenTab();
 
   const handleOpenModule = (path: string, label: string, icon: React.ReactNode) => {
     // Forms and multi-step processes allow duplicates (paths ending with /new, /create, etc.)
-    const isFormPath = path.includes("/new") || path.includes("/create") || path.includes("/edit")
+    const isFormPath = path.includes("/new") || path.includes("/create") || path.includes("/edit");
     openTab(
       {
         label,
@@ -35,8 +35,8 @@ function DashboardComponent() {
         allowDuplicate: isFormPath, // Allow multiple instances of forms
       },
       (path) => navigate({ to: path as "/" | (string & {}) })
-    )
-  }
+    );
+  };
   const stats = [
     {
       title: "Active Patients",
@@ -67,7 +67,7 @@ function DashboardComponent() {
       icon: Calendar,
       link: "/scheduling",
     },
-  ]
+  ];
 
   const quickActions = [
     {
@@ -98,7 +98,7 @@ function DashboardComponent() {
       link: "/scheduling/new",
       color: "secondary",
     },
-  ]
+  ];
 
   return (
     <Stack spacing="lg">
@@ -223,5 +223,5 @@ function DashboardComponent() {
         </Card>
       </Box>
     </Stack>
-  )
+  );
 }

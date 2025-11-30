@@ -1,30 +1,25 @@
-import { Box } from "@/components/ui/box"
-import { Flex } from "@/components/ui/flex"
-import type { FieldLayout, FormField } from "@/components/ui/form-builder"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Stack } from "@/components/ui/stack"
-import { cn } from "@/lib/utils"
+import { Flex } from "@/components/ui/flex";
+import type { FieldLayout, FormField } from "@/components/ui/form-builder";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Stack } from "@/components/ui/stack";
+import { cn } from "@/lib/utils";
 
 interface FormFieldRendererProps {
-  field: FormField
-  value: unknown
-  error?: string
-  hasError: boolean
-  touched: boolean
-  layout: FieldLayout
-  onChange: (value: unknown) => void
-  onBlur: () => void
-  getFieldSizeClasses: (size?: FieldLayout["size"]) => string
-  getWidthClasses: (width?: FieldLayout["width"]) => string
+  field: FormField;
+  value: unknown;
+  hasError: boolean;
+  layout: FieldLayout;
+  onChange: (value: unknown) => void;
+  onBlur: () => void;
+  getFieldSizeClasses: (size?: FieldLayout["size"]) => string;
+  getWidthClasses: (width?: FieldLayout["width"]) => string;
 }
 
 export function FormFieldRenderer({
   field,
   value,
-  error,
   hasError,
-  touched,
   layout,
   onChange,
   onBlur,
@@ -38,12 +33,12 @@ export function FormFieldRenderer({
     onChange: (
       e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
     ) => {
-      onChange(e.target.value)
+      onChange(e.target.value);
     },
     onBlur,
     disabled: field.disabled,
     readOnly: field.readonly,
-    "aria-invalid": hasError ? "true" : "false",
+    "aria-invalid": hasError,
     "aria-describedby": hasError ? `${field.id}-error` : undefined,
     className: cn(
       field.className,
@@ -52,7 +47,7 @@ export function FormFieldRenderer({
       getWidthClasses(layout.width),
       "px-4"
     ),
-  }
+  };
 
   if (field.type === "textarea") {
     return (
@@ -75,7 +70,7 @@ export function FormFieldRenderer({
           field.className
         )}
       />
-    )
+    );
   }
 
   if (field.type === "select" || field.type === "multiselect") {
@@ -98,7 +93,7 @@ export function FormFieldRenderer({
           </option>
         ))}
       </select>
-    )
+    );
   }
 
   if (field.type === "checkbox") {
@@ -121,7 +116,7 @@ export function FormFieldRenderer({
           {field.description || field.label}
         </Label>
       </Flex>
-    )
+    );
   }
 
   if (field.type === "radio" && field.options) {
@@ -149,7 +144,7 @@ export function FormFieldRenderer({
           </Flex>
         ))}
       </Stack>
-    )
+    );
   }
 
   return (
@@ -164,5 +159,5 @@ export function FormFieldRenderer({
         getWidthClasses(layout.width)
       )}
     />
-  )
+  );
 }

@@ -1,5 +1,35 @@
-import { createRootRoute, Outlet, redirect, useLocation, useNavigate } from "@tanstack/react-router"
-import { TanStackRouterDevtools } from "@tanstack/react-router-devtools"
+import { ActionRibbon } from "@/components/ActionRibbon";
+import { AccessibilityPanel } from "@/components/accessibility/AccessibilityPanel";
+import { KeyboardShortcutsHelp } from "@/components/accessibility/KeyboardShortcutsHelp";
+import { VoiceCommandChatbox } from "@/components/accessibility/VoiceCommandChatbox";
+import { VoiceCommandFAB } from "@/components/accessibility/VoiceCommandFAB";
+import { VoiceCommandFeedback } from "@/components/accessibility/VoiceCommandFeedback";
+import { VoiceCommandIndicator } from "@/components/accessibility/VoiceCommandIndicator";
+import {
+  CenteredLayout,
+  CleanLayout,
+  FullLayout,
+  MinimalLayout,
+} from "@/components/layout/Layouts";
+import { Box } from "@/components/ui/box";
+import { Container } from "@/components/ui/container";
+import { Flex } from "@/components/ui/flex";
+import { useDisclosure } from "@/hooks/ui/useDisclosure";
+import { SkipToMainContent, initializeAccessibility } from "@/lib/accessibility";
+import { checkSetupStatus } from "@/lib/api/setup";
+import { getLayoutForRoute } from "@/lib/layouts/routeLayouts";
+import { useAuthStore } from "@/stores/authStore";
+import { useActiveTabId, useOpenTab, useSetActiveTab, useTabs } from "@/stores/tabStore";
+import { useSetSidebarCollapsed, useSidebarCollapsed } from "@/stores/uiStore";
+import { PERMISSIONS, type Permission } from "@health-v1/shared/constants/permissions";
+import {
+  Outlet,
+  createRootRoute,
+  redirect,
+  useLocation,
+  useNavigate,
+} from "@tanstack/react-router";
+import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import {
   Activity,
   BarChart3,
@@ -12,77 +42,58 @@ import {
   Settings,
   Stethoscope,
   Users,
-} from "lucide-react"
-import { useCallback, useEffect, useMemo } from "react"
-import { ActionRibbon } from "@/components/ActionRibbon"
-import { AccessibilityPanel } from "@/components/accessibility/AccessibilityPanel"
-import { KeyboardShortcutsHelp } from "@/components/accessibility/KeyboardShortcutsHelp"
-import { VoiceCommandChatbox } from "@/components/accessibility/VoiceCommandChatbox"
-import { VoiceCommandFAB } from "@/components/accessibility/VoiceCommandFAB"
-import { VoiceCommandFeedback } from "@/components/accessibility/VoiceCommandFeedback"
-import { VoiceCommandIndicator } from "@/components/accessibility/VoiceCommandIndicator"
-import { CenteredLayout, CleanLayout, FullLayout, MinimalLayout } from "@/components/layout/Layouts"
-import { Box } from "@/components/ui/box"
-import { Container } from "@/components/ui/container"
-import { Flex } from "@/components/ui/flex"
-import { useDisclosure } from "@/hooks/ui/useDisclosure"
-import { initializeAccessibility, SkipToMainContent } from "@/lib/accessibility"
-import { checkSetupStatus } from "@/lib/api/setup"
-import { PERMISSIONS, type Permission } from "@health-v1/shared/constants/permissions"
-import { getLayoutForRoute } from "@/lib/layouts/routeLayouts"
-import { useAuthStore } from "@/stores/authStore"
-import { useActiveTabId, useOpenTab, useSetActiveTab, useTabs } from "@/stores/tabStore"
-import { useSetSidebarCollapsed, useSidebarCollapsed } from "@/stores/uiStore"
+} from "lucide-react";
+import { useCallback, useEffect, useMemo } from "react";
 
 export const Route = createRootRoute({
   beforeLoad: async ({ location }) => {
     // Public routes that don't require authentication or setup
-    const publicRoutes = ["/login", "/access-denied", "/setup"]
-    const isPublicRoute = publicRoutes.includes(location.pathname)
+    const publicRoutes = ["/login", "/access-denied", "/setup"];
+    const isPublicRoute = publicRoutes.includes(location.pathname);
 
     // Check setup status first (before authentication check)
     try {
-      const setupStatus = await checkSetupStatus()
+      const setupStatus = await checkSetupStatus();
       if (!setupStatus.setup_completed && location.pathname !== "/setup") {
         // Setup not completed, redirect to setup page
-        throw redirect({ to: "/setup" })
+        throw redirect({ to: "/setup" });
       }
       if (setupStatus.setup_completed && location.pathname === "/setup") {
         // Setup already completed, redirect to login
-        throw redirect({ to: "/login" })
+        throw redirect({ to: "/login" });
       }
     } catch (err) {
       // If it's a redirect, re-throw it
       if (err && typeof err === "object" && "to" in err) {
-        throw err
+        throw err;
       }
       // If API is not available, allow access (for development)
-      console.warn("Could not check setup status:", err)
+      console.warn("Could not check setup status:", err);
     }
 
     if (isPublicRoute) {
-      return
+      return;
     }
 
     // Check authentication
-    const authStore = useAuthStore.getState()
+    const authStore = useAuthStore.getState();
 
     // If no token in store, try to restore from sessionStorage
     if (!authStore.accessToken) {
-      await authStore.checkAuth()
+      await authStore.checkAuth();
     }
 
     // If still not authenticated, redirect to login
     if (!authStore.isAuthenticated) {
-      const redirectTo = location.pathname !== "/" ? location.pathname : undefined
+      const redirectTo = location.pathname !== "/" ? location.pathname : undefined;
       throw redirect({
         to: "/login",
         search: redirectTo ? { redirect: redirectTo } : undefined,
-      })
+      });
     }
   },
   component: RootComponent,
-})
+});
 
 // Helper function to get icon for a path
 function getIconForPath(path: string): React.ReactNode {
@@ -98,87 +109,87 @@ function getIconForPath(path: string): React.ReactNode {
     "/analytics": <BarChart3 className="h-4 w-4" />,
     "/form-builder": <FileEdit className="h-4 w-4" />,
     "/settings": <Settings className="h-4 w-4" />,
-  }
+  };
 
   // Find matching icon by path prefix
   for (const [key, icon] of Object.entries(iconMap)) {
     if (path.startsWith(key)) {
-      return icon
+      return icon;
     }
   }
 
-  return <FileText className="h-4 w-4" /> // Default icon
+  return <FileText className="h-4 w-4" />; // Default icon
 }
 
 function RootComponentInner() {
-  const location = useLocation()
-  const navigate = useNavigate()
-  const tabs = useTabs()
-  const activeTabId = useActiveTabId()
-  const openTab = useOpenTab()
-  const setActiveTab = useSetActiveTab()
-  const isSidebarCollapsed = useSidebarCollapsed()
-  const setIsSidebarCollapsed = useSetSidebarCollapsed()
+  const location = useLocation();
+  const navigate = useNavigate();
+  const tabs = useTabs();
+  const activeTabId = useActiveTabId();
+  const openTab = useOpenTab();
+  const setActiveTab = useSetActiveTab();
+  const isSidebarCollapsed = useSidebarCollapsed();
+  const setIsSidebarCollapsed = useSetSidebarCollapsed();
   const {
     isOpen: isMobileSidebarOpen,
     onClose: onMobileSidebarClose,
     onToggle: onMobileSidebarToggle,
-  } = useDisclosure("mobile-sidebar")
+  } = useDisclosure("mobile-sidebar");
 
   // Initialize accessibility features on mount
   useEffect(() => {
-    initializeAccessibility()
-  }, [])
+    initializeAccessibility();
+  }, []);
 
   // Initialize auth on app startup - check for existing tokens
   useEffect(() => {
-    const authStore = useAuthStore.getState()
+    const authStore = useAuthStore.getState();
     // Only check if we don't already have auth state
     if (!authStore.isAuthenticated && !authStore.isLoading) {
       authStore.checkAuth().catch((error) => {
-        console.error("Auth initialization error:", error)
-      })
+        console.error("Auth initialization error:", error);
+      });
     }
-  }, [])
+  }, []);
 
   // Check for standalone tab on mount (when window is opened from drag-out)
   useEffect(() => {
-    const urlParams = new URLSearchParams(location.search)
-    const tabToken = urlParams.get("_tab")
+    const urlParams = new URLSearchParams(location.search);
+    const tabToken = urlParams.get("_tab");
 
     if (tabToken) {
       try {
         // Retrieve tab data from sessionStorage using token (single-use, secure)
-        const tabDataKey = `_tab_${tabToken}`
-        const expiresKey = `_tab_${tabToken}_expires`
+        const tabDataKey = `_tab_${tabToken}`;
+        const expiresKey = `_tab_${tabToken}_expires`;
 
-        const tabDataStr = sessionStorage.getItem(tabDataKey)
-        const expiresStr = sessionStorage.getItem(expiresKey)
+        const tabDataStr = sessionStorage.getItem(tabDataKey);
+        const expiresStr = sessionStorage.getItem(expiresKey);
 
         if (!tabDataStr) {
           // Token not found or already used - clean up and exit
           if (expiresStr) {
-            sessionStorage.removeItem(expiresKey)
+            sessionStorage.removeItem(expiresKey);
           }
           // Clean up URL param
-          const newUrl = new URL(window.location.href)
-          newUrl.searchParams.delete("_tab")
-          window.history.replaceState({}, "", newUrl.toString())
-          return
+          const newUrl = new URL(window.location.href);
+          newUrl.searchParams.delete("_tab");
+          window.history.replaceState({}, "", newUrl.toString());
+          return;
         }
 
         // Check expiration
-        if (expiresStr && Date.now() > parseInt(expiresStr, 10)) {
+        if (expiresStr && Date.now() > Number.parseInt(expiresStr, 10)) {
           // Token expired - clean up
-          sessionStorage.removeItem(tabDataKey)
-          sessionStorage.removeItem(expiresKey)
-          const newUrl = new URL(window.location.href)
-          newUrl.searchParams.delete("_tab")
-          window.history.replaceState({}, "", newUrl.toString())
-          return
+          sessionStorage.removeItem(tabDataKey);
+          sessionStorage.removeItem(expiresKey);
+          const newUrl = new URL(window.location.href);
+          newUrl.searchParams.delete("_tab");
+          window.history.replaceState({}, "", newUrl.toString());
+          return;
         }
 
-        const tabData = JSON.parse(tabDataStr)
+        const tabData = JSON.parse(tabDataStr);
 
         // Open the tab automatically with the correct icon
         openTab(
@@ -190,47 +201,47 @@ function RootComponentInner() {
             allowDuplicate: tabData.allowDuplicate || false,
           },
           (path) => navigate({ to: path as "/" | (string & {}) })
-        )
+        );
 
         // Immediately delete the token (single-use security measure)
         // This prevents token reuse if URL is shared or bookmarked
-        sessionStorage.removeItem(tabDataKey)
-        sessionStorage.removeItem(expiresKey)
+        sessionStorage.removeItem(tabDataKey);
+        sessionStorage.removeItem(expiresKey);
 
         // Clean up URL param without reload (for cleaner URL and security)
-        const newUrl = new URL(window.location.href)
-        newUrl.searchParams.delete("_tab")
-        window.history.replaceState({}, "", newUrl.toString())
+        const newUrl = new URL(window.location.href);
+        newUrl.searchParams.delete("_tab");
+        window.history.replaceState({}, "", newUrl.toString());
       } catch (err) {
-        console.error("Error restoring standalone tab:", err)
+        console.error("Error restoring standalone tab:", err);
         // On error, try to clean up
         try {
-          sessionStorage.removeItem(`_tab_${tabToken}`)
-          sessionStorage.removeItem(`_tab_${tabToken}_expires`)
+          sessionStorage.removeItem(`_tab_${tabToken}`);
+          sessionStorage.removeItem(`_tab_${tabToken}_expires`);
         } catch (_cleanupErr) {
           // Ignore cleanup errors
         }
       }
     }
-  }, [location.search, location.pathname, openTab, navigate]) // Run when location changes or on mount
+  }, [location.search, location.pathname, openTab, navigate]); // Run when location changes or on mount
 
   // Sync active tab with router location when navigating via browser back/forward
   useEffect(() => {
-    const currentTab = tabs.find((t) => t.path === location.pathname)
+    const currentTab = tabs.find((t) => t.path === location.pathname);
     if (currentTab && currentTab.id !== activeTabId) {
-      setActiveTab(currentTab.id, (path) => navigate({ to: path as "/" | (string & {}) }))
+      setActiveTab(currentTab.id, (path) => navigate({ to: path as "/" | (string & {}) }));
     }
-  }, [location.pathname, tabs, activeTabId, setActiveTab, navigate])
+  }, [location.pathname, tabs, activeTabId, setActiveTab, navigate]);
 
   // Update browser tab title when active tab changes
   useEffect(() => {
-    const activeTab = tabs.find((t) => t.id === activeTabId)
+    const activeTab = tabs.find((t) => t.id === activeTabId);
     if (activeTab) {
-      document.title = `${activeTab.label} - Salk Commons Health`
+      document.title = `${activeTab.label} - Salk Commons Health`;
     } else {
-      document.title = "Salk Commons Health"
+      document.title = "Salk Commons Health";
     }
-  }, [tabs, activeTabId])
+  }, [tabs, activeTabId]);
 
   const handleNavClick = useCallback(
     (path: string, label: string, icon: React.ReactNode) => {
@@ -247,8 +258,8 @@ function RootComponentInner() {
         "/analytics": PERMISSIONS.ANALYTICS.VIEW,
         "/form-builder": undefined,
         "/settings": PERMISSIONS.SETTINGS.VIEW,
-      }
-      const requiredPermission = routePermissionMap[path]
+      };
+      const requiredPermission = routePermissionMap[path];
 
       openTab(
         {
@@ -259,23 +270,23 @@ function RootComponentInner() {
           requiredPermission,
         },
         (path) => navigate({ to: path as "/" | (string & {}) })
-      )
+      );
       // Close mobile sidebar after navigation
-      onMobileSidebarClose()
+      onMobileSidebarClose();
     },
     [openTab, navigate, onMobileSidebarClose]
-  )
+  );
 
   const handleTabAction = (actionId: string, tabPath: string) => {
     // Handle different actions
     switch (actionId) {
       case "refresh":
         // Reload the current tab
-        window.location.reload()
-        break
+        window.location.reload();
+        break;
       case "duplicate": {
         // Open the same path in a new tab
-        const tabToDuplicate = tabs.find((t) => t.path === tabPath)
+        const tabToDuplicate = tabs.find((t) => t.path === tabPath);
         if (tabToDuplicate) {
           openTab(
             {
@@ -285,9 +296,9 @@ function RootComponentInner() {
               closable: true,
             },
             (path) => navigate({ to: path as "/" | (string & {}) })
-          )
+          );
         }
-        break
+        break;
       }
       case "view-details":
       case "edit-patient":
@@ -304,23 +315,23 @@ function RootComponentInner() {
       case "view-templates":
         // These actions would typically navigate or open modals
         // For now, we'll log them - you can implement specific handlers
-        console.log(`Action: ${actionId} for path: ${tabPath}`)
+        console.log(`Action: ${actionId} for path: ${tabPath}`);
         // Example: You could dispatch an event or call a callback here
-        break
+        break;
       default:
-        console.log(`Unknown action: ${actionId}`)
+        console.log(`Unknown action: ${actionId}`);
     }
-  }
+  };
 
   // Define navigation items with permissions
   const allNavigationItems = useMemo<
     Array<{
-      path: string
-      label: string
-      icon: React.ReactNode
-      onClick: () => void
-      isActive: boolean
-      permission?: Permission
+      path: string;
+      label: string;
+      icon: React.ReactNode;
+      onClick: () => void;
+      isActive: boolean;
+      permission?: Permission;
     }>
   >(
     () => [
@@ -416,23 +427,23 @@ function RootComponentInner() {
       },
     ],
     [location.pathname, handleNavClick]
-  )
+  );
 
   // Filter navigation items based on permissions
   // Use direct store access to avoid hook re-render issues
   const navigationItems = useMemo(() => {
-    const state = useAuthStore.getState()
+    const state = useAuthStore.getState();
     return allNavigationItems.filter((item) => {
-      if (!item.permission) return true // No permission required
-      return state.permissions.includes(item.permission)
-    })
-  }, [allNavigationItems]) // Filter based on navigation items and permissions
+      if (!item.permission) return true; // No permission required
+      return state.permissions.includes(item.permission);
+    });
+  }, [allNavigationItems]); // Filter based on navigation items and permissions
 
   // Determine layout based on route
-  const layoutType = getLayoutForRoute(location.pathname)
+  const layoutType = getLayoutForRoute(location.pathname);
 
   // Voice command components should only show on authenticated layouts
-  const showVoiceCommands = layoutType === "full" || layoutType === "minimal"
+  const showVoiceCommands = layoutType === "full" || layoutType === "minimal";
 
   // Render appropriate layout
   switch (layoutType) {
@@ -442,7 +453,7 @@ function RootComponentInner() {
           <CenteredLayout />
           <TanStackRouterDevtools />
         </>
-      )
+      );
 
     case "clean":
       return (
@@ -450,7 +461,7 @@ function RootComponentInner() {
           <CleanLayout />
           <TanStackRouterDevtools />
         </>
-      )
+      );
 
     case "minimal":
       return (
@@ -459,7 +470,7 @@ function RootComponentInner() {
           {showVoiceCommands && <VoiceCommandComponents />}
           <TanStackRouterDevtools />
         </>
-      )
+      );
 
     case "full":
     default:
@@ -477,7 +488,7 @@ function RootComponentInner() {
           {showVoiceCommands && <VoiceCommandComponents />}
           <TanStackRouterDevtools />
         </>
-      )
+      );
   }
 }
 
@@ -490,10 +501,10 @@ function VoiceCommandComponents() {
       <VoiceCommandFAB />
       <VoiceCommandChatbox />
     </>
-  )
+  );
 }
 
 // Root component - no longer needs TabProvider
 function RootComponent() {
-  return <RootComponentInner />
+  return <RootComponentInner />;
 }

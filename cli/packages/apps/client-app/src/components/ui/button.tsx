@@ -1,8 +1,8 @@
-import { Slot } from "@radix-ui/react-slot"
-import { cva, type VariantProps } from "class-variance-authority"
-import * as React from "react"
-import { cn } from "@/lib/utils"
-import { HoverHelp } from "./hover-help"
+import { cn } from "@/lib/utils";
+import { Slot } from "@radix-ui/react-slot";
+import { type VariantProps, cva } from "class-variance-authority";
+import * as React from "react";
+import { HoverHelp } from "./hover-help";
 
 const buttonVariants = cva(
   "inline-flex items-center justify-center whitespace-nowrap rounded-sm text-button font-semibold ring-offset-background transition-fluent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] aria-disabled:opacity-50 aria-disabled:cursor-not-allowed",
@@ -41,16 +41,16 @@ const buttonVariants = cva(
       size: "default",
     },
   }
-)
+);
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
-  asChild?: boolean
+  asChild?: boolean;
   help?: {
-    content: string | React.ReactNode
-    title?: string
-  }
+    content: string | React.ReactNode;
+    title?: string;
+  };
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -67,10 +67,10 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) => {
-    const Comp = asChild ? Slot : "button"
+    const Comp = asChild ? Slot : "button";
 
     // Generate ARIA label from children if not provided
-    const buttonAriaLabel = ariaLabel || (typeof children === "string" ? children : undefined)
+    const buttonAriaLabel = ariaLabel || (typeof children === "string" ? children : undefined);
 
     return (
       <div className="relative inline-flex group">
@@ -84,9 +84,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         </Comp>
         {help && <HoverHelp content={help.content} title={help.title} position="top-right" />}
       </div>
-    )
+    );
   }
-)
-Button.displayName = "Button"
+);
+Button.displayName = "Button";
 
-export { Button, buttonVariants }
+export { Button, buttonVariants };

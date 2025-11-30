@@ -1,5 +1,5 @@
-import { FileText } from "lucide-react"
-import type { NavAction } from "./types"
+import { FileText } from "lucide-react";
+import type { NavAction } from "./types";
 
 export function getRevenueActions(
   path: string,
@@ -24,5 +24,5 @@ export function getRevenueActions(
       icon: <FileText className="h-4 w-4" />,
       onClick: () => onAction("financial-summary", path),
     },
-  ]
+  ];
 }

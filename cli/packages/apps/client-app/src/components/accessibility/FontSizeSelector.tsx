@@ -3,13 +3,13 @@
  * Adjust font size for better readability
  */
 
-import { useEffect } from "react"
-import { Box } from "@/components/ui/box"
-import { useAccessibilityStore } from "@/stores/accessibilityStore"
+import { Box } from "@/components/ui/box";
+import { useAccessibilityStore } from "@/stores/accessibilityStore";
+import { useEffect } from "react";
 
 export function FontSizeSelector() {
-  const fontSize = useAccessibilityStore((state) => state.preferences.fontSize)
-  const updatePreference = useAccessibilityStore((state) => state.updatePreference)
+  const fontSize = useAccessibilityStore((state) => state.preferences.fontSize);
+  const updatePreference = useAccessibilityStore((state) => state.updatePreference);
 
   useEffect(() => {
     if (typeof document !== "undefined") {
@@ -19,11 +19,11 @@ export function FontSizeSelector() {
         "font-size-medium",
         "font-size-large",
         "font-size-extra-large"
-      )
+      );
       // Add current font size class
-      document.documentElement.classList.add(`font-size-${fontSize}`)
+      document.documentElement.classList.add(`font-size-${fontSize}`);
     }
-  }, [fontSize])
+  }, [fontSize]);
 
   return (
     <Box>
@@ -48,5 +48,5 @@ export function FontSizeSelector() {
         <option value="extra-large">Extra Large</option>
       </select>
     </Box>
-  )
+  );
 }

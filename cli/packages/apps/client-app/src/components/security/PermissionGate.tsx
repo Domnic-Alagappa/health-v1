@@ -3,18 +3,18 @@
  * Fine-grained permission checking with AND/OR logic
  */
 
-import { Box } from "@/components/ui/box"
-import { useAuditLog } from "@/hooks/security/useAuditLog"
-import { usePermissions } from "@/hooks/security/usePermissions"
-import type { Permission } from "@health-v1/shared/constants/permissions"
-import { AccessDenied } from "./AccessDenied"
+import { Box } from "@/components/ui/box";
+import { useAuditLog } from "@/hooks/security/useAuditLog";
+import { usePermissions } from "@/hooks/security/usePermissions";
+import type { Permission } from "@health-v1/shared/constants/permissions";
+import { AccessDenied } from "./AccessDenied";
 
 interface PermissionGateProps {
-  children: React.ReactNode
-  permissions: Permission[]
-  mode?: "all" | "any" // 'all' = AND logic, 'any' = OR logic
-  fallback?: React.ReactNode
-  resource?: string
+  children: React.ReactNode;
+  permissions: Permission[];
+  mode?: "all" | "any"; // 'all' = AND logic, 'any' = OR logic
+  fallback?: React.ReactNode;
+  resource?: string;
 }
 
 export function PermissionGate({
@@ -24,19 +24,19 @@ export function PermissionGate({
   fallback,
   resource,
 }: PermissionGateProps) {
-  const { hasAllPermissions, hasAnyPermission } = usePermissions()
-  const { logDenied } = useAuditLog()
+  const { hasAllPermissions, hasAnyPermission } = usePermissions();
+  const { logDenied } = useAuditLog();
 
-  const granted = mode === "all" ? hasAllPermissions(permissions) : hasAnyPermission(permissions)
+  const granted = mode === "all" ? hasAllPermissions(permissions) : hasAnyPermission(permissions);
 
   if (!granted) {
     // Log access denied
     if (resource) {
-      logDenied(resource, permissions.join(mode === "all" ? " AND " : " OR "))
+      logDenied(resource, permissions.join(mode === "all" ? " AND " : " OR "));
     }
 
     if (fallback) {
-      return <>{fallback}</>
+      return <>{fallback}</>;
     }
 
     return (
@@ -45,8 +45,8 @@ export function PermissionGate({
         resource={resource || "resource"}
         requiredPermissions={permissions}
       />
-    )
+    );
   }
 
-  return <Box>{children}</Box>
+  return <Box>{children}</Box>;
 }

@@ -1,13 +1,13 @@
-import { Download, Eye } from "lucide-react"
-import { getBaseTabActions } from "./base"
-import type { TabActionGroup } from "./types"
+import { Download, Eye } from "lucide-react";
+import { getBaseTabActions } from "./base";
+import type { TabActionGroup } from "./types";
 
 export function getResultsTabActions(
   path: string,
   _label: string,
   onAction: (actionId: string, tabPath: string) => void
 ): TabActionGroup[] {
-  const baseActions = getBaseTabActions(path, onAction)
+  const baseActions = getBaseTabActions(path, onAction);
 
   return [
     {
@@ -29,5 +29,5 @@ export function getResultsTabActions(
     {
       actions: baseActions,
     },
-  ]
+  ];
 }

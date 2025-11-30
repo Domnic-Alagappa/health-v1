@@ -1,12 +1,12 @@
-import * as React from "react"
-import { cn } from "@/lib/utils"
-import { HoverHelp } from "./hover-help"
+import { cn } from "@/lib/utils";
+import * as React from "react";
+import { HoverHelp } from "./hover-help";
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   help?: {
-    content: string | React.ReactNode
-    title?: string
-  }
+    content: string | React.ReactNode;
+    title?: string;
+  };
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
@@ -22,10 +22,10 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     },
     ref
   ) => {
-    const helpId = help ? `help-${Math.random().toString(36).substring(2, 9)}` : undefined
+    const helpId = help ? `help-${Math.random().toString(36).substring(2, 9)}` : undefined;
 
     // Generate ARIA label from placeholder if not provided
-    const inputAriaLabel = ariaLabel || placeholder
+    const inputAriaLabel = ariaLabel || placeholder;
 
     return (
       <div className="relative w-full group">
@@ -51,9 +51,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           />
         )}
       </div>
-    )
+    );
   }
-)
-Input.displayName = "Input"
+);
+Input.displayName = "Input";
 
-export { Input }
+export { Input };

@@ -1,5 +1,5 @@
-import { RefreshCw, Settings } from "lucide-react"
-import type { NavAction } from "./types"
+import { RefreshCw, Settings } from "lucide-react";
+import type { NavAction } from "./types";
 
 export function getDashboardActions(
   path: string,
@@ -18,5 +18,5 @@ export function getDashboardActions(
       icon: <Settings className="h-4 w-4" />,
       onClick: () => onAction("dashboard-settings", path),
     },
-  ]
+  ];
 }

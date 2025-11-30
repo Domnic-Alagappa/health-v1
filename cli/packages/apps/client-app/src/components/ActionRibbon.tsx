@@ -1,34 +1,34 @@
-import { memo, useMemo } from "react"
-import { Box } from "@/components/ui/box"
-import { Button } from "@/components/ui/button"
-import { Flex } from "@/components/ui/flex"
-import { Separator } from "@/components/ui/separator"
-import { getTabActions } from "@/lib/tab-actions"
-import { useActiveTabId, useTabs } from "@/stores/tabStore"
+import { Box } from "@/components/ui/box";
+import { Button } from "@/components/ui/button";
+import { Flex } from "@/components/ui/flex";
+import { Separator } from "@/components/ui/separator";
+import { getTabActions } from "@/lib/tab-actions";
+import { useActiveTabId, useTabs } from "@/stores/tabStore";
+import { memo, useMemo } from "react";
 
 interface ActionRibbonProps {
-  onAction?: (actionId: string, tabPath: string) => void
+  onAction?: (actionId: string, tabPath: string) => void;
 }
 
 export const ActionRibbon = memo(function ActionRibbon({ onAction }: ActionRibbonProps) {
-  const tabs = useTabs()
-  const activeTabId = useActiveTabId()
+  const tabs = useTabs();
+  const activeTabId = useActiveTabId();
 
-  const activeTab = useMemo(() => tabs.find((t) => t.id === activeTabId), [tabs, activeTabId])
+  const activeTab = useMemo(() => tabs.find((t) => t.id === activeTabId), [tabs, activeTabId]);
 
   const allActions = useMemo(() => {
-    if (!activeTab) return []
+    if (!activeTab) return [];
 
     // Get all action groups from tab actions
-    const actionGroups = getTabActions(activeTab.path, activeTab.label, onAction || (() => {}))
+    const actionGroups = getTabActions(activeTab.path, activeTab.label, onAction || (() => {}));
 
     // Flatten all actions from all groups into a single array
-    return actionGroups.flatMap((group) => group.actions)
-  }, [activeTab, onAction])
+    return actionGroups.flatMap((group) => group.actions);
+  }, [activeTab, onAction]);
 
   // Don't show ribbon for dashboard or if no actions
   if (!activeTab || activeTab.path === "/" || allActions.length === 0) {
-    return null
+    return null;
   }
 
   return (
@@ -60,5 +60,5 @@ export const ActionRibbon = memo(function ActionRibbon({ onAction }: ActionRibbo
         </Flex>
       </Box>
     </Box>
-  )
-})
+  );
+});

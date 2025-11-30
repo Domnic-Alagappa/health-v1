@@ -1,12 +1,12 @@
-import { Box } from "@/components/ui/box"
-import { Flex } from "@/components/ui/flex"
-import { cn } from "@/lib/utils"
+import { Box } from "@/components/ui/box";
+import { Flex } from "@/components/ui/flex";
+import { cn } from "@/lib/utils";
 
 interface TabDragPreviewProps {
-  draggedTab: { id: string; label: string; icon?: React.ReactNode }
-  dragPosition: { x: number; y: number }
-  dragOffset: { x: number; y: number }
-  isDraggingOutside: boolean
+  draggedTab: { id: string; label: string; icon?: React.ReactNode };
+  dragPosition: { x: number; y: number };
+  dragOffset: { x: number; y: number };
+  isDraggingOutside: boolean;
 }
 
 export function TabDragPreview({
@@ -56,5 +56,5 @@ export function TabDragPreview({
         />
       </Flex>
     </Box>
-  )
+  );
 }

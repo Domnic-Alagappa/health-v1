@@ -3,18 +3,18 @@
  * Select color blind mode filter
  */
 
-import { useEffect } from "react"
-import { Box } from "@/components/ui/box"
-import { useAccessibilityStore } from "@/stores/accessibilityStore"
+import { Box } from "@/components/ui/box";
+import { useAccessibilityStore } from "@/stores/accessibilityStore";
+import { useEffect } from "react";
 
 export function ColorBlindModeSelector() {
-  const colorBlindMode = useAccessibilityStore((state) => state.preferences.colorBlindMode)
-  const updatePreference = useAccessibilityStore((state) => state.updatePreference)
+  const colorBlindMode = useAccessibilityStore((state) => state.preferences.colorBlindMode);
+  const updatePreference = useAccessibilityStore((state) => state.updatePreference);
 
   useEffect(() => {
     if (typeof document !== "undefined") {
       // Remove all color blind data attributes
-      document.documentElement.removeAttribute("data-cb")
+      document.documentElement.removeAttribute("data-cb");
       // Set current color blind mode data attribute if not 'none'
       if (colorBlindMode !== "none") {
         // Map full names to short names for CSS selectors
@@ -22,12 +22,12 @@ export function ColorBlindModeSelector() {
           protanopia: "protan",
           deuteranopia: "deutan",
           tritanopia: "tritan",
-        }
-        const shortName = modeMap[colorBlindMode] || colorBlindMode
-        document.documentElement.setAttribute("data-cb", shortName)
+        };
+        const shortName = modeMap[colorBlindMode] || colorBlindMode;
+        document.documentElement.setAttribute("data-cb", shortName);
       }
     }
-  }, [colorBlindMode])
+  }, [colorBlindMode]);
 
   return (
     <Box>
@@ -52,5 +52,5 @@ export function ColorBlindModeSelector() {
         <option value="tritanopia">Tritanopia (Blue-Blind)</option>
       </select>
     </Box>
-  )
+  );
 }

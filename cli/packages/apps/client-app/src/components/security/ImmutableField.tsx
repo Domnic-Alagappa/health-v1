@@ -3,19 +3,19 @@
  * Component that prevents editing of immutable fields
  */
 
-import { Lock } from "lucide-react"
-import { Flex } from "@/components/ui/flex"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Stack } from "@/components/ui/stack"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Flex } from "@/components/ui/flex";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Stack } from "@/components/ui/stack";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Lock } from "lucide-react";
 
 interface ImmutableFieldProps {
-  label: string
-  value: string | number | Date
-  immutable?: boolean
-  tooltip?: string
-  className?: string
+  label: string;
+  value: string | number | Date;
+  immutable?: boolean;
+  tooltip?: string;
+  className?: string;
 }
 
 export function ImmutableField({
@@ -25,7 +25,7 @@ export function ImmutableField({
   tooltip = "This field cannot be modified",
   className = "",
 }: ImmutableFieldProps) {
-  const displayValue = value instanceof Date ? value.toLocaleDateString() : String(value)
+  const displayValue = value instanceof Date ? value.toLocaleDateString() : String(value);
 
   return (
     <Stack spacing="sm" className={className}>
@@ -54,15 +54,15 @@ export function ImmutableField({
         className={immutable ? "bg-muted cursor-not-allowed" : ""}
         onCopy={(e) => {
           if (immutable) {
-            e.preventDefault()
+            e.preventDefault();
           }
         }}
         onPaste={(e) => {
           if (immutable) {
-            e.preventDefault()
+            e.preventDefault();
           }
         }}
       />
     </Stack>
-  )
+  );
 }

@@ -3,17 +3,17 @@
  * Display recognized commands and feedback
  */
 
-import { Box } from "@/components/ui/box"
-import { cn } from "@/lib/utils"
-import { useVoiceCommandStore } from "@/stores/voiceCommandStore"
+import { Box } from "@/components/ui/box";
+import { cn } from "@/lib/utils";
+import { useVoiceCommandStore } from "@/stores/voiceCommandStore";
 
 export function VoiceCommandFeedback() {
-  const lastCommand = useVoiceCommandStore((state) => state.lastCommand)
-  const lastIntent = useVoiceCommandStore((state) => state.lastIntent)
-  const error = useVoiceCommandStore((state) => state.error)
+  const lastCommand = useVoiceCommandStore((state) => state.lastCommand);
+  const lastIntent = useVoiceCommandStore((state) => state.lastIntent);
+  const error = useVoiceCommandStore((state) => state.error);
 
   if (!lastCommand && !error) {
-    return null
+    return null;
   }
 
   return (
@@ -38,5 +38,5 @@ export function VoiceCommandFeedback() {
         </div>
       )}
     </Box>
-  )
+  );
 }

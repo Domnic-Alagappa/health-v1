@@ -23,9 +23,8 @@ export const FIELD_DEFINITIONS = {
     username: { immutable: false, mask: false, type: "string" },
     createdAt: { immutable: true, mask: false, type: "timestamp" },
   },
-} as const
+} as const;
 
-export type FieldType = "string" | "number" | "date" | "timestamp" | "array" | "boolean"
-export type EntityType = keyof typeof FIELD_DEFINITIONS
-export type FieldName<T extends EntityType> = keyof (typeof FIELD_DEFINITIONS)[T]
-
+export type FieldType = "string" | "number" | "date" | "timestamp" | "array" | "boolean";
+export type EntityType = keyof typeof FIELD_DEFINITIONS;
+export type FieldName<T extends EntityType> = keyof (typeof FIELD_DEFINITIONS)[T];

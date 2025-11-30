@@ -3,62 +3,61 @@
  * Shows a floating mic button when voice commands are enabled
  */
 
-import { Mic, MicOff } from "lucide-react"
-import { useEffect } from "react"
-import { Box } from "@/components/ui/box"
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
-import { getVoiceCommandEngine } from "@/lib/voice/voiceCommandEngine"
-import { useAccessibilityStore } from "@/stores/accessibilityStore"
-import { useVoiceCommandStore } from "@/stores/voiceCommandStore"
+import { Box } from "@/components/ui/box";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { getVoiceCommandEngine } from "@/lib/voice/voiceCommandEngine";
+import { useAccessibilityStore } from "@/stores/accessibilityStore";
+import { useVoiceCommandStore } from "@/stores/voiceCommandStore";
+import { Mic, MicOff } from "lucide-react";
 
 export function VoiceCommandFAB() {
-  const preferences = useAccessibilityStore((state) => state.preferences)
-  const isListening = useVoiceCommandStore((state) => state.isListening)
-  const startListening = useVoiceCommandStore((state) => state.startListening)
-  const stopListening = useVoiceCommandStore((state) => state.stopListening)
-  const setError = useVoiceCommandStore((state) => state.setError)
+  const preferences = useAccessibilityStore((state) => state.preferences);
+  const isListening = useVoiceCommandStore((state) => state.isListening);
+  const startListening = useVoiceCommandStore((state) => state.startListening);
+  const stopListening = useVoiceCommandStore((state) => state.stopListening);
+  const setError = useVoiceCommandStore((state) => state.setError);
 
   // Only show if voice commands are enabled
   if (!preferences.voiceCommandsEnabled) {
-    return null
+    return null;
   }
 
   const handleToggle = async () => {
     if (isListening) {
-      stopListening()
-      const engine = getVoiceCommandEngine()
-      engine.stop()
+      stopListening();
+      const engine = getVoiceCommandEngine();
+      engine.stop();
     } else {
       try {
         // Request microphone permission first
         try {
-          await navigator.mediaDevices.getUserMedia({ audio: true })
+          await navigator.mediaDevices.getUserMedia({ audio: true });
         } catch (permError) {
           setError(
             "Microphone permission denied. Please enable microphone access in your browser settings."
-          )
-          return
+          );
+          return;
         }
 
-        const engine = getVoiceCommandEngine()
+        const engine = getVoiceCommandEngine();
         if (!engine.isAvailable()) {
-          setError("Voice recognition is not supported in this browser.")
-          return
+          setError("Voice recognition is not supported in this browser.");
+          return;
         }
 
         engine.start({
           language: preferences.voiceCommandsLanguage || "en-US",
           continuous: true,
           interimResults: true,
-        })
-        startListening()
-        setError(null)
+        });
+        startListening();
+        setError(null);
       } catch (error) {
-        setError(error instanceof Error ? error.message : "Failed to start voice recognition")
+        setError(error instanceof Error ? error.message : "Failed to start voice recognition");
       }
     }
-  }
+  };
 
   return (
     <Box
@@ -86,5 +85,5 @@ export function VoiceCommandFAB() {
         )}
       </Button>
     </Box>
-  )
+  );
 }

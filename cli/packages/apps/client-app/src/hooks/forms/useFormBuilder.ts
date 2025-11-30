@@ -1,90 +1,90 @@
-import { useEffect, useMemo, useState } from "react"
-import type { FormConfig, FormField } from "@/components/ui/form-builder"
-import { validateField } from "@/lib/formValidationUtils"
+import type { FormConfig, FormField } from "@/components/ui/form-builder";
+import { validateField } from "@/lib/formValidationUtils";
+import { useEffect, useMemo, useState } from "react";
 
 interface UseFormBuilderOptions {
-  config: FormConfig
-  initialValues?: Record<string, unknown>
+  config: FormConfig;
+  initialValues?: Record<string, unknown>;
 }
 
 export function useFormBuilder({ config, initialValues = {} }: UseFormBuilderOptions) {
-  const [formData, setFormData] = useState<Record<string, unknown>>(initialValues)
-  const [errors, setErrors] = useState<Record<string, string>>({})
-  const [touched, setTouched] = useState<Record<string, boolean>>({})
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [formData, setFormData] = useState<Record<string, unknown>>(initialValues);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    setFormData(initialValues)
-  }, [initialValues])
+    setFormData(initialValues);
+  }, [initialValues]);
 
   const handleChange = (fieldId: string, value: unknown) => {
-    setFormData((prev) => ({ ...prev, [fieldId]: value }))
+    setFormData((prev) => ({ ...prev, [fieldId]: value }));
 
     if (touched[fieldId]) {
-      const field = config.fields.find((f) => f.id === fieldId)
+      const field = config.fields.find((f) => f.id === fieldId);
       if (field) {
-        const error = validateField(field, value)
+        const error = validateField(field, value);
         setErrors((prev) => ({
           ...prev,
           [fieldId]: error === true ? "" : error,
-        }))
+        }));
       }
     }
-  }
+  };
 
   const handleBlur = (fieldId: string) => {
-    setTouched((prev) => ({ ...prev, [fieldId]: true }))
-    const field = config.fields.find((f) => f.id === fieldId)
+    setTouched((prev) => ({ ...prev, [fieldId]: true }));
+    const field = config.fields.find((f) => f.id === fieldId);
     if (field) {
-      const value = formData[fieldId]
-      const error = validateField(field, value)
+      const value = formData[fieldId];
+      const error = validateField(field, value);
       setErrors((prev) => ({
         ...prev,
         [fieldId]: error === true ? "" : error,
-      }))
+      }));
     }
-  }
+  };
 
   const validateForm = (): boolean => {
-    const newErrors: Record<string, string> = {}
-    let isValid = true
+    const newErrors: Record<string, string> = {};
+    let isValid = true;
 
     config.fields.forEach((field) => {
-      const value = formData[field.id]
-      const error = validateField(field, value)
+      const value = formData[field.id];
+      const error = validateField(field, value);
       if (error !== true) {
-        newErrors[field.id] = error
-        isValid = false
+        newErrors[field.id] = error;
+        isValid = false;
       }
-    })
+    });
 
-    setErrors(newErrors)
+    setErrors(newErrors);
     setTouched(
       config.fields.reduce(
         (acc, field) => {
-          acc[field.id] = true
-          return acc
+          acc[field.id] = true;
+          return acc;
         },
         {} as Record<string, boolean>
       )
-    )
+    );
 
-    return isValid
-  }
+    return isValid;
+  };
 
   const isFieldVisible = (field: FormField): boolean => {
-    if (!field.dependencies) return true
-    const dependencyValue = formData[field.dependencies.field]
-    return field.dependencies.condition(dependencyValue)
-  }
+    if (!field.dependencies) return true;
+    const dependencyValue = formData[field.dependencies.field];
+    return field.dependencies.condition(dependencyValue);
+  };
 
   const sortedFields = useMemo(() => {
     return [...config.fields].sort((a, b) => {
-      const orderA = a.layout?.order ?? 0
-      const orderB = b.layout?.order ?? 0
-      return orderA - orderB
-    })
-  }, [config.fields])
+      const orderA = a.layout?.order ?? 0;
+      const orderB = b.layout?.order ?? 0;
+      return orderA - orderB;
+    });
+  }, [config.fields]);
 
   return {
     formData,
@@ -97,5 +97,5 @@ export function useFormBuilder({ config, initialValues = {} }: UseFormBuilderOpt
     validateForm,
     isFieldVisible,
     sortedFields,
-  }
+  };
 }

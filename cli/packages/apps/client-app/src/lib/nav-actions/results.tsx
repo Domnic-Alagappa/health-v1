@@ -1,5 +1,5 @@
-import { Activity, Download, FileText } from "lucide-react"
-import type { NavAction } from "./types"
+import { Activity, Download, FileText } from "lucide-react";
+import type { NavAction } from "./types";
 
 export function getResultsActions(
   path: string,
@@ -24,5 +24,5 @@ export function getResultsActions(
       icon: <FileText className="h-4 w-4" />,
       onClick: () => onAction("result-reports", path),
     },
-  ]
+  ];
 }

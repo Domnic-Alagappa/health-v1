@@ -3,8 +3,8 @@
  * Configured for healthcare security requirements
  */
 
-import { QueryClient } from "@tanstack/react-query"
-import { SECURITY_CONFIG } from "@health-v1/shared/constants/security"
+import { SECURITY_CONFIG } from "@health-v1/shared/constants/security";
+import { QueryClient } from "@tanstack/react-query";
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -20,19 +20,19 @@ export const queryClient = new QueryClient({
       retry: 1,
     },
   },
-})
+});
 
 /**
  * Clear all sensitive data from cache
  * Called on logout
  */
 export function clearSensitiveCache() {
-  queryClient.clear()
+  queryClient.clear();
 }
 
 /**
  * Invalidate all patient-related queries
  */
 export function invalidatePatientQueries() {
-  queryClient.invalidateQueries({ queryKey: ["patients"] })
+  queryClient.invalidateQueries({ queryKey: ["patients"] });
 }

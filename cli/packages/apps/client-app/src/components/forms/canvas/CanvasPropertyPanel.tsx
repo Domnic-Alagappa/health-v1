@@ -1,22 +1,22 @@
-import { Trash2 } from "lucide-react"
-import { Box } from "@/components/ui/box"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Stack } from "@/components/ui/stack"
-import type { CanvasField, CanvasGroup, CanvasSection } from "./types"
+import { Box } from "@/components/ui/box";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Stack } from "@/components/ui/stack";
+import { Trash2 } from "lucide-react";
+import type { CanvasField, CanvasGroup, CanvasSection } from "./types";
 
 interface CanvasPropertyPanelProps {
-  selectedField: CanvasField | null
-  selectedGroup: CanvasGroup | null
-  selectedSection: CanvasSection | null
-  snap: (value: number) => number
-  onUpdateField: (fieldId: string, updates: Partial<CanvasField>) => void
-  onUpdateGroup: (groupId: string, updates: Partial<CanvasGroup>) => void
-  onUpdateSection: (sectionId: string, updates: Partial<CanvasSection>) => void
-  onRemoveField: (fieldId: string) => void
-  onRemoveGroup: (groupId: string) => void
-  onRemoveSection: (sectionId: string) => void
+  selectedField: CanvasField | null;
+  selectedGroup: CanvasGroup | null;
+  selectedSection: CanvasSection | null;
+  snap: (value: number) => number;
+  onUpdateField: (fieldId: string, updates: Partial<CanvasField>) => void;
+  onUpdateGroup: (groupId: string, updates: Partial<CanvasGroup>) => void;
+  onUpdateSection: (sectionId: string, updates: Partial<CanvasSection>) => void;
+  onRemoveField: (fieldId: string) => void;
+  onRemoveGroup: (groupId: string) => void;
+  onRemoveSection: (sectionId: string) => void;
 }
 
 export function CanvasPropertyPanel({
@@ -31,7 +31,7 @@ export function CanvasPropertyPanel({
   onRemoveGroup,
   onRemoveSection,
 }: CanvasPropertyPanelProps) {
-  if (!selectedField && !selectedGroup && !selectedSection) return null
+  if (!selectedField && !selectedGroup && !selectedSection) return null;
 
   return (
     <Box className="w-80 border-l bg-white">
@@ -306,5 +306,5 @@ export function CanvasPropertyPanel({
         </>
       )}
     </Box>
-  )
+  );
 }

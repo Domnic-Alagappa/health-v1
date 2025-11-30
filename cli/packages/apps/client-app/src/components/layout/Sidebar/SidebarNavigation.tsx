@@ -1,13 +1,14 @@
-import { Box } from "@/components/ui/box"
-import { Stack } from "@/components/ui/stack"
-import { type SidebarItem, SidebarItemComponent } from "./SidebarItem"
+import { Stack } from "@/components/ui/stack";
+import { type SidebarItem, SidebarItemComponent } from "./SidebarItem";
+
+export type { SidebarItem };
 
 interface SidebarNavigationProps {
-  items: SidebarItem[]
-  isCollapsed: boolean
-  expandedItems: Set<string>
-  onToggleExpand: (path: string) => void
-  onNavAction?: (actionId: string, navPath: string) => void
+  items: SidebarItem[];
+  isCollapsed: boolean;
+  expandedItems: Set<string>;
+  onToggleExpand: (path: string) => void;
+  onNavAction?: (actionId: string, navPath: string) => void;
 }
 
 export function SidebarNavigation({
@@ -21,7 +22,7 @@ export function SidebarNavigation({
     <nav
       className="flex-1 overflow-y-auto p-2"
       onContextMenu={(e) => {
-        e.preventDefault()
+        e.preventDefault();
       }}
     >
       <Stack spacing="xs">
@@ -37,5 +38,5 @@ export function SidebarNavigation({
         ))}
       </Stack>
     </nav>
-  )
+  );
 }

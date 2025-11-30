@@ -1,16 +1,15 @@
-import { Box } from "@/components/ui/box"
-import { Card } from "@/components/ui/card"
-import { Stack } from "@/components/ui/stack"
-import { cn } from "@/lib/utils"
-import type { CanvasField as CanvasFieldType } from "./types"
+import { Box } from "@/components/ui/box";
+import { Stack } from "@/components/ui/stack";
+import { cn } from "@/lib/utils";
+import type { CanvasField as CanvasFieldType } from "./types";
 
 interface CanvasFieldProps {
-  field: CanvasFieldType
-  isSelected: boolean
-  isDragging: boolean
-  onSelect: () => void
-  onDragStart: (e: React.MouseEvent) => void
-  onResizeStart: (e: React.MouseEvent) => void
+  field: CanvasFieldType;
+  isSelected: boolean;
+  isDragging: boolean;
+  onSelect: () => void;
+  onDragStart: (e: React.MouseEvent) => void;
+  onResizeStart: (e: React.MouseEvent) => void;
 }
 
 export function CanvasField({
@@ -37,13 +36,13 @@ export function CanvasField({
         height: `${field.height}px`,
       }}
       onClick={(e) => {
-        e.stopPropagation()
-        onSelect()
+        e.stopPropagation();
+        onSelect();
       }}
       onMouseDown={onDragStart}
       draggable
       onDragStart={(e) => {
-        e.dataTransfer.setData("text/plain", field.id)
+        e.dataTransfer.setData("text/plain", field.id);
       }}
     >
       {/* Field Content Preview */}
@@ -98,11 +97,11 @@ export function CanvasField({
         <Box
           className="absolute -bottom-1 -right-1 w-4 h-4 bg-primary border-2 border-white"
           onMouseDown={(e) => {
-            e.stopPropagation()
-            onResizeStart(e)
+            e.stopPropagation();
+            onResizeStart(e);
           }}
         />
       )}
     </Box>
-  )
+  );
 }

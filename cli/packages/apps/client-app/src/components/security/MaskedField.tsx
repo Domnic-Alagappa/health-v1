@@ -3,22 +3,22 @@
  * Component that automatically masks sensitive fields with progressive disclosure
  */
 
-import { Eye, EyeOff, Lock } from "lucide-react"
-import { useState } from "react"
-import { Box } from "@/components/ui/box"
-import { Button } from "@/components/ui/button"
-import { Flex } from "@/components/ui/flex"
-import { useAuditLog } from "@/hooks/security/useAuditLog"
-import { useMasking } from "@/hooks/security/useMasking"
-import type { MaskingLevel } from "@health-v1/shared/constants/security"
+import { Box } from "@/components/ui/box";
+import { Button } from "@/components/ui/button";
+import { Flex } from "@/components/ui/flex";
+import { useAuditLog } from "@/hooks/security/useAuditLog";
+import { useMasking } from "@/hooks/security/useMasking";
+import type { MaskingLevel } from "@health-v1/shared/constants/security";
+import { Eye, EyeOff, Lock } from "lucide-react";
+import { useState } from "react";
 
 interface MaskedFieldProps {
-  value: string
-  field: string
-  level?: MaskingLevel
-  label?: string
-  showRevealButton?: boolean
-  className?: string
+  value: string;
+  field: string;
+  level?: MaskingLevel;
+  label?: string;
+  showRevealButton?: boolean;
+  className?: string;
 }
 
 export function MaskedField({
@@ -29,20 +29,20 @@ export function MaskedField({
   showRevealButton = true,
   className = "",
 }: MaskedFieldProps) {
-  const { mask } = useMasking()
-  const { logPHI } = useAuditLog()
-  const [revealed, setRevealed] = useState(false)
+  const { mask } = useMasking();
+  const { logPHI } = useAuditLog();
+  const [revealed, setRevealed] = useState(false);
 
-  const maskedValue = mask(value, field, level)
-  const displayValue = revealed ? value : maskedValue
+  const maskedValue = mask(value, field, level);
+  const displayValue = revealed ? value : maskedValue;
 
   const handleReveal = () => {
     if (!revealed) {
       // Log PHI access on reveal
-      logPHI("field", field, { field, action: "reveal" })
+      logPHI("field", field, { field, action: "reveal" });
     }
-    setRevealed(!revealed)
-  }
+    setRevealed(!revealed);
+  };
 
   return (
     <Flex align="center" gap="sm" className={className}>
@@ -63,5 +63,5 @@ export function MaskedField({
         </Button>
       )}
     </Flex>
-  )
+  );
 }

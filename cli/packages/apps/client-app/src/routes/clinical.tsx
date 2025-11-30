@@ -1,20 +1,20 @@
-import { createFileRoute } from "@tanstack/react-router"
-import { Plus } from "lucide-react"
-import { ProtectedRoute } from "@/components/security/ProtectedRoute"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { PERMISSIONS } from "@health-v1/shared/constants/permissions"
+import { ProtectedRoute } from "@/components/security/ProtectedRoute";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { PERMISSIONS } from "@health-v1/shared/constants/permissions";
+import { createFileRoute } from "@tanstack/react-router";
+import { Plus } from "lucide-react";
 
 export const Route = createFileRoute("/clinical")({
   component: ClinicalComponent,
-})
+});
 
 function ClinicalComponent() {
   return (
     <ProtectedRoute requiredPermission={PERMISSIONS.CLINICAL.VIEW} resource="clinical">
       <ClinicalComponentInner />
     </ProtectedRoute>
-  )
+  );
 }
 
 function ClinicalComponentInner() {
@@ -68,5 +68,5 @@ function ClinicalComponentInner() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

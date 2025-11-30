@@ -1,20 +1,20 @@
-import { createFileRoute } from "@tanstack/react-router"
-import { AlertCircle } from "lucide-react"
-import { ProtectedRoute } from "@/components/security/ProtectedRoute"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { PERMISSIONS } from "@health-v1/shared/constants/permissions"
+import { ProtectedRoute } from "@/components/security/ProtectedRoute";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { PERMISSIONS } from "@health-v1/shared/constants/permissions";
+import { createFileRoute } from "@tanstack/react-router";
+import { AlertCircle } from "lucide-react";
 
 export const Route = createFileRoute("/results")({
   component: ResultsComponent,
-})
+});
 
 function ResultsComponent() {
   return (
     <ProtectedRoute requiredPermission={PERMISSIONS.RESULTS.VIEW} resource="results">
       <ResultsComponentInner />
     </ProtectedRoute>
-  )
+  );
 }
 
 function ResultsComponentInner() {
@@ -50,5 +50,5 @@ function ResultsComponentInner() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

@@ -3,19 +3,19 @@
  * Unified access denied component for all scenarios
  */
 
-import { AlertCircle, Lock } from "lucide-react"
-import { Box } from "@/components/ui/box"
-import { Card } from "@/components/ui/card"
-import { Stack } from "@/components/ui/stack"
-import { usePermissions } from "@/hooks/security/usePermissions"
-import type { Permission } from "@health-v1/shared/constants/permissions"
+import { Box } from "@/components/ui/box";
+import { Card } from "@/components/ui/card";
+import { Stack } from "@/components/ui/stack";
+import { usePermissions } from "@/hooks/security/usePermissions";
+import type { Permission } from "@health-v1/shared/constants/permissions";
+import { AlertCircle, Lock } from "lucide-react";
 
 interface AccessDeniedProps {
-  type: "route" | "tab" | "component" | "api"
-  resource: string
-  requiredPermissions: Permission[]
-  currentPermissions?: string[]
-  onRequestAccess?: () => void
+  type: "route" | "tab" | "component" | "api";
+  resource: string;
+  requiredPermissions: Permission[];
+  currentPermissions?: string[];
+  onRequestAccess?: () => void;
 }
 
 export function AccessDenied({
@@ -25,8 +25,8 @@ export function AccessDenied({
   currentPermissions,
   onRequestAccess,
 }: AccessDeniedProps) {
-  const { permissions, role } = usePermissions()
-  const displayPermissions = currentPermissions || permissions
+  const { permissions, role } = usePermissions();
+  const displayPermissions = currentPermissions || permissions;
 
   return (
     <Card className="p-6">
@@ -80,5 +80,5 @@ export function AccessDenied({
         )}
       </Stack>
     </Card>
-  )
+  );
 }

@@ -3,11 +3,11 @@
  * WCAG 2.1 AA/AAA compliant
  */
 
-import type * as React from "react"
-import { useAccessibilityStore } from "@/stores/accessibilityStore"
-import { useVoiceCommandStore } from "@/stores/voiceCommandStore"
-import { COMMON_SHORTCUTS, keyboardShortcutManager } from "./keyboard/shortcuts"
-import { getVoiceCommandEngine } from "./voice/voiceCommandEngine"
+import { useAccessibilityStore } from "@/stores/accessibilityStore";
+import { useVoiceCommandStore } from "@/stores/voiceCommandStore";
+import type * as React from "react";
+import { COMMON_SHORTCUTS, keyboardShortcutManager } from "./keyboard/shortcuts";
+import { getVoiceCommandEngine } from "./voice/voiceCommandEngine";
 
 /**
  * Skip to main content link - allows keyboard users to skip navigation
@@ -21,31 +21,31 @@ export function SkipToMainContent(): React.ReactElement {
     >
       Skip to main content
     </a>
-  )
+  );
 }
 
 /**
  * Live region for screen reader announcements
  */
 export function createLiveRegion(level: "polite" | "assertive" = "polite") {
-  const region = document.createElement("div")
-  region.setAttribute("role", "status")
-  region.setAttribute("aria-live", level)
-  region.setAttribute("aria-atomic", "true")
-  region.className = "sr-only"
-  document.body.appendChild(region)
-  return region
+  const region = document.createElement("div");
+  region.setAttribute("role", "status");
+  region.setAttribute("aria-live", level);
+  region.setAttribute("aria-atomic", "true");
+  region.className = "sr-only";
+  document.body.appendChild(region);
+  return region;
 }
 
 /**
  * Announce message to screen readers
  */
 export function announceToScreenReader(message: string, level: "polite" | "assertive" = "polite") {
-  const region = createLiveRegion(level)
-  region.textContent = message
+  const region = createLiveRegion(level);
+  region.textContent = message;
   setTimeout(() => {
-    region.textContent = ""
-  }, 1000)
+    region.textContent = "";
+  }, 1000);
 }
 
 /**
@@ -56,14 +56,14 @@ export function getAccessibleLabel(
   required?: boolean,
   description?: string
 ): string {
-  let accessibleLabel = label
+  let accessibleLabel = label;
   if (required) {
-    accessibleLabel += " (required)"
+    accessibleLabel += " (required)";
   }
   if (description) {
-    accessibleLabel += `. ${description}`
+    accessibleLabel += `. ${description}`;
   }
-  return accessibleLabel
+  return accessibleLabel;
 }
 
 /**
@@ -80,7 +80,7 @@ export const KeyboardKeys = {
   ArrowRight: "ArrowRight",
   Home: "Home",
   End: "End",
-} as const
+} as const;
 
 /**
  * Check if element is focusable
@@ -94,9 +94,9 @@ export function isFocusable(element: HTMLElement): boolean {
     "textarea:not([disabled])",
     "[tabindex]:not([tabindex='-1'])",
     "[contenteditable='true']",
-  ].join(", ")
+  ].join(", ");
 
-  return element.matches(focusableSelectors)
+  return element.matches(focusableSelectors);
 }
 
 /**
@@ -105,56 +105,56 @@ export function isFocusable(element: HTMLElement): boolean {
 export function trapFocus(container: HTMLElement) {
   const focusableElements = container.querySelectorAll<HTMLElement>(
     'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
-  )
+  );
 
-  const firstElement = focusableElements[0]
-  const lastElement = focusableElements[focusableElements.length - 1]
+  const firstElement = focusableElements[0];
+  const lastElement = focusableElements[focusableElements.length - 1];
 
   function handleTabKey(e: KeyboardEvent) {
-    if (e.key !== "Tab") return
+    if (e.key !== "Tab") return;
 
     if (e.shiftKey) {
       if (document.activeElement === firstElement) {
-        e.preventDefault()
-        lastElement?.focus()
+        e.preventDefault();
+        lastElement?.focus();
       }
     } else {
       if (document.activeElement === lastElement) {
-        e.preventDefault()
-        firstElement?.focus()
+        e.preventDefault();
+        firstElement?.focus();
       }
     }
   }
 
-  container.addEventListener("keydown", handleTabKey)
-  firstElement?.focus()
+  container.addEventListener("keydown", handleTabKey);
+  firstElement?.focus();
 
   return () => {
-    container.removeEventListener("keydown", handleTabKey)
-  }
+    container.removeEventListener("keydown", handleTabKey);
+  };
 }
 
 /**
  * Get accessible error message
  */
 export function getErrorMessage(fieldName: string, error: string): string {
-  return `${fieldName} error: ${error}`
+  return `${fieldName} error: ${error}`;
 }
 
 /**
  * High contrast mode detection
  */
 export function prefersHighContrast(): boolean {
-  if (typeof window === "undefined") return false
-  return window.matchMedia("(prefers-contrast: high)").matches
+  if (typeof window === "undefined") return false;
+  return window.matchMedia("(prefers-contrast: high)").matches;
 }
 
 /**
  * Reduced motion detection
  */
 export function prefersReducedMotion(): boolean {
-  if (typeof window === "undefined") return false
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  if (typeof window === "undefined") return false;
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
 /**
@@ -167,7 +167,7 @@ export function isScreenReaderActive(): boolean {
     navigator.userAgent.includes("JAWS") ||
     navigator.userAgent.includes("VoiceOver") ||
     document.querySelector('[role="application"][aria-label*="screen reader"]') !== null
-  )
+  );
 }
 
 /**
@@ -180,37 +180,37 @@ export function initializeAccessibility(): void {
     ...COMMON_SHORTCUTS.OPEN_ACCESSIBILITY,
     action: () => {
       // Trigger accessibility panel open
-      const event = new CustomEvent("open-accessibility-panel")
-      window.dispatchEvent(event)
+      const event = new CustomEvent("open-accessibility-panel");
+      window.dispatchEvent(event);
     },
     global: true,
-  })
+  });
 
   keyboardShortcutManager.register({
     ...COMMON_SHORTCUTS.TOGGLE_VOICE_COMMANDS,
     action: () => {
-      const preferences = useAccessibilityStore.getState().preferences
+      const preferences = useAccessibilityStore.getState().preferences;
       if (preferences.voiceCommandsEnabled) {
-        const engine = getVoiceCommandEngine()
-        const voiceStore = useVoiceCommandStore.getState()
+        const engine = getVoiceCommandEngine();
+        const voiceStore = useVoiceCommandStore.getState();
         if (voiceStore.isListening) {
-          engine.stop()
+          engine.stop();
         } else {
-          engine.start({ language: preferences.voiceCommandsLanguage || "en-US" })
+          engine.start({ language: preferences.voiceCommandsLanguage || "en-US" });
         }
       }
     },
     global: true,
-  })
+  });
 
   // Register escape key for closing modals
   keyboardShortcutManager.register({
     ...COMMON_SHORTCUTS.ESCAPE,
     action: () => {
       // Close any open modals/dialogs
-      const event = new KeyboardEvent("keydown", { key: "Escape", bubbles: true })
-      document.activeElement?.dispatchEvent(event)
+      const event = new KeyboardEvent("keydown", { key: "Escape", bubbles: true });
+      document.activeElement?.dispatchEvent(event);
     },
     global: true,
-  })
+  });
 }

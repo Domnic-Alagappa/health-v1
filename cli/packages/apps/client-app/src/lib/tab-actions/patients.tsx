@@ -9,18 +9,18 @@ import {
   Pill,
   Printer,
   RefreshCw,
-} from "lucide-react"
-import { getBaseTabActions } from "./base"
-import type { TabActionGroup } from "./types"
+} from "lucide-react";
+import { getBaseTabActions } from "./base";
+import type { TabActionGroup } from "./types";
 
 export function getPatientsTabActions(
   path: string,
   _label: string,
   onAction: (actionId: string, tabPath: string) => void
 ): TabActionGroup[] {
-  const patientIdMatch = path.match(/\/patients\/(.+)$/)
-  const patientId = patientIdMatch ? patientIdMatch[1] : null
-  const baseActions = getBaseTabActions(path, onAction)
+  const patientIdMatch = path.match(/\/patients\/(.+)$/);
+  const patientId = patientIdMatch ? patientIdMatch[1] : null;
+  const baseActions = getBaseTabActions(path, onAction);
 
   if (patientId) {
     // Patient detail page actions
@@ -95,7 +95,7 @@ export function getPatientsTabActions(
       {
         actions: baseActions,
       },
-    ]
+    ];
   }
 
   // Patients list page
@@ -119,5 +119,5 @@ export function getPatientsTabActions(
     {
       actions: baseActions.filter((a) => a.id !== "refresh"),
     },
-  ]
+  ];
 }

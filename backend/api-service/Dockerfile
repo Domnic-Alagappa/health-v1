@@ -41,7 +41,7 @@ RUN cargo build --release --bin api-service
 RUN cp target/release/api-service /app/api-service
 
 # Runtime stage
-FROM debian:bookworm-slim
+FROM debian:trixie-slim
 
 # Install runtime dependencies
 RUN apt-get update && apt-get install -y \

@@ -38,7 +38,6 @@ export const en = {
     showCaptions: "Show Captions",
     keyboardNavigation: "Keyboard Navigation",
   },
-} as const
+} as const;
 
-export type EnglishLabels = typeof en
-
+export type EnglishLabels = typeof en;

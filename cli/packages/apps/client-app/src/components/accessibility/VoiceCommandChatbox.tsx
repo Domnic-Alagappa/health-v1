@@ -3,51 +3,51 @@
  * Displays a chatbox interface for voice command interaction
  */
 
-import { MessageSquare, Mic, Send, X } from "lucide-react"
-import { useEffect, useRef, useState } from "react"
-import { Box } from "@/components/ui/box"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { cn } from "@/lib/utils"
-import { getVoiceCommandEngine } from "@/lib/voice/voiceCommandEngine"
-import { getVoiceCommandExecutor } from "@/lib/voice/voiceCommandExecutor"
-import { getVoiceCommandParser } from "@/lib/voice/voiceCommandParser"
-import { useAccessibilityStore } from "@/stores/accessibilityStore"
-import { useVoiceCommandStore } from "@/stores/voiceCommandStore"
+import { Box } from "@/components/ui/box";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { MessageSquare, Mic, Send, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+
+import { getVoiceCommandEngine } from "@/lib/voice/voiceCommandEngine";
+import { getVoiceCommandExecutor } from "@/lib/voice/voiceCommandExecutor";
+import { getVoiceCommandParser } from "@/lib/voice/voiceCommandParser";
+import { useAccessibilityStore } from "@/stores/accessibilityStore";
+import { useVoiceCommandStore } from "@/stores/voiceCommandStore";
 
 interface ChatMessage {
-  id: string
-  type: "user" | "system" | "error"
-  content: string
-  timestamp: number
+  id: string;
+  type: "user" | "system" | "error";
+  content: string;
+  timestamp: number;
 }
 
 export function VoiceCommandChatbox() {
-  const preferences = useAccessibilityStore((state) => state.preferences)
-  const isListening = useVoiceCommandStore((state) => state.isListening)
-  const lastCommand = useVoiceCommandStore((state) => state.lastCommand)
-  const lastIntent = useVoiceCommandStore((state) => state.lastIntent)
-  const error = useVoiceCommandStore((state) => state.error)
-  const startListening = useVoiceCommandStore((state) => state.startListening)
-  const stopListening = useVoiceCommandStore((state) => state.stopListening)
-  const setError = useVoiceCommandStore((state) => state.setError)
-  const addToHistory = useVoiceCommandStore((state) => state.addToHistory)
+  const preferences = useAccessibilityStore((state) => state.preferences);
+  const isListening = useVoiceCommandStore((state) => state.isListening);
+  const lastCommand = useVoiceCommandStore((state) => state.lastCommand);
+  const error = useVoiceCommandStore((state) => state.error);
+  const startListening = useVoiceCommandStore((state) => state.startListening);
+  const stopListening = useVoiceCommandStore((state) => state.stopListening);
+  const setError = useVoiceCommandStore((state) => state.setError);
+  const addToHistory = useVoiceCommandStore((state) => state.addToHistory);
 
-  const [isOpen, setIsOpen] = useState(false)
-  const [messages, setMessages] = useState<ChatMessage[]>([])
-  const [inputValue, setInputValue] = useState("")
-  const messagesEndRef = useRef<HTMLDivElement>(null)
+  const [isOpen, setIsOpen] = useState(false);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [inputValue, setInputValue] = useState("");
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Only show if voice commands are enabled
   if (!preferences.voiceCommandsEnabled) {
-    return null
+    return null;
   }
 
   // Scroll to bottom when new messages arrive
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [messages])
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   // Handle voice command recognition
   useEffect(() => {
@@ -57,40 +57,42 @@ export function VoiceCommandChatbox() {
         type: "user",
         content: lastCommand,
         timestamp: Date.now(),
-      }
-      setMessages((prev) => [...prev, newMessage])
+      };
+      setMessages((prev: ChatMessage[]) => [...prev, newMessage]);
 
       // Parse and execute command
       try {
-        const parser = getVoiceCommandParser()
-        const executor = getVoiceCommandExecutor()
-        const intent = parser.parse(lastCommand)
+        const parser = getVoiceCommandParser();
+        const executor = getVoiceCommandExecutor();
+        const intent = parser.parse(lastCommand);
 
-        executor.execute(intent)
-        addToHistory(lastCommand, intent.type, true)
+        if (intent) {
+          executor.execute(intent);
+          addToHistory(lastCommand, intent.type, true);
 
-        // Add system response
-        setTimeout(() => {
-          const responseMessage: ChatMessage = {
-            id: `msg-${Date.now()}`,
-            type: "system",
-            content: `Executed: ${intent.type}`,
-            timestamp: Date.now(),
-          }
-          setMessages((prev) => [...prev, responseMessage])
-        }, 500)
+          // Add system response
+          setTimeout(() => {
+            const responseMessage: ChatMessage = {
+              id: `msg-${Date.now()}`,
+              type: "system",
+              content: `Executed: ${intent.type}`,
+              timestamp: Date.now(),
+            };
+            setMessages((prev: ChatMessage[]) => [...prev, responseMessage]);
+          }, 500);
+        }
       } catch (err) {
         const errorMessage: ChatMessage = {
           id: `msg-${Date.now()}`,
           type: "error",
           content: err instanceof Error ? err.message : "Failed to execute command",
           timestamp: Date.now(),
-        }
-        setMessages((prev) => [...prev, errorMessage])
-        addToHistory(lastCommand, "error", false)
+        };
+        setMessages((prev: ChatMessage[]) => [...prev, errorMessage]);
+        addToHistory(lastCommand, "error", false);
       }
     }
-  }, [lastCommand, isListening, addToHistory])
+  }, [lastCommand, isListening, addToHistory]);
 
   // Handle errors
   useEffect(() => {
@@ -100,96 +102,98 @@ export function VoiceCommandChatbox() {
         type: "error",
         content: error,
         timestamp: Date.now(),
-      }
-      setMessages((prev) => [...prev, errorMessage])
+      };
+      setMessages((prev: ChatMessage[]) => [...prev, errorMessage]);
     }
-  }, [error])
+  }, [error]);
 
   const handleToggleListening = async () => {
     if (isListening) {
-      stopListening()
-      const engine = getVoiceCommandEngine()
-      engine.stop()
+      stopListening();
+      const engine = getVoiceCommandEngine();
+      engine.stop();
     } else {
       try {
         // Request microphone permission first
         try {
-          await navigator.mediaDevices.getUserMedia({ audio: true })
-        } catch (permError) {
+          await navigator.mediaDevices.getUserMedia({ audio: true });
+        } catch (_permError) {
           setError(
             "Microphone permission denied. Please enable microphone access in your browser settings."
-          )
-          return
+          );
+          return;
         }
 
-        const engine = getVoiceCommandEngine()
+        const engine = getVoiceCommandEngine();
         if (!engine.isAvailable()) {
-          setError("Voice recognition is not supported in this browser.")
-          return
+          setError("Voice recognition is not supported in this browser.");
+          return;
         }
 
         engine.start({
           language: preferences.voiceCommandsLanguage || "en-US",
           continuous: true,
           interimResults: true,
-        })
-        startListening()
-        setError(null)
+        });
+        startListening();
+        setError(null);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to start voice recognition")
+        setError(err instanceof Error ? err.message : "Failed to start voice recognition");
       }
     }
-  }
+  };
 
   const handleSendMessage = () => {
-    if (!inputValue.trim()) return
+    if (!inputValue.trim()) return;
 
     const newMessage: ChatMessage = {
       id: `msg-${Date.now()}`,
       type: "user",
       content: inputValue,
       timestamp: Date.now(),
-    }
-    setMessages((prev) => [...prev, newMessage])
-    setInputValue("")
+    };
+    setMessages((prev) => [...prev, newMessage]);
+    setInputValue("");
 
     // Parse and execute command
     try {
-      const parser = getVoiceCommandParser()
-      const executor = getVoiceCommandExecutor()
-      const intent = parser.parse(inputValue)
+      const parser = getVoiceCommandParser();
+      const executor = getVoiceCommandExecutor();
+      const intent = parser.parse(inputValue);
 
-      executor.execute(intent)
-      addToHistory(inputValue, intent.type, true)
+      if (intent) {
+        executor.execute(intent);
+        addToHistory(inputValue, intent.type, true);
 
-      // Add system response
-      setTimeout(() => {
-        const responseMessage: ChatMessage = {
-          id: `msg-${Date.now()}`,
-          type: "system",
-          content: `Executed: ${intent.type}`,
-          timestamp: Date.now(),
-        }
-        setMessages((prev) => [...prev, responseMessage])
-      }, 500)
+        // Add system response
+        setTimeout(() => {
+          const responseMessage: ChatMessage = {
+            id: `msg-${Date.now()}`,
+            type: "system",
+            content: `Executed: ${intent.type}`,
+            timestamp: Date.now(),
+          };
+          setMessages((prev: ChatMessage[]) => [...prev, responseMessage]);
+        }, 500);
+      }
     } catch (err) {
       const errorMessage: ChatMessage = {
         id: `msg-${Date.now()}`,
         type: "error",
         content: err instanceof Error ? err.message : "Failed to execute command",
         timestamp: Date.now(),
-      }
-      setMessages((prev) => [...prev, errorMessage])
-      addToHistory(inputValue, "error", false)
+      };
+      setMessages((prev: ChatMessage[]) => [...prev, errorMessage]);
+      addToHistory(inputValue, "error", false);
     }
-  }
+  };
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault()
-      handleSendMessage()
+      e.preventDefault();
+      handleSendMessage();
     }
-  }
+  };
 
   if (!isOpen) {
     return (
@@ -203,7 +207,7 @@ export function VoiceCommandChatbox() {
           <MessageSquare className="h-6 w-6" aria-hidden="true" />
         </Button>
       </Box>
-    )
+    );
   }
 
   return (
@@ -242,7 +246,7 @@ export function VoiceCommandChatbox() {
                 Start speaking or type a command...
               </p>
             )}
-            {messages.map((message) => (
+            {messages.map((message: ChatMessage) => (
               <Box
                 key={message.id}
                 className={cn(
@@ -294,5 +298,5 @@ export function VoiceCommandChatbox() {
         </CardContent>
       </Card>
     </Box>
-  )
+  );
 }

@@ -1,52 +1,51 @@
-import * as React from "react"
-import { cn } from "@/lib/utils"
-import { Input } from "./input"
-import { Label } from "./label"
+import * as React from "react";
+import { Input } from "./input";
+import { Label } from "./label";
 
 interface PreviewField {
-  id: string
-  name: string
-  label: string
-  type: string
-  placeholder?: string
-  x: number
-  y: number
-  width: number
-  height: number
-  groupId?: string
-  options?: Array<{ label: string; value: string }>
+  id: string;
+  name: string;
+  label: string;
+  type: string;
+  placeholder?: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  groupId?: string;
+  options?: Array<{ label: string; value: string }>;
   validation?: {
-    required?: boolean
-  }
+    required?: boolean;
+  };
 }
 
 interface PreviewGroup {
-  id: string
-  title?: string
-  description?: string
-  x: number
-  y: number
-  width: number
-  height: number
-  fields: string[]
+  id: string;
+  title?: string;
+  description?: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  fields: string[];
 }
 
 interface PreviewSection {
-  id: string
-  title?: string
-  x: number
-  y: number
-  width: number
-  height: number
+  id: string;
+  title?: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
 }
 
 interface FormCanvasPreviewProps {
-  fields: PreviewField[]
-  groups: PreviewGroup[]
-  sections: PreviewSection[]
-  canvasWidth: number
-  canvasHeight: number
-  sheetSize: string
+  fields: PreviewField[];
+  groups: PreviewGroup[];
+  sections: PreviewSection[];
+  canvasWidth: number;
+  canvasHeight: number;
+  sheetSize: string;
 }
 
 /**
@@ -60,14 +59,14 @@ export function FormCanvasPreview({
   canvasHeight,
   sheetSize,
 }: FormCanvasPreviewProps) {
-  const [formData, setFormData] = React.useState<Record<string, unknown>>({})
+  const [formData, setFormData] = React.useState<Record<string, unknown>>({});
 
   const handleChange = (fieldId: string, value: unknown) => {
-    setFormData((prev) => ({ ...prev, [fieldId]: value }))
-  }
+    setFormData((prev) => ({ ...prev, [fieldId]: value }));
+  };
 
   const renderField = (field: PreviewField) => {
-    const value = formData[field.id] ?? ""
+    const value = formData[field.id] ?? "";
 
     // Image/Logo field
     if (field.imageUrl) {
@@ -91,7 +90,7 @@ export function FormCanvasPreview({
             />
           </div>
         </div>
-      )
+      );
     }
 
     // Horizontal line
@@ -108,7 +107,7 @@ export function FormCanvasPreview({
             borderTop: `${field.borderWidth || 1}px ${field.borderStyle || "solid"} ${field.borderColor || "#1C1C1E"}`,
           }}
         />
-      )
+      );
     }
 
     // Vertical line
@@ -125,7 +124,7 @@ export function FormCanvasPreview({
             borderLeft: `${field.borderWidth || 1}px ${field.borderStyle || "solid"} ${field.borderColor || "#1C1C1E"}`,
           }}
         />
-      )
+      );
     }
 
     // Box with border
@@ -143,7 +142,7 @@ export function FormCanvasPreview({
             backgroundColor: "transparent",
           }}
         />
-      )
+      );
     }
 
     if (field.type === "separator") {
@@ -167,7 +166,7 @@ export function FormCanvasPreview({
             )}
           </div>
         </div>
-      )
+      );
     }
 
     if (field.type === "display-text") {
@@ -184,7 +183,7 @@ export function FormCanvasPreview({
         >
           <h3 className="text-base font-semibold text-[#1C1C1E]">{field.label}</h3>
         </div>
-      )
+      );
     }
 
     return (
@@ -278,18 +277,18 @@ export function FormCanvasPreview({
           )}
         </div>
       </div>
-    )
-  }
+    );
+  };
 
   // Add print styles to document head
   React.useEffect(() => {
-    const styleId = "form-canvas-print-styles"
-    let styleElement = document.getElementById(styleId) as HTMLStyleElement
+    const styleId = "form-canvas-print-styles";
+    let styleElement = document.getElementById(styleId) as HTMLStyleElement;
 
     if (!styleElement) {
-      styleElement = document.createElement("style")
-      styleElement.id = styleId
-      document.head.appendChild(styleElement)
+      styleElement = document.createElement("style");
+      styleElement.id = styleId;
+      document.head.appendChild(styleElement);
     }
 
     const printStyles = `
@@ -354,18 +353,18 @@ export function FormCanvasPreview({
           height: 100% !important;
         }
       }
-    `
+    `;
 
-    styleElement.textContent = printStyles
+    styleElement.textContent = printStyles;
 
     return () => {
       // Cleanup on unmount
-      const existingStyle = document.getElementById(styleId)
+      const existingStyle = document.getElementById(styleId);
       if (existingStyle) {
-        existingStyle.remove()
+        existingStyle.remove();
       }
-    }
-  }, [canvasWidth, canvasHeight, sheetSize])
+    };
+  }, [canvasWidth, canvasHeight, sheetSize]);
 
   return (
     <>
@@ -441,15 +440,15 @@ export function FormCanvasPreview({
                   )}
                   <div className="p-2">
                     {group.fields.map((fieldId) => {
-                      const field = fields.find((f) => f.id === fieldId)
-                      if (!field) return null
+                      const field = fields.find((f) => f.id === fieldId);
+                      if (!field) return null;
                       // Adjust field position relative to group
                       const relativeField = {
                         ...field,
                         x: field.x - group.x,
                         y: field.y - group.y - (group.title ? 40 : 0),
-                      }
-                      return renderField(relativeField)
+                      };
+                      return renderField(relativeField);
                     })}
                   </div>
                 </div>
@@ -470,5 +469,5 @@ export function FormCanvasPreview({
         </div>
       </div>
     </>
-  )
+  );
 }

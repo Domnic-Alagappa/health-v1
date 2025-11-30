@@ -1,23 +1,23 @@
-import { createFileRoute } from "@tanstack/react-router"
-import { Bell, Shield, User } from "lucide-react"
-import { ProtectedRoute } from "@/components/security/ProtectedRoute"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Separator } from "@/components/ui/separator"
-import { PERMISSIONS } from "@health-v1/shared/constants/permissions"
+import { ProtectedRoute } from "@/components/security/ProtectedRoute";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { PERMISSIONS } from "@health-v1/shared/constants/permissions";
+import { createFileRoute } from "@tanstack/react-router";
+import { Bell, Shield, User } from "lucide-react";
 
 export const Route = createFileRoute("/settings")({
   component: SettingsComponent,
-})
+});
 
 function SettingsComponent() {
   return (
     <ProtectedRoute requiredPermission={PERMISSIONS.SETTINGS.VIEW} resource="settings">
       <SettingsComponentInner />
     </ProtectedRoute>
-  )
+  );
 }
 
 function SettingsComponentInner() {
@@ -108,5 +108,5 @@ function SettingsComponentInner() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

@@ -314,12 +314,21 @@ pub async fn run_migrations_with_config(
                 tokio::time::sleep(config.statement_delay).await;
             }
             
+            // Debug: log the statement being executed
+            let statement_preview = if statement.len() > 100 {
+                format!("{}...", &statement[..100])
+            } else {
+                statement.clone()
+            };
+            info!("Executing statement {}: {}", idx + 1, statement_preview);
+            
             match execute_statement_with_retry(&mut tx, statement, &config).await {
                 Ok(_) => {
                     // Statement executed successfully
                 }
                 Err(e) => {
                     error!("Error executing statement {} in migration {}: {}", idx + 1, version, e);
+                    error!("Failed statement: {}", statement_preview);
                     let _ = tx.rollback().await;
                     return Err(crate::shared::AppError::Internal(
                         format!("Migration {} failed at statement {}: {}", version, idx + 1, e)

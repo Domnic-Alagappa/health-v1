@@ -1,9 +1,9 @@
-import * as React from "react"
-import { cn } from "../lib/utils"
-import { Box } from "./box"
+import * as React from "react";
+import { cn } from "../lib/utils";
+import { Box } from "./box";
 
 export interface ContainerProps extends React.HTMLAttributes<HTMLDivElement> {
-  size?: "sm" | "md" | "lg" | "xl" | "full"
+  size?: "sm" | "md" | "lg" | "xl" | "full";
 }
 
 const Container = React.forwardRef<HTMLDivElement, ContainerProps>(
@@ -14,7 +14,7 @@ const Container = React.forwardRef<HTMLDivElement, ContainerProps>(
       lg: "max-w-screen-lg",
       xl: "max-w-screen-xl",
       full: "max-w-full",
-    }
+    };
 
     return (
       <Box
@@ -27,9 +27,9 @@ const Container = React.forwardRef<HTMLDivElement, ContainerProps>(
         )}
         {...props}
       />
-    )
+    );
   }
-)
-Container.displayName = "Container"
+);
+Container.displayName = "Container";
 
-export { Container }
+export { Container };

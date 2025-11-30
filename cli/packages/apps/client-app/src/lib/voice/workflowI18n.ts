@@ -3,9 +3,9 @@
  * Internationalization for workflows and LLM interactions
  */
 
-import type { ActionItem } from "@/components/ui/component-registry"
-import { getTranslation } from "@/lib/i18n/i18n"
-import type { WorkflowStep } from "./workflowBuilder"
+import type { ActionItem } from "@/components/ui/component-registry";
+import { getTranslation } from "@/lib/i18n/i18n";
+import type { WorkflowStep } from "./workflowBuilder";
 
 /**
  * Translate action label using i18n
@@ -13,15 +13,15 @@ import type { WorkflowStep } from "./workflowBuilder"
 export function translateActionLabel(action: ActionItem, locale: string): string {
   if (action.i18nKey) {
     try {
-      const translated = getTranslation(locale, action.i18nKey as any)
+      const translated = getTranslation(locale, action.i18nKey as any);
       if (translated !== action.i18nKey) {
-        return translated
+        return translated;
       }
     } catch {
       // Fallback to original label
     }
   }
-  return action.label
+  return action.label;
 }
 
 /**
@@ -38,9 +38,9 @@ Usa las acciones disponibles para construir flujos de trabajo que logren los obj
     fr: `Vous êtes un constructeur de flux de travail avancé pour une application de soins de santé.
 Analysez la commande de l'utilisateur et les actions disponibles pour créer un flux de travail étape par étape.
 Utilisez les actions disponibles pour créer des flux de travail qui atteignent les objectifs de l'utilisateur.`,
-  }
+  };
 
-  return prompts[locale] || prompts.en
+  return prompts[locale] || prompts.en;
 }
 
 /**
@@ -49,15 +49,15 @@ Utilisez les actions disponibles pour créer des flux de travail qui atteignent 
 export function translateWorkflowStep(step: WorkflowStep, locale: string): string {
   if (step.type === "speak" && step.message) {
     // Could translate message here if needed
-    return step.message
+    return step.message;
   }
 
   if (step.type === "action" && step.actionId) {
     // Would look up action and translate its label
-    return `Execute action: ${step.actionId}`
+    return `Execute action: ${step.actionId}`;
   }
 
-  return `Step: ${step.type}`
+  return `Step: ${step.type}`;
 }
 
 /**
@@ -71,13 +71,13 @@ export function getAvailableActionsDescription(
     .map((action) => {
       const label = action.i18nKey
         ? getTranslation(locale, action.i18nKey as any) || action.label
-        : action.label
+        : action.label;
 
-      return `- ${label} (ID: ${action.id}, Commands: ${action.voiceCommands.join(", ")})`
+      return `- ${label} (ID: ${action.id}, Commands: ${action.voiceCommands.join(", ")})`;
     })
-    .join("\n")
+    .join("\n");
 
-  return `Available Actions:\n${actionDescriptions}`
+  return `Available Actions:\n${actionDescriptions}`;
 }
 
 /**
@@ -85,31 +85,31 @@ export function getAvailableActionsDescription(
  */
 export function getComponentStructureDescription(structure: unknown, locale: string): string {
   if (!structure || typeof structure !== "object") {
-    return "No structure available"
+    return "No structure available";
   }
 
   const struct = structure as {
-    type?: string
-    fields?: Array<{ id: string; label: string; type: string }>
-    actions?: Array<{ id: string; label: string }>
-    sections?: Array<{ id: string; label: string }>
-  }
+    type?: string;
+    fields?: Array<{ id: string; label: string; type: string }>;
+    actions?: Array<{ id: string; label: string }>;
+    sections?: Array<{ id: string; label: string }>;
+  };
 
-  let description = `Component Type: ${struct.type || "unknown"}\n`
+  let description = `Component Type: ${struct.type || "unknown"}\n`;
 
   if (struct.fields && struct.fields.length > 0) {
-    description += `Fields:\n${struct.fields.map((f) => `  - ${f.label} (${f.type})`).join("\n")}\n`
+    description += `Fields:\n${struct.fields.map((f) => `  - ${f.label} (${f.type})`).join("\n")}\n`;
   }
 
   if (struct.actions && struct.actions.length > 0) {
-    description += `Actions:\n${struct.actions.map((a) => `  - ${a.label}`).join("\n")}\n`
+    description += `Actions:\n${struct.actions.map((a) => `  - ${a.label}`).join("\n")}\n`;
   }
 
   if (struct.sections && struct.sections.length > 0) {
-    description += `Sections:\n${struct.sections.map((s) => `  - ${s.label}`).join("\n")}\n`
+    description += `Sections:\n${struct.sections.map((s) => `  - ${s.label}`).join("\n")}\n`;
   }
 
-  return description
+  return description;
 }
 
 /**
@@ -135,7 +135,7 @@ export function translateErrorMessage(error: string, locale: string): string {
       workflow_failed: "L'exécution du flux de travail a échoué",
       invalid_step: "Étape de flux de travail invalide",
     },
-  }
+  };
 
-  return errorMessages[locale]?.[error] || errorMessages.en[error] || error
+  return errorMessages[locale]?.[error] || errorMessages.en[error] || error;
 }

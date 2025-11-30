@@ -1,5 +1,5 @@
-import { Calendar, Plus } from "lucide-react"
-import type { NavAction } from "./types"
+import { Calendar, Plus } from "lucide-react";
+import type { NavAction } from "./types";
 
 export function getSchedulingActions(
   path: string,
@@ -24,5 +24,5 @@ export function getSchedulingActions(
       icon: <Calendar className="h-4 w-4" />,
       onClick: () => onAction("calendar-view", path),
     },
-  ]
+  ];
 }

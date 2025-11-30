@@ -2,8 +2,8 @@
  * Authentication API
  */
 
-import { apiRequest, API_ROUTES } from "./client"
-import type { LoginRequest, LoginResponse, UserInfo } from "./types"
+import { API_ROUTES, apiRequest } from "./client";
+import type { LoginRequest, LoginResponse, UserInfo } from "./types";
 
 /**
  * Login
@@ -12,7 +12,7 @@ export async function login(credentials: LoginRequest): Promise<LoginResponse> {
   return apiRequest<LoginResponse>(API_ROUTES.AUTH.LOGIN, {
     method: "POST",
     body: JSON.stringify(credentials),
-  })
+  });
 }
 
 /**
@@ -24,7 +24,7 @@ export async function logout(refreshToken: string): Promise<void> {
     headers: {
       Authorization: `Bearer ${refreshToken}`,
     },
-  })
+  });
 }
 
 /**
@@ -36,7 +36,7 @@ export async function refreshToken(refreshToken: string): Promise<LoginResponse>
     headers: {
       Authorization: `Bearer ${refreshToken}`,
     },
-  })
+  });
 }
 
 /**
@@ -48,6 +48,5 @@ export async function getUserInfo(accessToken: string): Promise<UserInfo> {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
-  })
+  });
 }
-

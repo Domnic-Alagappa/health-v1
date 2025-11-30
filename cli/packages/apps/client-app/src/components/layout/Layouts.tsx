@@ -3,24 +3,24 @@
  * Different layout configurations for different route types
  */
 
-import { Outlet } from "@tanstack/react-router"
-import { ActionRibbon } from "@/components/ActionRibbon"
-import { Sidebar } from "@/components/layout/Sidebar"
-import type { SidebarItem } from "@/components/layout/Sidebar/SidebarItem"
-import { TabBar } from "@/components/layout/TabBar"
-import { Box } from "@/components/ui/box"
-import { Container } from "@/components/ui/container"
-import { Flex } from "@/components/ui/flex"
-import { SkipToMainContent } from "@/lib/accessibility"
+import { ActionRibbon } from "@/components/ActionRibbon";
+import { Sidebar } from "@/components/layout/Sidebar";
+import type { SidebarItem } from "@/components/layout/Sidebar/SidebarItem";
+import { TabBar } from "@/components/layout/TabBar";
+import { Box } from "@/components/ui/box";
+import { Container } from "@/components/ui/container";
+import { Flex } from "@/components/ui/flex";
+import { SkipToMainContent } from "@/lib/accessibility";
+import { Outlet } from "@tanstack/react-router";
 
 interface FullLayoutProps {
-  sidebarItems: SidebarItem[]
-  isSidebarCollapsed: boolean
-  onToggleSidebar: () => void
-  isMobileSidebarOpen: boolean
-  onCloseMobileSidebar: () => void
-  onToggleMobileSidebar: () => void
-  onTabAction: (actionId: string) => void
+  sidebarItems: SidebarItem[];
+  isSidebarCollapsed: boolean;
+  onToggleSidebar: () => void;
+  isMobileSidebarOpen: boolean;
+  onCloseMobileSidebar: () => void;
+  onToggleMobileSidebar: () => void;
+  onTabAction: (actionId: string) => void;
 }
 
 /**
@@ -54,8 +54,8 @@ export function FullLayout({
             onClick={onCloseMobileSidebar}
             onKeyDown={(e) => {
               if (e.key === "Enter" || e.key === " " || e.key === "Escape") {
-                e.preventDefault()
-                onCloseMobileSidebar()
+                e.preventDefault();
+                onCloseMobileSidebar();
               }
             }}
           />
@@ -81,8 +81,16 @@ export function FullLayout({
         </main>
       </Flex>
     </Flex>
-  )
+  );
 }
+
+export interface MinimalLayoutProps {
+  onTabAction?: (actionId: string) => void;
+}
+
+const defaultMinimalLayoutProps: MinimalLayoutProps = {
+  onTabAction: undefined,
+};
 
 /**
  * Minimal Layout - Tab Bar only, no sidebar
@@ -107,7 +115,7 @@ export function MinimalLayout({
         </Container>
       </main>
     </Flex>
-  )
+  );
 }
 
 /**
@@ -122,7 +130,7 @@ export function CleanLayout() {
         <Outlet />
       </main>
     </div>
-  )
+  );
 }
 
 /**
@@ -141,5 +149,5 @@ export function CenteredLayout() {
         <Outlet />
       </main>
     </div>
-  )
+  );
 }

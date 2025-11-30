@@ -2,7 +2,7 @@
  * Supported locales
  */
 
-import type { Locale } from "./types"
+import type { Locale } from "./types";
 
 export const SUPPORTED_LOCALES: Locale[] = [
   { code: "en", name: "English", nativeName: "English" },
@@ -34,5 +34,4 @@ export const SUPPORTED_LOCALES: Locale[] = [
   { code: "id", name: "Indonesian", nativeName: "Bahasa Indonesia" },
   { code: "ms", name: "Malay", nativeName: "Bahasa Melayu" },
   { code: "uk", name: "Ukrainian", nativeName: "Українська" },
-]
-
+];

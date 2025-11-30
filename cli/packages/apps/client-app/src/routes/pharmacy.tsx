@@ -1,19 +1,19 @@
-import { createFileRoute } from "@tanstack/react-router"
-import { Pill } from "lucide-react"
-import { ProtectedRoute } from "@/components/security/ProtectedRoute"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { PERMISSIONS } from "@health-v1/shared/constants/permissions"
+import { ProtectedRoute } from "@/components/security/ProtectedRoute";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { PERMISSIONS } from "@health-v1/shared/constants/permissions";
+import { createFileRoute } from "@tanstack/react-router";
+import { Pill } from "lucide-react";
 
 export const Route = createFileRoute("/pharmacy")({
   component: PharmacyComponent,
-})
+});
 
 function PharmacyComponent() {
   return (
     <ProtectedRoute requiredPermission={PERMISSIONS.PHARMACY.VIEW} resource="pharmacy">
       <PharmacyComponentInner />
     </ProtectedRoute>
-  )
+  );
 }
 
 function PharmacyComponentInner() {
@@ -37,5 +37,5 @@ function PharmacyComponentInner() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

@@ -3,30 +3,30 @@
  * Request and response interceptors for security, audit logging, and error handling
  */
 
-import { SECURITY_CONFIG } from "@health-v1/shared/constants/security"
-import { maskObject } from "./masking"
-import type { ApiResponse, RequestConfig } from "./types"
+import { SECURITY_CONFIG } from "@health-v1/shared/constants/security";
+import { maskObject } from "./masking";
+import type { ApiResponse, RequestConfig } from "./types";
 
-const TOKEN_STORAGE_KEY_ACCESS = "auth_access_token"
-const TOKEN_STORAGE_KEY_REFRESH = "auth_refresh_token"
-let refreshPromise: Promise<string> | null = null
+const TOKEN_STORAGE_KEY_ACCESS = "auth_access_token";
+const TOKEN_STORAGE_KEY_REFRESH = "auth_refresh_token";
+let refreshPromise: Promise<string> | null = null;
 
 /**
  * Store tokens in sessionStorage (more secure than localStorage - cleared on tab close)
  */
 export function setTokens(access: string | null, refresh: string | null) {
-  if (typeof window === "undefined") return
+  if (typeof window === "undefined") return;
 
   if (access) {
-    sessionStorage.setItem(TOKEN_STORAGE_KEY_ACCESS, access)
+    sessionStorage.setItem(TOKEN_STORAGE_KEY_ACCESS, access);
   } else {
-    sessionStorage.removeItem(TOKEN_STORAGE_KEY_ACCESS)
+    sessionStorage.removeItem(TOKEN_STORAGE_KEY_ACCESS);
   }
 
   if (refresh) {
-    sessionStorage.setItem(TOKEN_STORAGE_KEY_REFRESH, refresh)
+    sessionStorage.setItem(TOKEN_STORAGE_KEY_REFRESH, refresh);
   } else {
-    sessionStorage.removeItem(TOKEN_STORAGE_KEY_REFRESH)
+    sessionStorage.removeItem(TOKEN_STORAGE_KEY_REFRESH);
   }
 }
 
@@ -34,16 +34,16 @@ export function setTokens(access: string | null, refresh: string | null) {
  * Get access token from sessionStorage
  */
 export function getAccessToken(): string | null {
-  if (typeof window === "undefined") return null
-  return sessionStorage.getItem(TOKEN_STORAGE_KEY_ACCESS)
+  if (typeof window === "undefined") return null;
+  return sessionStorage.getItem(TOKEN_STORAGE_KEY_ACCESS);
 }
 
 /**
  * Get refresh token from sessionStorage
  */
 export function getRefreshToken(): string | null {
-  if (typeof window === "undefined") return null
-  return sessionStorage.getItem(TOKEN_STORAGE_KEY_REFRESH)
+  if (typeof window === "undefined") return null;
+  return sessionStorage.getItem(TOKEN_STORAGE_KEY_REFRESH);
 }
 
 /**
@@ -56,25 +56,25 @@ export async function requestInterceptor(
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     ...config.headers,
-  }
+  };
 
   // Add authorization token if available (from sessionStorage)
-  const accessToken = getAccessToken()
+  const accessToken = getAccessToken();
   if (accessToken) {
-    headers.Authorization = `Bearer ${accessToken}`
+    headers.Authorization = `Bearer ${accessToken}`;
   }
 
   // Add request ID for audit trail
-  const requestId = crypto.randomUUID()
-  headers["X-Request-ID"] = requestId
+  const requestId = crypto.randomUUID();
+  headers["X-Request-ID"] = requestId;
 
   // Add timestamp
-  headers["X-Request-Timestamp"] = new Date().toISOString()
+  headers["X-Request-Timestamp"] = new Date().toISOString();
 
   return {
     ...config,
     headers,
-  }
+  };
 }
 
 /**
@@ -86,61 +86,61 @@ export async function responseInterceptor<T>(
 ): Promise<ApiResponse<T>> {
   // Handle 401 Unauthorized - trigger token refresh via auth store
   if (response.status === 401) {
-    const refreshToken = getRefreshToken()
+    const refreshToken = getRefreshToken();
     if (refreshToken && !refreshPromise) {
       // Use auth store to refresh token (handles state updates and persistence)
-      const { useAuthStore } = await import("@/stores/authStore")
-      refreshPromise = useAuthStore.getState().refreshToken()
+      const { useAuthStore } = await import("@/stores/authStore");
+      refreshPromise = useAuthStore.getState().refreshToken();
       try {
-        await refreshPromise
+        await refreshPromise;
         // Tokens are now updated in sessionStorage by auth store
       } catch (error) {
         // Refresh failed, clear tokens via auth store
-        useAuthStore.getState().logout()
-        throw error
+        useAuthStore.getState().logout();
+        throw error;
       } finally {
-        refreshPromise = null
+        refreshPromise = null;
       }
     } else {
       // No refresh token, clear tokens via auth store
-      const { useAuthStore } = await import("@/stores/authStore")
-      useAuthStore.getState().logout()
+      const { useAuthStore } = await import("@/stores/authStore");
+      useAuthStore.getState().logout();
     }
   }
 
   // Handle 403 Forbidden - log and show access denied
   if (response.status === 403) {
     // Log unauthorized access attempt
-    console.warn("Access denied:", url)
+    console.warn("Access denied:", url);
     // This would trigger audit logging
-    throw new Error("Access denied")
+    throw new Error("Access denied");
   }
 
   // Parse response
-  let data: T
+  let data: T;
   try {
-    data = await response.json()
+    data = await response.json();
   } catch {
     // Not JSON, return text
-    const text = await response.text()
-    data = text as unknown as T
+    const text = await response.text();
+    data = text as unknown as T;
   }
 
   // Mask sensitive fields in response before caching
   if (SECURITY_CONFIG.AUDIT.LOG_PHI_ACCESS && typeof data === "object" && data !== null) {
-    const fieldsToMask = ["ssn", "email", "phone", "mrn", "creditCard"]
-    data = maskObject(data as Record<string, unknown>, fieldsToMask) as T
+    const fieldsToMask = ["ssn", "email", "phone", "mrn", "creditCard"];
+    data = maskObject(data as Record<string, unknown>, fieldsToMask) as T;
   }
 
   // Log PHI access for audit
   if (SECURITY_CONFIG.AUDIT.LOG_PHI_ACCESS) {
     // This would send to audit log
-    console.debug("PHI access logged:", url)
+    console.debug("PHI access logged:", url);
   }
 
   return {
     data,
-  }
+  };
 }
 
 /**
@@ -148,27 +148,27 @@ export async function responseInterceptor<T>(
  */
 export function errorInterceptor(error: unknown, url: string): ApiError {
   // Sanitize error messages to remove any PHI
-  let message = "An error occurred"
-  let code: string | undefined
+  let message = "An error occurred";
+  let code: string | undefined;
 
   if (error instanceof Error) {
-    message = error.message
+    message = error.message;
     // Remove any potential PHI from error messages
-    message = sanitizeErrorMessage(message)
+    message = sanitizeErrorMessage(message);
   }
 
   if (error instanceof Response) {
-    code = error.status.toString()
-    message = `HTTP ${error.status}: ${error.statusText}`
+    code = error.status.toString();
+    message = `HTTP ${error.status}: ${error.statusText}`;
   }
 
   // Log error securely (masked)
-  console.error("API Error:", { url, code, message: sanitizeErrorMessage(message) })
+  console.error("API Error:", { url, code, message: sanitizeErrorMessage(message) });
 
   return {
     message,
     code,
-  }
+  };
 }
 
 /**
@@ -176,13 +176,13 @@ export function errorInterceptor(error: unknown, url: string): ApiError {
  */
 function sanitizeErrorMessage(message: string): string {
   // Remove email patterns
-  message = message.replace(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g, "[EMAIL]")
+  message = message.replace(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g, "[EMAIL]");
 
   // Remove SSN patterns
-  message = message.replace(/\b\d{3}-\d{2}-\d{4}\b/g, "[SSN]")
+  message = message.replace(/\b\d{3}-\d{2}-\d{4}\b/g, "[SSN]");
 
   // Remove phone patterns
-  message = message.replace(/\b\d{3}-\d{3}-\d{4}\b/g, "[PHONE]")
+  message = message.replace(/\b\d{3}-\d{3}-\d{4}\b/g, "[PHONE]");
 
-  return message
+  return message;
 }

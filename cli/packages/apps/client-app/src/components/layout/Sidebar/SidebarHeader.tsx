@@ -1,11 +1,10 @@
-import { ChevronLeft, Stethoscope } from "lucide-react"
-import { Box } from "@/components/ui/box"
-import { Button } from "@/components/ui/button"
-import { Flex } from "@/components/ui/flex"
+import { Button } from "@/components/ui/button";
+import { Flex } from "@/components/ui/flex";
+import { ChevronLeft, Stethoscope } from "lucide-react";
 
 interface SidebarHeaderProps {
-  isCollapsed: boolean
-  onToggle: () => void
+  isCollapsed: boolean;
+  onToggle: () => void;
 }
 
 export function SidebarHeader({ isCollapsed, onToggle }: SidebarHeaderProps) {
@@ -33,5 +32,5 @@ export function SidebarHeader({ isCollapsed, onToggle }: SidebarHeaderProps) {
         </>
       )}
     </Flex>
-  )
+  );
 }

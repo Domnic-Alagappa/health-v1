@@ -1,13 +1,13 @@
-import { FileText, Printer } from "lucide-react"
-import { getBaseTabActions } from "./base"
-import type { TabActionGroup } from "./types"
+import { FileText, Printer } from "lucide-react";
+import { getBaseTabActions } from "./base";
+import type { TabActionGroup } from "./types";
 
 export function getClinicalTabActions(
   path: string,
   _label: string,
   onAction: (actionId: string, tabPath: string) => void
 ): TabActionGroup[] {
-  const baseActions = getBaseTabActions(path, onAction)
+  const baseActions = getBaseTabActions(path, onAction);
 
   return [
     {
@@ -37,5 +37,5 @@ export function getClinicalTabActions(
         ...baseActions,
       ],
     },
-  ]
+  ];
 }

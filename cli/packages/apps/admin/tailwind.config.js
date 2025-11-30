@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-import sharedConfig from "../../libs/components/tailwind.config.js"
+import sharedConfig from "../../libs/components/tailwind.config.js";
 
 export default {
   ...sharedConfig,
@@ -8,4 +8,4 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
     "../../libs/components/src/**/*.{js,ts,jsx,tsx}",
   ],
-}
+};

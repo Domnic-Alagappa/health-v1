@@ -3,53 +3,53 @@
  * i18n provider component
  */
 
-import { createContext, type ReactNode, useEffect, useMemo, useState } from "react"
+import { type ReactNode, createContext, useEffect, useMemo, useState } from "react";
 import {
+  I18nContext,
   formatCurrencyInLocale,
   formatDateInLocale,
   formatNumberInLocale,
   getLocaleInfo,
   getTranslation,
-  I18nContext,
   isRTL,
-} from "./i18n"
-import { SUPPORTED_LOCALES } from "./types"
+} from "./i18n";
+import { SUPPORTED_LOCALES } from "./types";
 
 export interface TranslationProviderProps {
-  children: ReactNode
-  defaultLocale?: string
+  children: ReactNode;
+  defaultLocale?: string;
 }
 
 export function TranslationProvider({ children, defaultLocale = "en" }: TranslationProviderProps) {
   const [locale, setLocaleState] = useState<string>(() => {
     // Try to get from localStorage
     if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("i18n-locale")
+      const saved = localStorage.getItem("i18n-locale");
       if (saved && SUPPORTED_LOCALES.some((l) => l.code === saved)) {
-        return saved
+        return saved;
       }
     }
-    return defaultLocale
-  })
+    return defaultLocale;
+  });
 
   const setLocale = (newLocale: string) => {
     if (SUPPORTED_LOCALES.some((l) => l.code === newLocale)) {
-      setLocaleState(newLocale)
+      setLocaleState(newLocale);
       if (typeof window !== "undefined") {
-        localStorage.setItem("i18n-locale", newLocale)
-        document.documentElement.setAttribute("lang", newLocale)
-        document.documentElement.setAttribute("dir", isRTL(newLocale) ? "rtl" : "ltr")
+        localStorage.setItem("i18n-locale", newLocale);
+        document.documentElement.setAttribute("lang", newLocale);
+        document.documentElement.setAttribute("dir", isRTL(newLocale) ? "rtl" : "ltr");
       }
     }
-  }
+  };
 
   useEffect(() => {
     // Set initial HTML attributes
     if (typeof window !== "undefined") {
-      document.documentElement.setAttribute("lang", locale)
-      document.documentElement.setAttribute("dir", isRTL(locale) ? "rtl" : "ltr")
+      document.documentElement.setAttribute("lang", locale);
+      document.documentElement.setAttribute("dir", isRTL(locale) ? "rtl" : "ltr");
     }
-  }, [locale])
+  }, [locale]);
 
   const value = useMemo(
     () => ({
@@ -67,7 +67,7 @@ export function TranslationProvider({ children, defaultLocale = "en" }: Translat
       getLocale: () => getLocaleInfo(locale),
     }),
     [locale]
-  )
+  );
 
-  return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>
+  return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
 }
