@@ -61,7 +61,7 @@ export function Canvas({
   return (
     <Box
       ref={canvasRef}
-      className="relative mx-auto bg-white dark:bg-[#2B2B2B] shadow-fluent-3"
+      className="relative mx-auto bg-white"
       style={{
         width: `${canvasWidth}px`,
         height: `${canvasHeight}px`,
@@ -74,7 +74,7 @@ export function Canvas({
         <Card
           key={section.id}
           className={cn(
-            "absolute border-2 cursor-move transition-all bg-[#F4F6F8] dark:bg-[#1E1E1E]",
+            "absolute border-2 cursor-move transition-all bg-[#F4F6F8]",
             selectedSection === section.id
               ? "border-primary shadow-fluent-2 z-10"
               : "border-[#E1E4E8] hover:border-primary/50 z-0",
@@ -97,7 +97,7 @@ export function Canvas({
           </Box>
           {selectedSection === section.id && (
             <Box
-              className="absolute -bottom-1 -right-1 w-4 h-4 bg-primary border-2 border-white dark:border-[#2B2B2B] rounded-full cursor-se-resize z-20"
+              className="absolute -bottom-1 -right-1 w-4 h-4 bg-primary border-2 border-white"
               onMouseDown={(e) => {
                 e.stopPropagation()
                 onSectionResizeStart(e, section.id)
@@ -111,7 +111,7 @@ export function Canvas({
         <Card
           key={group.id}
           className={cn(
-            "absolute border-2 cursor-move transition-all bg-white dark:bg-[#2B2B2B] shadow-fluent-1",
+            "absolute border-2 cursor-move transition-all bg-white",
             selectedGroup === group.id
               ? "border-primary shadow-fluent-2 z-10"
               : "border-[#E1E4E8] hover:border-primary/50 z-0",
@@ -129,7 +129,7 @@ export function Canvas({
           }}
           onMouseDown={(e) => onGroupDragStart(e, group.id)}
         >
-          <Box className="w-full p-3 border-b border-[#E1E4E8] bg-[#F4F6F8] dark:bg-[#1E1E1E]">
+          <Box className="w-full p-3 border-b border-[#E1E4E8] bg-[#F4F6F8]">
             <h4 className="text-sm font-semibold">{group.title || "Group"}</h4>
             {group.description && (
               <p className="text-xs text-muted-foreground mt-1">{group.description}</p>
@@ -171,7 +171,7 @@ export function Canvas({
           </Box>
           {selectedGroup === group.id && (
             <Box
-              className="absolute -bottom-1 -right-1 w-4 h-4 bg-primary border-2 border-white dark:border-[#2B2B2B] rounded-full cursor-se-resize z-20"
+              className="absolute -bottom-1 -right-1 w-4 h-4 bg-primary border-2 border-white"
               onMouseDown={(e) => {
                 e.stopPropagation()
                 onGroupResizeStart(e, group.id)

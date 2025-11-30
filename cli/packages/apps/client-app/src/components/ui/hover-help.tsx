@@ -31,9 +31,9 @@ export function HoverHelp({ content, title, position = "top-right", className }:
             className={cn(
               "opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10",
               "inline-flex items-center justify-center rounded-full",
-              "h-5 w-5 bg-white/90 dark:bg-[#2B2B2B]/90",
-              "border border-[#E1E4E8] dark:border-[#3B3B3B]",
-              "hover:bg-white dark:hover:bg-[#2B2B2B]",
+              "h-5 w-5 bg-white/90",
+              "border border-[#E1E4E8]",
+              "hover:bg-white",
               "shadow-fluent-1",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
               positionClasses[position],
@@ -41,7 +41,7 @@ export function HoverHelp({ content, title, position = "top-right", className }:
             )}
             aria-label={title || "More information"}
           >
-            <Info className="h-3 w-3 text-[#4A4A4E] dark:text-[#A9A9A9]" strokeWidth={2.5} />
+            <Info className="h-3 w-3 text-[#4A4A4E]" strokeWidth={2.5} />
           </button>
         </TooltipTrigger>
         <TooltipContent side="left" className="max-w-xs">

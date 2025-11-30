@@ -18,7 +18,7 @@ function FormBuilderPage() {
   return (
     <Flex direction="column" className="h-screen">
       {/* Builder Type Selector */}
-      <Box className="border-b bg-white dark:bg-[#2B2B2B] px-4 py-3">
+      <Box className="border-b bg-white">
         <Stack spacing="xs">
           <Flex className="items-center gap-2">
             <span className="text-sm font-medium mr-4">Form Builder Type:</span>

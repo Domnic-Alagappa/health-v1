@@ -101,8 +101,6 @@ export const TabItem = memo(function TabItem({
                 !tab.success && [
                   "bg-[#F4F6F8] border-[#E1E4E8] text-[#4A4A4E]",
                   "hover:bg-[#E9EEF3] hover:border-[#D0D6DB] hover:text-[#1C1C1E]",
-                  "dark:bg-[#1E1E1E] dark:text-[#A9A9A9] dark:border-transparent",
-                  "dark:hover:bg-[#2B2B2B] dark:hover:text-white",
                 ],
 
               // Active State - Microsoft Fluent style with 4px bottom border
@@ -110,27 +108,25 @@ export const TabItem = memo(function TabItem({
                 !tab.alert &&
                 !tab.success && [
                   "bg-white border-primary text-primary shadow-fluent-1",
-                  "dark:bg-[#2B2B2B] dark:border-primary dark:text-white",
                 ],
 
               // Alert State
               tab.alert && [
                 isActive
-                  ? "bg-[#FFF5F2] border-warning text-warning shadow-fluent-1 dark:bg-[#2B2B2B]"
-                  : "bg-[#F4F6F8] border-transparent text-warning hover:bg-[#FFF5F2] hover:border-warning dark:bg-[#1E1E1E] dark:hover:bg-[#2B2B2B]",
+                  ? "bg-[#FFF5F2] border-warning text-warning shadow-fluent-1"
+                  : "bg-[#F4F6F8] border-transparent text-warning hover:bg-[#FFF5F2] hover:border-warning",
               ],
 
               // Success State
               tab.success && [
                 isActive
-                  ? "bg-[#F0FAF4] border-accent text-accent shadow-fluent-1 dark:bg-[#2B2B2B]"
-                  : "bg-[#F4F6F8] border-transparent text-accent hover:bg-[#F0FAF4] hover:border-accent dark:bg-[#1E1E1E] dark:hover:bg-[#2B2B2B]",
+                  ? "bg-[#F0FAF4] border-accent text-accent shadow-fluent-1"
+                  : "bg-[#F4F6F8] border-transparent text-accent hover:bg-[#F0FAF4] hover:border-accent",
               ],
 
               // Disabled State
               tab.disabled && [
                 "bg-[#F4F6F8] border-transparent text-[#A5A5A5]",
-                "dark:bg-[#1E1E1E] dark:text-[#A5A5A5]",
               ]
             )}
             style={
@@ -153,7 +149,7 @@ export const TabItem = memo(function TabItem({
               <span
                 className={cn(
                   "shrink-0 transition-colors",
-                  !isActive && !tab.alert && !tab.success && "text-[#4A4A4E] dark:text-[#A9A9A9]",
+                  !isActive && !tab.alert && !tab.success && "text-[#4A4A4E]",
                   tab.alert && "text-warning",
                   tab.success && "text-accent",
                   tab.disabled && "text-[#A5A5A5]"
@@ -174,7 +170,7 @@ export const TabItem = memo(function TabItem({
             <span
               className={cn(
                 "truncate flex-1 capitalize",
-                !isActive && !tab.alert && !tab.success && "text-[#4A4A4E] dark:text-[#A9A9A9]",
+                !isActive && !tab.alert && !tab.success && "text-[#4A4A4E]",
                 tab.alert && "text-warning",
                 tab.success && "text-accent",
                 tab.disabled && "text-[#A5A5A5]"

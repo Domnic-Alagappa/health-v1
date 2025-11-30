@@ -10,7 +10,6 @@ import { persist } from "zustand/middleware"
 interface UIState {
   sidebarCollapsed: boolean
   activeTabId: string | null
-  theme: "light" | "dark" | "system"
   sidebarExpandedItems: Set<string>
   disclosures: Record<string, boolean> // For modals, dialogs, dropdowns, etc.
   preferences: {
@@ -23,7 +22,6 @@ interface UIState {
 interface UIActions {
   setSidebarCollapsed: (collapsed: boolean) => void
   setActiveTabId: (tabId: string | null) => void
-  setTheme: (theme: "light" | "dark" | "system") => void
   toggleSidebarExpand: (path: string) => void
   setSidebarExpandedItems: (items: Set<string>) => void
   openDisclosure: (id: string) => void
@@ -39,7 +37,6 @@ type UIStore = UIState & UIActions
 const initialState: UIState = {
   sidebarCollapsed: false,
   activeTabId: null,
-  theme: "system",
   sidebarExpandedItems: new Set<string>(),
   disclosures: {},
   preferences: {
@@ -60,10 +57,6 @@ export const useUIStore = create<UIStore>()(
 
       setActiveTabId: (tabId: string | null) => {
         set({ activeTabId: tabId })
-      },
-
-      setTheme: (theme: "light" | "dark" | "system") => {
-        set({ theme })
       },
 
       toggleSidebarExpand: (path: string) => {
@@ -133,7 +126,6 @@ export const useUIStore = create<UIStore>()(
       name: "ui-storage", // localStorage key
       partialize: (state) => ({
         sidebarCollapsed: state.sidebarCollapsed,
-        theme: state.theme,
         // Don't persist sidebarExpandedItems (Set is complex to persist, will reset on reload)
         preferences: state.preferences,
         // Don't persist activeTabId or disclosures
@@ -145,8 +137,6 @@ export const useUIStore = create<UIStore>()(
 // Selectors
 export const useSidebarCollapsed = () => useUIStore((state) => state.sidebarCollapsed)
 export const useSetSidebarCollapsed = () => useUIStore((state) => state.setSidebarCollapsed)
-export const useTheme = () => useUIStore((state) => state.theme)
-export const useSetTheme = () => useUIStore((state) => state.setTheme)
 export const useSidebarExpandedItems = () => useUIStore((state) => state.sidebarExpandedItems)
 export const useToggleSidebarExpand = () => useUIStore((state) => state.toggleSidebarExpand)
 export const useUIPreferences = () => useUIStore((state) => state.preferences)

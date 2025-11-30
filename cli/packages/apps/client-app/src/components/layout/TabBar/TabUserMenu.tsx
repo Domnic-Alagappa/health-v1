@@ -52,7 +52,7 @@ export function TabUserMenu() {
   return (
     <div
       className={cn(
-        "flex items-center gap-2 px-2 py-1 bg-[#F4F6F8] dark:bg-[#1E1E1E] shrink-0 border-l border-[#E1E4E8] dark:border-[#2B2B2B]"
+        "flex items-center gap-2 px-2 py-1 bg-[#F4F6F8]"
       )}
     >
       {/* User Menu Dropdown */}

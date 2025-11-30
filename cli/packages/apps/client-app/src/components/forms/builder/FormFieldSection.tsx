@@ -16,7 +16,7 @@ export function FormFieldSection({ field, className }: FormFieldSectionProps) {
       <Box className={cn("col-span-12 my-4", className)}>
         <Box className="relative">
           <Box className="absolute inset-0 flex items-center">
-            <Box className="w-full border-t border-[#E1E4E8] dark:border-[#3B3B3B]"></Box>
+            <Box className="w-full border-t border-[#E1E4E8]"></Box>
           </Box>
           {field.label && (
             <Flex className="relative justify-center text-sm">

@@ -27,7 +27,7 @@ export function TabDragPreview({
       <Flex
         className={cn(
           "items-center gap-2 px-4 py-2.5 rounded-lg border-2 shadow-lg",
-          "bg-white dark:bg-[#2B2B2B]",
+          "bg-white",
           "min-w-[140px] max-w-[220px]",
           isDraggingOutside ? "border-accent" : "border-primary"
         )}

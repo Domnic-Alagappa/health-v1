@@ -11,7 +11,7 @@ interface CanvasToolbarProps {
 
 export function CanvasToolbar({ viewMode, fieldCount, onViewModeChange }: CanvasToolbarProps) {
   return (
-    <Flex className="border-b bg-white dark:bg-[#2B2B2B] px-4 py-2 items-center justify-between">
+    <Flex className="border-b bg-white">
       <Flex className="items-center gap-2">
         <span className="text-sm font-medium">Physical Form Builder</span>
       </Flex>

@@ -234,7 +234,7 @@ export function MyForm() {
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       {/* Left Sidebar - Field Library */}
-      <div className="w-72 border-r bg-[#F4F6F8] dark:bg-[#1E1E1E] p-4 overflow-y-auto">
+      <div className="w-72 border-r bg-[#F4F6F8]">
         <div className="space-y-6">
           {/* Form Settings */}
           <div>
@@ -337,7 +337,7 @@ export function MyForm() {
           onValueChange={(v) => setActiveTab(v as typeof activeTab)}
           className="flex-1 flex flex-col"
         >
-          <div className="border-b bg-white dark:bg-[#2B2B2B] px-4">
+          <div className="border-b bg-white">
             <TabsList className="bg-transparent">
               <TabsTrigger value="edit" className="gap-2">
                 <Settings className="h-4 w-4" />
@@ -357,7 +357,7 @@ export function MyForm() {
           {/* Edit Tab */}
           <TabsContent
             value="edit"
-            className="flex-1 overflow-y-auto p-6 m-0 bg-[#F4F6F8] dark:bg-[#1E1E1E]"
+            className="flex-1 overflow-y-auto p-6 m-0 bg-[#F4F6F8]"
           >
             <Card className="max-w-5xl mx-auto">
               <CardContent className="p-6">
@@ -377,7 +377,7 @@ export function MyForm() {
                           "group relative p-4 rounded-md border-2 transition-all cursor-pointer",
                           selectedField === field.id
                             ? "border-primary bg-primary/5 shadow-fluent-1"
-                            : "border-transparent hover:border-[#E1E4E8] bg-white dark:bg-[#2B2B2B]"
+                            : "border-transparent hover:border-[#E1E4E8] bg-white"
                         )}
                         onClick={() => setSelectedField(field.id)}
                       >
@@ -462,7 +462,7 @@ export function MyForm() {
           {/* Code Tab */}
           <TabsContent
             value="code"
-            className="flex-1 overflow-y-auto p-6 m-0 bg-[#F4F6F8] dark:bg-[#1E1E1E]"
+            className="flex-1 overflow-y-auto p-6 m-0 bg-[#F4F6F8]"
           >
             <Card className="max-w-5xl mx-auto">
               <CardHeader className="flex flex-row items-center justify-between">
@@ -482,7 +482,7 @@ export function MyForm() {
                 </Button>
               </CardHeader>
               <CardContent>
-                <pre className="bg-[#1E1E1E] dark:bg-[#0A0A0A] text-[#D4D4D4] p-4 rounded-md overflow-x-auto text-sm font-mono">
+                <pre className="bg-[#F4F6F8]">
                   <code>{generateCode()}</code>
                 </pre>
               </CardContent>
@@ -492,7 +492,7 @@ export function MyForm() {
           {/* Preview Tab */}
           <TabsContent
             value="preview"
-            className="flex-1 overflow-y-auto p-6 m-0 bg-[#F4F6F8] dark:bg-[#1E1E1E]"
+            className="flex-1 overflow-y-auto p-6 m-0 bg-[#F4F6F8]"
           >
             <Card className="max-w-5xl mx-auto">
               <CardContent className="p-6">
@@ -518,7 +518,7 @@ export function MyForm() {
 
       {/* Right Sidebar - Field Properties */}
       {selectedFieldData && activeTab === "edit" && (
-        <div className="w-80 border-l bg-white dark:bg-[#2B2B2B] p-4 overflow-y-auto">
+        <div className="w-80 border-l bg-white">
           <h3 className="text-sm font-semibold mb-4">Field Properties</h3>
           <div className="space-y-4">
             {/* Basic Properties */}

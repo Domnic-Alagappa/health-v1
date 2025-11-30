@@ -20,9 +20,9 @@ const HelpButton = React.forwardRef<HTMLButtonElement, HelpButtonProps>(
     }
 
     const variantClasses = {
-      default: "text-[#4A4A4E] hover:text-primary dark:text-[#A9A9A9] dark:hover:text-primary",
+      default: "text-[#4A4A4E] hover:text-primary",
       subtle: "text-muted-foreground hover:text-foreground opacity-60 hover:opacity-100",
-      "icon-only": "text-[#4A4A4E] hover:text-primary dark:text-[#A9A9A9] dark:hover:text-primary",
+      "icon-only": "text-[#4A4A4E] hover:text-primary",
     }
 
     return (

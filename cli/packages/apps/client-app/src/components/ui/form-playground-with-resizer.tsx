@@ -285,7 +285,7 @@ export function MyForm() {
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       {/* Left Sidebar */}
-      <div className="w-72 border-r bg-[#F4F6F8] dark:bg-[#1E1E1E] p-4 overflow-y-auto">
+      <div className="w-72 border-r bg-[#F4F6F8]">
         <div className="space-y-6">
           {/* Form Settings */}
           <div>
@@ -384,7 +384,7 @@ export function MyForm() {
       {/* Center - Main Canvas */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Toolbar */}
-        <div className="border-b bg-white dark:bg-[#2B2B2B] px-4 py-2 flex items-center justify-between">
+        <div className="border-b bg-white">
           <div className="flex items-center gap-2">
             <Button
               variant={activeTab === "edit" ? "default" : "outline"}
@@ -419,7 +419,7 @@ export function MyForm() {
         </div>
 
         {/* Canvas */}
-        <div className="flex-1 overflow-y-auto p-6 bg-[#F4F6F8] dark:bg-[#1E1E1E] relative">
+        <div className="flex-1 overflow-y-auto p-6 bg-[#F4F6F8]">
           {showGrid && (
             <div className="absolute inset-0 pointer-events-none opacity-20">
               <div className="grid grid-cols-12 gap-4 h-full p-6">
@@ -456,7 +456,7 @@ export function MyForm() {
                             "group relative rounded-md border-2 transition-all cursor-move",
                             selectedField === field.id
                               ? "border-primary bg-primary/5 shadow-fluent-1"
-                              : "border-transparent hover:border-[#E1E4E8] bg-white dark:bg-[#2B2B2B]",
+                              : "border-transparent hover:border-[#E1E4E8] bg-white",
                             draggedField === field.id && "opacity-50",
                             dragOverIndex === index && "border-primary border-dashed"
                           )}
@@ -555,7 +555,7 @@ export function MyForm() {
                 </Button>
               </CardHeader>
               <CardContent>
-                <pre className="bg-[#1E1E1E] dark:bg-[#0A0A0A] text-[#D4D4D4] p-4 rounded-md overflow-x-auto text-sm font-mono">
+                <pre className="bg-[#F4F6F8]">
                   <code>{generateCode()}</code>
                 </pre>
               </CardContent>
@@ -587,7 +587,7 @@ export function MyForm() {
 
       {/* Right Sidebar - Field Properties */}
       {selectedFieldData && activeTab === "edit" && (
-        <div className="w-80 border-l bg-white dark:bg-[#2B2B2B] p-4 overflow-y-auto">
+        <div className="w-80 border-l bg-white">
           <h3 className="text-sm font-semibold mb-4">Field Properties</h3>
           <div className="space-y-4">
             {/* Basic Properties */}

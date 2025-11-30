@@ -34,7 +34,7 @@ export function CanvasPropertyPanel({
   if (!selectedField && !selectedGroup && !selectedSection) return null
 
   return (
-    <Box className="w-80 border-l bg-white dark:bg-[#2B2B2B] p-4 overflow-y-auto">
+    <Box className="w-80 border-l bg-white">
       {selectedField && (
         <>
           <h3 className="text-sm font-semibold mb-4">Field Properties</h3>

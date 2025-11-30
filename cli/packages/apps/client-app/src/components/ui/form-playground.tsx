@@ -115,7 +115,7 @@ export function FormPlayground() {
   return (
     <div className="flex h-screen overflow-hidden">
       {/* Left Sidebar - Field Library */}
-      <div className="w-64 border-r bg-[#F4F6F8] dark:bg-[#1E1E1E] p-4 overflow-y-auto">
+      <div className="w-64 border-r bg-[#F4F6F8]">
         <div className="space-y-4">
           <div>
             <h3 className="text-sm font-semibold mb-2">Form Settings</h3>
@@ -197,7 +197,7 @@ export function FormPlayground() {
       {/* Center - Form Builder Canvas */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Toolbar */}
-        <div className="border-b bg-white dark:bg-[#2B2B2B] px-4 py-2 flex items-center justify-between">
+        <div className="border-b bg-white">
           <div className="flex items-center gap-2">
             <Button
               variant={previewMode ? "default" : "outline"}
@@ -220,7 +220,7 @@ export function FormPlayground() {
         </div>
 
         {/* Canvas */}
-        <div className="flex-1 overflow-y-auto p-6 bg-[#F4F6F8] dark:bg-[#1E1E1E]">
+        <div className="flex-1 overflow-y-auto p-6 bg-[#F4F6F8]">
           {previewMode ? (
             <Card className="max-w-4xl mx-auto">
               <CardContent className="p-6">
@@ -259,7 +259,7 @@ export function FormPlayground() {
                           "group relative p-4 rounded-md border-2 transition-all",
                           selectedField === field.id
                             ? "border-primary bg-primary/5"
-                            : "border-transparent hover:border-[#E1E4E8] bg-white dark:bg-[#2B2B2B]"
+                            : "border-transparent hover:border-[#E1E4E8] bg-white"
                         )}
                         onClick={() => setSelectedField(field.id)}
                       >
@@ -296,7 +296,7 @@ export function FormPlayground() {
 
       {/* Right Sidebar - Field Properties */}
       {selectedFieldData && !previewMode && (
-        <div className="w-80 border-l bg-white dark:bg-[#2B2B2B] p-4 overflow-y-auto">
+        <div className="w-80 border-l bg-white">
           <h3 className="text-sm font-semibold mb-4">Field Properties</h3>
           <div className="space-y-4">
             {/* Basic Properties */}

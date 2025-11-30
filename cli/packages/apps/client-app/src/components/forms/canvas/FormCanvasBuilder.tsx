@@ -140,7 +140,7 @@ export function FormCanvasBuilder() {
             sheetSize={selectedSheetSize}
           />
         ) : (
-          <Box className="flex-1 overflow-auto bg-[#F4F6F8] dark:bg-[#1E1E1E] p-6">
+          <Box className="flex-1 overflow-auto bg-[#F4F6F8]">
             <Canvas
               canvasRef={canvasRef}
               canvasWidth={canvasConfig.canvasWidth || 1200}

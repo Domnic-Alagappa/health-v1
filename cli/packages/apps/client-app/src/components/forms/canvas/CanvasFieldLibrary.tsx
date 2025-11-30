@@ -62,7 +62,7 @@ export function CanvasFieldLibrary({
   }
 
   return (
-    <Box className="w-72 border-r bg-[#F4F6F8] dark:bg-[#1E1E1E] p-4 overflow-y-auto">
+    <Box className="w-72 border-r bg-[#F4F6F8]">
       <Stack spacing="lg">
         {/* Canvas Settings */}
         <Box>

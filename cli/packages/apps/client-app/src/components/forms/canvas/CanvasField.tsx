@@ -47,7 +47,7 @@ export function CanvasField({
       }}
     >
       {/* Field Content Preview */}
-      <Box className="w-full h-full p-2 bg-white dark:bg-[#2B2B2B] rounded-xs">
+      <Box className="w-full h-full p-2 bg-white">
         {field.imageUrl ? (
           <Box className="w-full h-full flex items-center justify-center bg-gray-50 border border-[#E1E4E8] rounded-xs overflow-hidden">
             <img
@@ -96,7 +96,7 @@ export function CanvasField({
       {/* Resize Handle */}
       {isSelected && (
         <Box
-          className="absolute -bottom-1 -right-1 w-4 h-4 bg-primary border-2 border-white dark:border-[#2B2B2B] rounded-full cursor-se-resize z-20"
+          className="absolute -bottom-1 -right-1 w-4 h-4 bg-primary border-2 border-white"
           onMouseDown={(e) => {
             e.stopPropagation()
             onResizeStart(e)
