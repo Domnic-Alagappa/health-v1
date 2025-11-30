@@ -100,6 +100,20 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         ),
     ));
 
+    // Initialize setup components
+    let setup_repository = Arc::new(infrastructure::repositories::SetupRepositoryImpl::new(pool.clone()));
+    let user_repository_for_setup = Box::new(infrastructure::repositories::UserRepositoryImpl::new(pool.clone()));
+    
+    let setup_organization_use_case = Arc::new(application::use_cases::setup::SetupOrganizationUseCase::new(
+        Box::new(infrastructure::repositories::SetupRepositoryImpl::new(pool.clone())),
+        user_repository_for_setup.clone(),
+    ));
+    
+    let create_super_admin_use_case = Arc::new(application::use_cases::setup::CreateSuperAdminUseCase::new(
+        Box::new(infrastructure::repositories::SetupRepositoryImpl::new(pool.clone())),
+        user_repository_for_setup,
+    ));
+
     // Create application state
     let app_state = shared::AppState {
         login_use_case,
@@ -109,6 +123,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         token_manager: token_manager_arc,
         permission_checker,
         relationship_store,
+        setup_repository,
+        setup_organization_use_case,
+        create_super_admin_use_case,
     };
 
     // Build application router with state, middleware, and CORS
@@ -118,6 +135,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let public_routes = axum::Router::new()
         .route("/health", axum::routing::get(|| async { "OK" }))
         .route("/auth/login", axum::routing::post(presentation::api::handlers::login))
+        .route("/api/setup/status", axum::routing::get(presentation::api::handlers::check_setup_status))
+        .route("/api/setup/initialize", axum::routing::post(presentation::api::handlers::initialize_setup))
         .with_state(app_state_arc.clone());
     
     // Create protected routes with middleware

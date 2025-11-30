@@ -1,0 +1,24 @@
+[package]
+name = "admin-ui"
+version = "0.1.0"
+description = "Health V1 Admin UI"
+authors = ["Health V1 Team"]
+license = ""
+repository = ""
+edition = "2021"
+rust-version = "1.77.2"
+
+[lib]
+name = "admin_ui_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2.5.1", features = [] }
+
+[dependencies]
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+log = "0.4"
+tauri = { version = "2.9.2", features = [] }
+tauri-plugin-log = { version = "2.0", features = [] }
+

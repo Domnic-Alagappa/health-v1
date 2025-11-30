@@ -10,7 +10,9 @@ pub fn create_router() -> Router<Arc<AppState>> {
     // Public routes (no authentication required)
     let public_routes = Router::new()
         .route("/health", get(health_check))
-        .route("/auth/login", post(login));
+        .route("/auth/login", post(login))
+        .route("/api/setup/status", get(check_setup_status))
+        .route("/api/setup/initialize", post(initialize_setup));
 
     // Protected routes (authentication required)
     // Apply auth middleware first, then ACL middleware

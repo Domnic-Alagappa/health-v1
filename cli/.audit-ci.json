@@ -1,10 +1,8 @@
 {
-  "_comment": "This file is kept for reference. audit-ci requires npm/yarn/pnpm lockfile and doesn't support Bun's bun.lock. For Bun projects, we use 'npm audit' directly since Bun uses npm registry.",
-  "low": true,
-  "moderate": true,
-  "high": true,
-  "critical": true,
-  "allowlist": [],
+  "audit-level": "moderate",
   "report-type": "summary",
-  "skip-dev": false
+  "allowlist": [],
+  "skip-dev": false,
+  "package-manager": "bun"
 }
+

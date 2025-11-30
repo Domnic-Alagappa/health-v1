@@ -1,5 +1,8 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-bunx lint-staged --config cli/.lintstagedrc.json
+# Run lint-staged
+npx lint-staged
 
+# Run Biome check
+bun run --filter='*' lint || exit 1

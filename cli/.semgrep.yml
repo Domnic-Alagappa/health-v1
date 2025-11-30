@@ -1,13 +1,70 @@
-# Semgrep configuration for security scanning
-# This file references Semgrep's security rule packs
+rules:
+  - id: ts-insecure-random
+    pattern: Math.random()
+    message: Use crypto.getRandomValues() for secure random number generation
+    languages: [typescript, javascript]
+    severity: ERROR
 
-# Exclude patterns
-exclude:
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/build/**"
-  - "**/target/**"
-  - "**/*.test.{ts,tsx,js,jsx}"
-  - "**/*.spec.{ts,tsx,js,jsx}"
-  - "**/routeTree.gen.ts"
+  - id: ts-hardcoded-secret
+    patterns:
+      - pattern-either:
+          - pattern: (password|secret|key|token|api_key|apikey)\s*=\s*['"](...|...)['"]
+          - pattern: const\s+(PASSWORD|SECRET|KEY|TOKEN|API_KEY|APIKEY)\s*=\s*['"](...|...)['"]
+    message: Hardcoded secrets detected. Use environment variables instead.
+    languages: [typescript, javascript]
+    severity: ERROR
+
+  - id: ts-sql-injection
+    patterns:
+      - pattern-either:
+          - pattern: $query(`SELECT ... $${VAR} ...`)
+          - pattern: $query("SELECT ... " + $VAR + " ...")
+    message: Potential SQL injection. Use parameterized queries.
+    languages: [typescript, javascript]
+    severity: ERROR
+
+  - id: ts-xss
+    patterns:
+      - pattern-either:
+          - pattern: innerHTML = $VAR
+          - pattern: dangerouslySetInnerHTML={{__html: $VAR}}
+    message: Potential XSS vulnerability. Sanitize user input.
+    languages: [typescript, javascript]
+    severity: ERROR
+
+  - id: rust-unsafe-unwrap
+    pattern: .unwrap()
+    message: Avoid unwrap() in production code. Use proper error handling.
+    languages: [rust]
+    severity: WARNING
+
+  - id: rust-hardcoded-secret
+    patterns:
+      - pattern-either:
+          - pattern: let\s+(password|secret|key|token)\s*=\s*['"](...|...)['"]
+          - pattern: const\s+(PASSWORD|SECRET|KEY|TOKEN)\s*:\s*&str\s*=\s*['"](...|...)['"]
+    message: Hardcoded secrets detected. Use environment variables instead.
+    languages: [rust]
+    severity: ERROR
+
+  - id: rust-sql-injection
+    pattern: format!("SELECT ... {} ...", $VAR)
+    message: Potential SQL injection. Use parameterized queries.
+    languages: [rust]
+    severity: ERROR
+
+  - id: general-env-file-commit
+    pattern: .env
+    message: .env files should not be committed. Add to .gitignore.
+    languages: [generic]
+    severity: ERROR
+
+  - id: general-hardcoded-credentials
+    patterns:
+      - pattern-either:
+          - pattern: password\s*[:=]\s*['"](...|...)['"]
+          - pattern: username\s*[:=]\s*['"]admin['"]
+    message: Hardcoded credentials detected.
+    languages: [generic]
+    severity: ERROR
 

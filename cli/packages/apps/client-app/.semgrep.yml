@@ -1,0 +1,13 @@
+# Semgrep configuration for security scanning
+# This file references Semgrep's security rule packs
+
+# Exclude patterns
+exclude:
+  - "**/node_modules/**"
+  - "**/dist/**"
+  - "**/build/**"
+  - "**/target/**"
+  - "**/*.test.{ts,tsx,js,jsx}"
+  - "**/*.spec.{ts,tsx,js,jsx}"
+  - "**/routeTree.gen.ts"
+

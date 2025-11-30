@@ -5,6 +5,11 @@ use crate::application::use_cases::auth::{
     LogoutUseCase,
     UserInfoUseCase,
 };
+use crate::application::use_cases::setup::{
+    SetupOrganizationUseCase,
+    CreateSuperAdminUseCase,
+};
+use crate::domain::repositories::SetupRepository;
 use crate::infrastructure::oidc::TokenManager;
 use crate::infrastructure::zanzibar::{PermissionChecker, RelationshipStore};
 
@@ -16,5 +21,8 @@ pub struct AppState {
     pub token_manager: Arc<TokenManager>,
     pub permission_checker: Arc<PermissionChecker>,
     pub relationship_store: Arc<RelationshipStore>,
+    pub setup_repository: Arc<dyn SetupRepository>,
+    pub setup_organization_use_case: Arc<SetupOrganizationUseCase>,
+    pub create_super_admin_use_case: Arc<CreateSuperAdminUseCase>,
 }
 
