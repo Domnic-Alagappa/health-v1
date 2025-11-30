@@ -60,8 +60,15 @@ pub async fn auth_middleware(
             )
         })?;
 
+    // Get request ID from extensions (set by request_id_middleware)
+    let request_id = request.extensions()
+        .get::<String>()
+        .cloned()
+        .unwrap_or_else(|| Uuid::new_v4().to_string());
+
     // Create request context
     let context = RequestContext::new(
+        request_id,
         user_id,
         claims.email,
         claims.role,

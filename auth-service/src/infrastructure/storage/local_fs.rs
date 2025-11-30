@@ -1,7 +1,7 @@
 use crate::infrastructure::storage::storage_trait::Storage;
 use crate::shared::AppResult;
 use async_trait::async_trait;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use tokio::fs;
 
 pub struct LocalFsStorage {

@@ -3,7 +3,6 @@ use crate::shared::AppResult;
 use async_trait::async_trait;
 use sqlx::{PgPool, Row};
 use uuid::Uuid;
-use chrono::Utc;
 
 pub struct RefreshTokenRepositoryImpl {
     pool: PgPool,

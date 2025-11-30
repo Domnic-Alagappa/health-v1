@@ -1,4 +1,3 @@
-use async_trait::async_trait;
 use crate::domain::entities::Relationship;
 use crate::domain::repositories::RelationshipRepository;
 use crate::shared::AppResult;

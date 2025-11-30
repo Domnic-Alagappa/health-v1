@@ -1,4 +1,3 @@
-use async_trait::async_trait;
 use crate::infrastructure::zanzibar::RelationshipStore;
 use crate::shared::AppResult;
 

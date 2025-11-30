@@ -1,0 +1,17 @@
+target/
+.git/
+.gitignore
+*.md
+.vscode/
+.idea/
+*.log
+*.swp
+*.swo
+*~
+.env
+.env.local
+*.bak
+CACHEDIR.TAG
+doc/
+scripts/
+

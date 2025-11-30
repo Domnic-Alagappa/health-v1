@@ -6,6 +6,7 @@ use axum::http::StatusCode;
 /// Request context containing authenticated user information
 #[derive(Debug, Clone)]
 pub struct RequestContext {
+    pub request_id: String,
     pub user_id: Uuid,
     pub email: String,
     pub role: Option<String>,
@@ -14,17 +15,28 @@ pub struct RequestContext {
 
 impl RequestContext {
     pub fn new(
+        request_id: String,
         user_id: Uuid,
         email: String,
         role: Option<String>,
         permissions: Vec<String>,
     ) -> Self {
         Self {
+            request_id,
             user_id,
             email,
             role,
             permissions,
         }
+    }
+    
+    /// Create audit context from request context
+    pub fn to_audit_context(&self, system_id: Option<String>) -> crate::shared::AuditContext {
+        crate::shared::AuditContext::new(
+            Some(self.request_id.clone()),
+            Some(self.user_id),
+            system_id,
+        )
     }
 
     /// Check if user has a specific permission

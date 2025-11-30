@@ -1,6 +1,7 @@
 use crate::infrastructure::encryption::vault::Vault;
 use crate::shared::AppResult;
 use async_trait::async_trait;
+use base64::{Engine as _, engine::general_purpose::STANDARD};
 use reqwest::Client;
 
 pub struct HashiCorpVault {
@@ -27,7 +28,7 @@ impl Vault for HashiCorpVault {
         let path = format!("{}/v1/{}/data/{}/{}", self.addr, self.mount_path, entity_type, entity_id);
         let data = serde_json::json!({
             "data": {
-                "encrypted_dek": base64::encode(encrypted_dek)
+                "encrypted_dek": STANDARD.encode(encrypted_dek)
             }
         });
         
@@ -62,7 +63,7 @@ impl Vault for HashiCorpVault {
                 .and_then(|d| d.get("encrypted_dek"))
                 .and_then(|v| v.as_str())
             {
-                let dek = base64::decode(encrypted_dek_str)
+                let dek = STANDARD.decode(encrypted_dek_str)
                     .map_err(|e| crate::shared::AppError::Encryption(format!("Base64 decode error: {}", e)))?;
                 Ok(Some(dek))
             } else {

@@ -36,5 +36,19 @@ impl RlsPolicy {
 
         sql
     }
+
+    /// Validate policy SQL expression
+    pub fn validate(&self) -> AppResult<()> {
+        if self.table_name.is_empty() {
+            return Err(crate::shared::AppError::Validation("Table name cannot be empty".to_string()));
+        }
+        if self.policy_name.is_empty() {
+            return Err(crate::shared::AppError::Validation("Policy name cannot be empty".to_string()));
+        }
+        if self.using_expression.is_empty() {
+            return Err(crate::shared::AppError::Validation("Using expression cannot be empty".to_string()));
+        }
+        Ok(())
+    }
 }
 

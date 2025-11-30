@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use uuid::Uuid;
+use chrono::{DateTime, Utc};
 
 /// Zanzibar-style relationship tuple
 /// Format: user:123#member@group:456
@@ -10,18 +11,52 @@ pub struct Relationship {
     pub user: String,        // user:123
     pub relation: String,    // member
     pub object: String,      // group:456
-    pub created_at: chrono::DateTime<chrono::Utc>,
+    pub created_at: DateTime<Utc>,
+    // Audit fields
+    pub request_id: Option<String>,
+    pub updated_at: DateTime<Utc>,
+    pub created_by: Option<Uuid>,
+    pub updated_by: Option<Uuid>,
+    pub system_id: Option<String>,
+    pub version: i64,
 }
 
 impl Relationship {
     pub fn new(user: String, relation: String, object: String) -> Self {
+        let now = Utc::now();
         Self {
             id: Uuid::new_v4(),
             user,
             relation,
             object,
-            created_at: chrono::Utc::now(),
+            created_at: now,
+            request_id: None,
+            updated_at: now,
+            created_by: None,
+            updated_by: None,
+            system_id: None,
+            version: 1,
         }
+    }
+    
+    /// Touch the record (update audit fields)
+    pub fn touch(&mut self, request_id: Option<String>, updated_by: Option<Uuid>) {
+        self.request_id = request_id;
+        self.updated_at = Utc::now();
+        self.updated_by = updated_by;
+        self.version += 1;
+    }
+    
+    /// Set audit fields for create operation
+    pub fn set_audit_create(&mut self, request_id: Option<String>, created_by: Option<Uuid>, system_id: Option<String>) {
+        let now = Utc::now();
+        self.request_id = request_id;
+        self.created_at = now;
+        self.updated_at = now;
+        self.created_by = created_by;
+        self.updated_by = created_by;
+        self.system_id = system_id;
+        self.version = 1;
     }
 
     /// Format as Zanzibar tuple string: user:123#member@group:456

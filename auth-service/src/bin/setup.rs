@@ -1,8 +1,8 @@
 use std::process;
 use dialoguer::{Input, Password, Select};
 use dotenv::dotenv;
-use sqlx::PgPool;
 use auth_service::config::Settings;
+use auth_service::infrastructure::database::{create_pool, DatabaseService};
 use auth_service::infrastructure::repositories::{
     SetupRepositoryImpl, UserRepositoryImpl,
 };
@@ -29,9 +29,9 @@ async fn main() {
         }
     };
 
-    // Connect to database
+    // Connect to database using database service
     println!("Connecting to database...");
-    let pool = match PgPool::connect(&settings.database.url).await {
+    let pool = match create_pool(&settings.database.url).await {
         Ok(p) => {
             println!("✓ Database connected\n");
             p
@@ -41,6 +41,16 @@ async fn main() {
             process::exit(1);
         }
     };
+
+    // Create database service and verify health
+    let db_service = DatabaseService::new(pool.clone());
+    match db_service.health_check().await {
+        Ok(_) => println!("✓ Database health check passed\n"),
+        Err(e) => {
+            eprintln!("Database health check failed: {}", e);
+            process::exit(1);
+        }
+    }
 
     // Run migrations
     println!("Running database migrations...");

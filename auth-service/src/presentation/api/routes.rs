@@ -12,7 +12,8 @@ pub fn create_router() -> Router<Arc<AppState>> {
         .route("/health", get(health_check))
         .route("/auth/login", post(login))
         .route("/api/setup/status", get(check_setup_status))
-        .route("/api/setup/initialize", post(initialize_setup));
+        .route("/api/setup/initialize", post(initialize_setup))
+        .route("/api/services/status", get(get_service_status));
 
     // Protected routes (authentication required)
     // Apply auth middleware first, then ACL middleware

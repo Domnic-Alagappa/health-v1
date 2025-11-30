@@ -46,5 +46,12 @@ impl Query {
         // Apply all filters
         self.filters.iter().all(|f| f(global, value))
     }
+
+    /// Execute query and collect matching results
+    pub async fn execute(&self) -> AppResult<Vec<String>> {
+        // This would query the MUMPS database and return matching values
+        // For now, return empty vec as placeholder
+        Ok(Vec::new())
+    }
 }
 

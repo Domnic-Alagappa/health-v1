@@ -1,0 +1,25 @@
+# Example override file for local development
+# Copy this to docker-compose.override.yml and customize as needed
+# This file is automatically merged with docker-compose.yml
+
+version: '3.8'
+
+services:
+  auth-service:
+    # Mount source code for development (hot reload)
+    volumes:
+      - ./auth-service/src:/app/src:ro
+      - ./auth-service/migrations:/app/migrations:ro
+    # Override environment for development
+    environment:
+      LOG_LEVEL: debug
+      RUST_LOG: debug
+
+  admin-ui:
+    # Use development build for hot reload (if supported)
+    build:
+      target: deps
+    volumes:
+      - ./cli/packages/apps/admin/src:/app/packages/apps/admin/src:ro
+      - ./cli/packages/libs:/app/packages/libs:ro
+

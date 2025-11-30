@@ -1,6 +1,6 @@
 use axum::{Json, extract::State, http::StatusCode, response::IntoResponse};
 use crate::application::dto::{LoginRequest, RefreshTokenRequest};
-use crate::shared::{AppResult, AppState, RequestContext};
+use crate::shared::{AppState, RequestContext};
 use std::sync::Arc;
 
 pub async fn login(

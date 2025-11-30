@@ -23,10 +23,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     info!("Starting auth-service on {}:{}", settings.server.host, settings.server.port);
 
-    // Initialize database connection
+    // Initialize database connection using database service
     info!("Connecting to database...");
-    let pool = sqlx::PgPool::connect(&settings.database.url).await
+    let pool = infrastructure::database::create_pool(&settings.database.url).await
         .map_err(|e| format!("Failed to connect to database: {}", e))?;
+    
+    // Create shared DatabaseService instance for all repositories
+    let database_service = Arc::new(infrastructure::database::DatabaseService::new(pool.clone()));
+    
+    // Verify database health
+    database_service.health_check().await
+        .map_err(|e| format!("Database health check failed: {}", e))?;
+    info!("Database health check passed");
     
     // Run migrations
     info!("Running database migrations...");
@@ -59,63 +67,65 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         settings.oidc.jwt_expiration,
     );
 
-    // Initialize use cases
+    // Initialize use cases using DatabaseService
     let get_permissions_use_case = application::use_cases::auth::GetUserPermissionsUseCase::new(
-        Box::new(infrastructure::repositories::UserRepositoryImpl::new(pool.clone())),
-        Box::new(infrastructure::repositories::RoleRepositoryImpl::new(pool.clone())),
-        Box::new(infrastructure::repositories::PermissionRepositoryImpl::new(pool.clone())),
+        Box::new(infrastructure::repositories::UserRepositoryImpl::new(database_service.clone())),
+        Box::new(infrastructure::repositories::RoleRepositoryImpl::new(database_service.clone())),
+        Box::new(infrastructure::repositories::PermissionRepositoryImpl::new(database_service.clone())),
     );
 
     let login_use_case = Arc::new(application::use_cases::auth::LoginUseCase::new(
-        Box::new(infrastructure::repositories::UserRepositoryImpl::new(pool.clone())),
-        Box::new(infrastructure::repositories::RefreshTokenRepositoryImpl::new(pool.clone())),
-        Box::new(infrastructure::repositories::RoleRepositoryImpl::new(pool.clone())),
-        Box::new(infrastructure::repositories::PermissionRepositoryImpl::new(pool.clone())),
+        Box::new(infrastructure::repositories::UserRepositoryImpl::new(database_service.clone())),
+        Box::new(infrastructure::repositories::RefreshTokenRepositoryImpl::new(database_service.clone())),
+        Box::new(infrastructure::repositories::RoleRepositoryImpl::new(database_service.clone())),
+        Box::new(infrastructure::repositories::PermissionRepositoryImpl::new(database_service.clone())),
         token_manager_clone,
     ));
 
     let refresh_token_use_case = Arc::new(application::use_cases::auth::RefreshTokenUseCase::new(
-        Box::new(infrastructure::repositories::UserRepositoryImpl::new(pool.clone())),
-        Box::new(infrastructure::repositories::RefreshTokenRepositoryImpl::new(pool.clone())),
+        Box::new(infrastructure::repositories::UserRepositoryImpl::new(database_service.clone())),
+        Box::new(infrastructure::repositories::RefreshTokenRepositoryImpl::new(database_service.clone())),
         token_manager_clone2,
     ));
 
     let logout_use_case = Arc::new(application::use_cases::auth::LogoutUseCase::new(
-        Box::new(infrastructure::repositories::RefreshTokenRepositoryImpl::new(pool.clone())),
+        Box::new(infrastructure::repositories::RefreshTokenRepositoryImpl::new(database_service.clone())),
     ));
 
     let userinfo_use_case = Arc::new(application::use_cases::auth::UserInfoUseCase::new(
-        Box::new(infrastructure::repositories::UserRepositoryImpl::new(pool.clone())),
+        Box::new(infrastructure::repositories::UserRepositoryImpl::new(database_service.clone())),
         get_permissions_use_case,
     ));
 
     // Initialize Zanzibar services
     let relationship_store = Arc::new(infrastructure::zanzibar::RelationshipStore::new(
-        Box::new(infrastructure::repositories::RelationshipRepositoryImpl::new(pool.clone())),
+        Box::new(infrastructure::repositories::RelationshipRepositoryImpl::new(database_service.clone())),
     ));
     
     let permission_checker = Arc::new(infrastructure::zanzibar::PermissionChecker::new(
         infrastructure::zanzibar::RelationshipStore::new(
-            Box::new(infrastructure::repositories::RelationshipRepositoryImpl::new(pool.clone())),
+            Box::new(infrastructure::repositories::RelationshipRepositoryImpl::new(database_service.clone())),
         ),
     ));
 
     // Initialize setup components
-    let setup_repository = Arc::new(infrastructure::repositories::SetupRepositoryImpl::new(pool.clone()));
-    let user_repository_for_setup = Box::new(infrastructure::repositories::UserRepositoryImpl::new(pool.clone()));
+    let setup_repository = Arc::new(infrastructure::repositories::SetupRepositoryImpl::new(database_service.clone()));
+    let user_repository_for_setup = Box::new(infrastructure::repositories::UserRepositoryImpl::new(database_service.clone()));
     
     let setup_organization_use_case = Arc::new(application::use_cases::setup::SetupOrganizationUseCase::new(
-        Box::new(infrastructure::repositories::SetupRepositoryImpl::new(pool.clone())),
+        Box::new(infrastructure::repositories::SetupRepositoryImpl::new(database_service.clone())),
         user_repository_for_setup.clone(),
     ));
     
     let create_super_admin_use_case = Arc::new(application::use_cases::setup::CreateSuperAdminUseCase::new(
-        Box::new(infrastructure::repositories::SetupRepositoryImpl::new(pool.clone())),
+        Box::new(infrastructure::repositories::SetupRepositoryImpl::new(database_service.clone())),
         user_repository_for_setup,
     ));
 
     // Create application state
     let app_state = shared::AppState {
+        database_service: database_service.clone(),
+        database_service: database_service.clone(),
         login_use_case,
         refresh_token_use_case,
         logout_use_case,
@@ -137,6 +147,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/auth/login", axum::routing::post(presentation::api::handlers::login))
         .route("/api/setup/status", axum::routing::get(presentation::api::handlers::check_setup_status))
         .route("/api/setup/initialize", axum::routing::post(presentation::api::handlers::initialize_setup))
+        .route("/api/services/status", axum::routing::get(presentation::api::handlers::get_service_status))
         .with_state(app_state_arc.clone());
     
     // Create protected routes with middleware

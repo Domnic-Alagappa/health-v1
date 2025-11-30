@@ -38,3 +38,18 @@ export interface SetupStatusResponse {
   setup_completed_by?: string
 }
 
+export interface ServiceInfo {
+  name: string
+  enabled: boolean
+  operational: boolean
+  healthEndpoint?: string
+  lastChecked?: string
+  error?: string
+}
+
+export interface ServiceStatusResponse {
+  services: ServiceInfo[]
+  overallStatus: string // "operational", "degraded", "down", "unknown"
+  checkedAt: string
+}
+

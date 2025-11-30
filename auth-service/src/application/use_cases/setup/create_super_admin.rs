@@ -2,7 +2,6 @@ use crate::domain::entities::User;
 use crate::domain::repositories::{SetupRepository, UserRepository};
 use crate::shared::AppResult;
 use bcrypt::{hash, DEFAULT_COST};
-use chrono::Utc;
 use uuid::Uuid;
 
 pub struct CreateSuperAdminUseCase {
@@ -73,20 +72,12 @@ impl CreateSuperAdminUseCase {
             .map_err(|e| crate::shared::AppError::Internal(format!("Failed to hash password: {}", e)))?;
 
         // Create super admin user
-        let now = Utc::now();
-        let user = User {
-            id: Uuid::new_v4(),
-            email: email.to_string(),
-            username: Some(username.to_string()),
+        let mut user = User::new_super_user(
+            email.to_string(),
+            username.to_string(),
             password_hash,
-            is_active: true,
-            is_verified: true,
-            is_super_user: true,
-            organization_id,
-            created_at: now,
-            updated_at: now,
-            last_login: None,
-        };
+        );
+        user.organization_id = organization_id;
 
         let created_user = self.user_repository.create(user).await?;
 

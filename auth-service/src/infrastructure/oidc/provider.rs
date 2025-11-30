@@ -32,7 +32,7 @@ impl OidcProvider {
         format!("{}/.well-known/jwks.json", self.issuer)
     }
 
-    pub async fn validate_authorization_code(&self, code: &str) -> AppResult<User> {
+    pub async fn validate_authorization_code(&self, _code: &str) -> AppResult<User> {
         // TODO: Implement authorization code validation
         Err(crate::shared::AppError::Authentication(
             "Authorization code validation not yet implemented".to_string(),

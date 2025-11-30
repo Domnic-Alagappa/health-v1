@@ -3,15 +3,13 @@
  * Centralized API client with environment-based configuration
  */
 
-import { getEnvConfig } from "../env"
-
-const env = getEnvConfig()
+import { env } from "../env"
 
 export const API_CONFIG = {
   BASE_URL: env.VITE_API_BASE_URL || "http://localhost:8080",
-  TIMEOUT: Number(process.env.VITE_API_TIMEOUT) || 30000, // 30 seconds
-  RETRY_ATTEMPTS: Number(process.env.VITE_API_RETRY_ATTEMPTS) || 3,
-  RETRY_DELAY: Number(process.env.VITE_API_RETRY_DELAY) || 1000, // 1 second
+  TIMEOUT: Number(import.meta.env.VITE_API_TIMEOUT) || 30000, // 30 seconds
+  RETRY_ATTEMPTS: Number(import.meta.env.VITE_API_RETRY_ATTEMPTS) || 3,
+  RETRY_DELAY: Number(import.meta.env.VITE_API_RETRY_DELAY) || 1000, // 1 second
 } as const
 
 /**
@@ -69,6 +67,7 @@ export const API_ROUTES = {
     CREATE: "/services",
     UPDATE: (id: string) => `/services/${id}`,
     DELETE: (id: string) => `/services/${id}`,
+    STATUS: "/api/services/status",
   },
 } as const
 

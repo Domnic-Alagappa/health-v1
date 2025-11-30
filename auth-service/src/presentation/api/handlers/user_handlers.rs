@@ -1,5 +1,5 @@
 use axum::{Json, extract::Path, http::StatusCode, response::IntoResponse};
-use crate::application::dto::{CreateUserRequest, UpdateUserRequest, UserResponse};
+use crate::application::dto::{CreateUserRequest, UpdateUserRequest};
 use uuid::Uuid;
 
 pub async fn create_user(

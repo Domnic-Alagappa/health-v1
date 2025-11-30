@@ -19,7 +19,7 @@ impl GenerateDekUseCase {
 
     pub async fn execute(&self, entity_id: Uuid, entity_type: &str) -> AppResult<EncryptionKey> {
         // Generate random 256-bit DEK
-        use aes_gcm::{AeadCore, KeyInit};
+        use aes_gcm::KeyInit;
         use aes_gcm::Aes256Gcm;
         use aes_gcm::aead::rand_core::OsRng;
         let dek = Aes256Gcm::generate_key(&mut OsRng);

@@ -1,5 +1,6 @@
 use crate::infrastructure::encryption::DekManager;
 use crate::shared::AppResult;
+use base64::{Engine as _, engine::general_purpose::STANDARD};
 use uuid::Uuid;
 
 pub struct FieldEncryption {
@@ -19,12 +20,12 @@ impl FieldEncryption {
         // Combine nonce and ciphertext, encode as base64
         let mut combined = nonce;
         combined.extend_from_slice(&ciphertext);
-        Ok(base64::encode(&combined))
+        Ok(STANDARD.encode(&combined))
     }
 
     /// Decrypt a field value
     pub async fn decrypt_field(&self, entity_id: Uuid, entity_type: &str, encrypted_value: &str) -> AppResult<String> {
-        let combined = base64::decode(encrypted_value)
+        let combined = STANDARD.decode(encrypted_value)
             .map_err(|e| crate::shared::AppError::Encryption(format!("Base64 decode error: {}", e)))?;
         
         if combined.len() < 12 {
