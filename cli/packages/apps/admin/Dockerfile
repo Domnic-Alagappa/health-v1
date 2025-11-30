@@ -23,7 +23,7 @@ WORKDIR /app
 
 # Copy dependencies from deps stage
 COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/.bun ./bun
+# Note: .bun directory not needed - Bun is already in the builder image
 
 # Copy all source files
 COPY package.json bun.lock* ./

@@ -3,6 +3,8 @@
  * All API request and response types used across the application
  */
 
+import type { User } from "../types/user"
+
 export interface ApiError {
   message: string;
   code?: string;
