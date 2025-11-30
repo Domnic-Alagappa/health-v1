@@ -3,8 +3,8 @@
  * Utilities for checking permissions in navigation
  */
 
-import type { Permission } from "@/lib/constants/permissions"
-import { PERMISSIONS } from "@/lib/constants/permissions"
+import type { Permission } from "@health-v1/shared/constants/permissions"
+import { PERMISSIONS } from "@health-v1/shared/constants/permissions"
 
 /**
  * Get required permission for a route

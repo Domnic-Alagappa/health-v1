@@ -4,8 +4,8 @@
  */
 
 import type { StateCreator } from "zustand"
-import { FIELD_DEFINITIONS } from "@/lib/constants/fields"
-import { SECURITY_CONFIG } from "@/lib/constants/security"
+import { FIELD_DEFINITIONS } from "@health-v1/shared/constants/fields"
+import { SECURITY_CONFIG } from "@health-v1/shared/constants/security"
 
 interface ValidationError {
   field: string

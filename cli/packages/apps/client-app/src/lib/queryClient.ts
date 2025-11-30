@@ -4,7 +4,7 @@
  */
 
 import { QueryClient } from "@tanstack/react-query"
-import { SECURITY_CONFIG } from "@/lib/constants/security"
+import { SECURITY_CONFIG } from "@health-v1/shared/constants/security"
 
 export const queryClient = new QueryClient({
   defaultOptions: {

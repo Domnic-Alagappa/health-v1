@@ -1,10 +1,7 @@
 /**
  * Constants Index
- * Re-export all constants
+ * Re-export all constants from shared package
  */
 
+export * from "@health-v1/shared/constants"
 export * from "./api"
-export * from "./fields"
-export * from "./oidc"
-export * from "./permissions"
-export * from "./security"

@@ -13,7 +13,7 @@ import {
   maskPhone,
   maskSSN,
 } from "@/lib/api/masking"
-import { SECURITY_CONFIG } from "@/lib/constants/security"
+import { SECURITY_CONFIG } from "@health-v1/shared/constants/security"
 import { useAuth } from "@/stores/authStore"
 
 /**

@@ -49,3 +49,12 @@ aws-sdk-s3.workspace = true
 aws-sdk-kms.workspace = true
 aws-config.workspace = true
 
+# Logging
+tracing.workspace = true
+
+# Web framework (for request context)
+axum.workspace = true
+
+# OIDC/JWT
+jsonwebtoken.workspace = true
+

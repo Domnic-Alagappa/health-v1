@@ -8,7 +8,7 @@ import { Box } from "@/components/ui/box"
 import { Card } from "@/components/ui/card"
 import { Stack } from "@/components/ui/stack"
 import { usePermissions } from "@/hooks/security/usePermissions"
-import type { Permission } from "@/lib/constants/permissions"
+import type { Permission } from "@health-v1/shared/constants/permissions"
 
 interface AccessDeniedProps {
   type: "route" | "tab" | "component" | "api"

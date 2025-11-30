@@ -2,25 +2,10 @@ import type * as React from "react"
 import { cn } from "../lib/utils"
 import { Input } from "./input"
 import { Label } from "./label"
+import type { FormFieldProps } from "@health-v1/shared/types/components/form"
 
-export interface FormFieldProps {
-  id: string
-  label: string
-  type?: string
-  value?: unknown
-  onChange?: (value: unknown) => void
-  onBlur?: () => void
-  error?: string
-  required?: boolean
-  disabled?: boolean
-  placeholder?: string
-  description?: string
-  help?: {
-    content: string | React.ReactNode
-    title?: string
-  }
-  className?: string
-}
+// Re-export from shared
+export type { FormFieldProps }
 
 /**
  * Individual form field component

@@ -1,55 +1,35 @@
 /**
  * API Types
+ * Re-export from shared package
  */
 
-export interface LoginRequest {
-  email: string
-  password: string
-}
+export type {
+  LoginRequest,
+  LoginResponse,
+  RefreshTokenRequest,
+  RefreshTokenResponse,
+  UserInfo,
+  SetupRequest,
+  SetupStatusResponse,
+  ServiceInfo,
+  ServiceStatusResponse,
+  ApiError,
+  ApiResponse,
+} from "@health-v1/shared/api/types"
 
-export interface LoginResponse {
+// Note: Admin app uses snake_case for LoginResponse, but shared uses camelCase
+// This is a compatibility layer - consider migrating admin to camelCase
+export interface LoginResponseSnakeCase {
   access_token: string
   refresh_token: string
   token_type: string
   expires_in: number
 }
 
-export interface UserInfo {
+// Admin-specific UserInfo with organization_id
+export interface UserInfoWithOrg extends Omit<import("@health-v1/shared/api/types").UserInfo, "sub"> {
   id: string
-  email: string
   username: string
-  role: string
-  permissions: string[]
   organization_id?: string
-}
-
-export interface SetupRequest {
-  organization_name: string
-  organization_slug: string
-  organization_domain?: string
-  admin_email: string
-  admin_username: string
-  admin_password: string
-}
-
-export interface SetupStatusResponse {
-  setup_completed: boolean
-  setup_completed_at?: string
-  setup_completed_by?: string
-}
-
-export interface ServiceInfo {
-  name: string
-  enabled: boolean
-  operational: boolean
-  healthEndpoint?: string
-  lastChecked?: string
-  error?: string
-}
-
-export interface ServiceStatusResponse {
-  services: ServiceInfo[]
-  overallStatus: string // "operational", "degraded", "down", "unknown"
-  checkedAt: string
 }
 

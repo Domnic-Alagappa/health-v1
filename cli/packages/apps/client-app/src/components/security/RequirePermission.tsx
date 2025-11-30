@@ -6,7 +6,7 @@
 import { Box } from "@/components/ui/box"
 import { useAuditLog } from "@/hooks/security/useAuditLog"
 import { usePermissions } from "@/hooks/security/usePermissions"
-import type { Permission } from "@/lib/constants/permissions"
+import type { Permission } from "@health-v1/shared/constants/permissions"
 import { AccessDenied } from "./AccessDenied"
 
 interface RequirePermissionProps {

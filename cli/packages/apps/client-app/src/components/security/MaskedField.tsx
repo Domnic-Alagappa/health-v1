@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Flex } from "@/components/ui/flex"
 import { useAuditLog } from "@/hooks/security/useAuditLog"
 import { useMasking } from "@/hooks/security/useMasking"
-import type { MaskingLevel } from "@/lib/constants/security"
+import type { MaskingLevel } from "@health-v1/shared/constants/security"
 
 interface MaskedFieldProps {
   value: string

@@ -7,7 +7,7 @@ import { Box } from "@/components/ui/box"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { registerComponent } from "@/components/ui/component-registry"
-import { PERMISSIONS } from "@/lib/constants/permissions"
+import { PERMISSIONS } from "@health-v1/shared/constants/permissions"
 
 export const Route = createFileRoute("/patients/$patientId")({
   component: PatientDetailComponent,

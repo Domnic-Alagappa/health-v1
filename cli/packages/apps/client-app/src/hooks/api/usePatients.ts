@@ -8,7 +8,7 @@ import { useAuditLog } from "@/hooks/security/useAuditLog"
 import { useMasking } from "@/hooks/security/useMasking"
 import { apiClient } from "@/lib/api/client"
 import type { Patient } from "@/lib/api/types"
-import { API_ROUTES } from "@/lib/constants/api"
+import { API_ROUTES } from "@health-v1/shared/api/routes"
 
 const PATIENTS_QUERY_KEYS = {
   all: ["patients"] as const,

@@ -3,7 +3,7 @@
  * Request and response interceptors for security, audit logging, and error handling
  */
 
-import { SECURITY_CONFIG } from "@/lib/constants/security"
+import { SECURITY_CONFIG } from "@health-v1/shared/constants/security"
 import { maskObject } from "./masking"
 import type { ApiResponse, RequestConfig } from "./types"
 

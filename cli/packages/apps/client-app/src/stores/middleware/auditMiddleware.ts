@@ -4,7 +4,7 @@
  */
 
 import type { StateCreator } from "zustand"
-import { SECURITY_CONFIG } from "@/lib/constants/security"
+import { SECURITY_CONFIG } from "@health-v1/shared/constants/security"
 import { useAuditStore } from "../auditStore"
 import { useAuthStore } from "../authStore"
 

@@ -3,7 +3,8 @@
  * Authentication-related API calls
  */
 
-import { API_ROUTES, OIDC_CONFIG } from "@/lib/constants"
+import { API_ROUTES } from "@health-v1/shared/api/routes"
+import { OIDC_CONFIG } from "@health-v1/shared/constants/oidc"
 import { apiClient } from "./client"
 import type {
   LoginRequest,

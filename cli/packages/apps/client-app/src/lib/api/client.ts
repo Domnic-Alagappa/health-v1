@@ -3,7 +3,10 @@
  * Secure fetch wrapper with interceptors, token refresh, and error handling
  */
 
-import { API_BASE_URL, type API_ROUTES, API_TIMEOUT } from "@/lib/constants/api"
+import { API_ROUTES } from "@health-v1/shared/api/routes"
+import { API_CONFIG } from "@health-v1/shared/api/config"
+const API_BASE_URL = API_CONFIG.BASE_URL
+const API_TIMEOUT = API_CONFIG.TIMEOUT
 import {
   errorInterceptor,
   requestInterceptor,

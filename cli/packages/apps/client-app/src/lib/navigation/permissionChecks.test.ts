@@ -3,7 +3,7 @@
  */
 
 import { describe, expect, it } from "vitest"
-import { PERMISSIONS } from "@/lib/constants/permissions"
+import { PERMISSIONS } from "@health-v1/shared/constants/permissions"
 import { canAccessRoute, getRoutePermission } from "./permissionChecks"
 
 describe("Permission Checks", () => {

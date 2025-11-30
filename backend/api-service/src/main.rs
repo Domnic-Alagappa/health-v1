@@ -122,9 +122,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     ));
 
     // Create application state
-    let app_state = shared::AppState {
+    use api_service::AppState;
+    let app_state = AppState {
         database_service: database_service.clone(),
-        database_service: database_service.clone(),
+        database_pool: pool.clone(),
         login_use_case,
         refresh_token_use_case,
         logout_use_case,

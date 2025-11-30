@@ -5,38 +5,18 @@
 
 import { create } from "zustand"
 
-export interface VoiceCommandState {
-  isListening: boolean
-  isProcessing: boolean
-  lastCommand: string | null
-  lastIntent: string | null
-  error: string | null
-  commandHistory: Array<{
-    command: string
-    intent: string
-    timestamp: number
-    success: boolean
-  }>
-  currentWorkflow: {
-    type: string
-    step: number
-    data: Record<string, unknown>
-  } | null
-}
+import type {
+  VoiceCommandState,
+  VoiceCommandActions,
+  VoiceCommandStore,
+} from "@health-v1/shared/types/stores/voice"
 
-interface VoiceCommandActions {
-  startListening: () => void
-  stopListening: () => void
-  setProcessing: (processing: boolean) => void
-  setLastCommand: (command: string | null) => void
-  setLastIntent: (intent: string | null) => void
-  setError: (error: string | null) => void
-  addToHistory: (command: string, intent: string, success: boolean) => void
-  setCurrentWorkflow: (workflow: VoiceCommandState["currentWorkflow"]) => void
-  clearHistory: () => void
+// Re-export types
+export type {
+  VoiceCommandState,
+  VoiceCommandActions,
+  VoiceCommandStore,
 }
-
-type VoiceCommandStore = VoiceCommandState & VoiceCommandActions
 
 const initialState: VoiceCommandState = {
   isListening: false,

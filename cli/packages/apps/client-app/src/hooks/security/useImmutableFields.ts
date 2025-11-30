@@ -4,8 +4,8 @@
  */
 
 import { useCallback } from "react"
-import { FIELD_DEFINITIONS, SECURITY_CONFIG } from "@/lib/constants"
-import type { EntityType, FieldName } from "@/lib/constants/fields"
+import { FIELD_DEFINITIONS, SECURITY_CONFIG } from "@health-v1/shared/constants"
+import type { EntityType, FieldName } from "@health-v1/shared/constants/fields"
 
 export function useImmutableFields() {
   const isImmutable = useCallback(

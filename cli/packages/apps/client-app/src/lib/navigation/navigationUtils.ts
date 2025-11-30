@@ -3,7 +3,7 @@
  * Helper functions for navigation with security
  */
 
-import type { Permission } from "@/lib/constants/permissions"
+import type { Permission } from "@health-v1/shared/constants/permissions"
 import { canAccessRoute } from "./permissionChecks"
 
 /**

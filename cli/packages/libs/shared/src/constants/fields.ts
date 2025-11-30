@@ -28,3 +28,4 @@ export const FIELD_DEFINITIONS = {
 export type FieldType = "string" | "number" | "date" | "timestamp" | "array" | "boolean"
 export type EntityType = keyof typeof FIELD_DEFINITIONS
 export type FieldName<T extends EntityType> = keyof (typeof FIELD_DEFINITIONS)[T]
+

@@ -1,0 +1,44 @@
+/**
+ * English translation labels
+ */
+
+export const en = {
+  common: {
+    save: "Save",
+    cancel: "Cancel",
+    delete: "Delete",
+    submit: "Submit",
+    close: "Close",
+    open: "Open",
+    edit: "Edit",
+    search: "Search",
+    loading: "Loading...",
+    error: "Error",
+    success: "Success",
+  },
+  forms: {
+    patientRegistration: "Patient Registration Form",
+    name: "Full Name",
+    mobile: "Mobile Number",
+    email: "Email",
+    required: "This field is required",
+  },
+  actions: {
+    fillForm: "Fill Form",
+    submit: "Submit",
+    clickSubmit: "Click Submit",
+    clickSave: "Click Save",
+    clickCancel: "Click Cancel",
+  },
+  accessibility: {
+    voiceCommands: "Voice Commands",
+    highContrast: "High Contrast",
+    fontSize: "Font Size",
+    colorBlindMode: "Color Blind Mode",
+    showCaptions: "Show Captions",
+    keyboardNavigation: "Keyboard Navigation",
+  },
+} as const
+
+export type EnglishLabels = typeof en
+

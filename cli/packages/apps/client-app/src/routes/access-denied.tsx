@@ -7,7 +7,7 @@ import { createFileRoute } from "@tanstack/react-router"
 import { AccessDenied } from "@/components/security/AccessDenied"
 import { Container } from "@/components/ui/container"
 import { usePermissions } from "@/hooks/security/usePermissions"
-import { PERMISSIONS } from "@/lib/constants/permissions"
+import { PERMISSIONS } from "@health-v1/shared/constants/permissions"
 
 export const Route = createFileRoute("/access-denied")({
   component: AccessDeniedPage,

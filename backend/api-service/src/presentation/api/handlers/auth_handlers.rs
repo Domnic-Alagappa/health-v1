@@ -1,6 +1,7 @@
 use axum::{Json, extract::State, http::StatusCode, response::IntoResponse};
 use authz_core::dto::{LoginRequest, RefreshTokenRequest};
-use shared::{AppState, RequestContext};
+use shared::RequestContext;
+use api_service::AppState;
 use std::sync::Arc;
 
 pub async fn login(

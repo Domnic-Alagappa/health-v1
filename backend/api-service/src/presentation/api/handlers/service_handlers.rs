@@ -1,7 +1,7 @@
 use axum::{Json, extract::State, http::StatusCode, response::IntoResponse};
 use chrono::Utc;
 use admin_service::dto::{ServiceStatusResponse, ServiceInfo};
-use shared::AppState;
+use api_service::AppState;
 use std::sync::Arc;
 use std::env;
 use std::time::Duration;

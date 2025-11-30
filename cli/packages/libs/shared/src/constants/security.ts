@@ -57,3 +57,4 @@ export const SECURITY_CONFIG = {
 
 export type MaskingLevel = "partial" | "complete"
 export type ImmutableField = (typeof SECURITY_CONFIG.IMMUTABLE_FIELDS)[number]
+

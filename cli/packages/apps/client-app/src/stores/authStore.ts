@@ -12,8 +12,8 @@ import {
   refreshAccessToken,
 } from "@/lib/api/auth"
 import { apiClient } from "@/lib/api/client"
-import type { User } from "@/lib/api/types"
-import { SECURITY_CONFIG } from "@/lib/constants/security"
+import type { User } from "@health-v1/shared/types/user"
+import { SECURITY_CONFIG } from "@health-v1/shared/constants/security"
 
 const TOKEN_STORAGE_KEY_ACCESS = "auth_access_token"
 const TOKEN_STORAGE_KEY_REFRESH = "auth_refresh_token"

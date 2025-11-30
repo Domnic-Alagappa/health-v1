@@ -4,7 +4,7 @@ use axum::{
 };
 use api_service::presentation::api::handlers::*;
 use std::sync::Arc;
-use shared::AppState;
+use api_service::AppState;
 
 pub fn create_router() -> Router<Arc<AppState>> {
     // Public routes (no authentication required)

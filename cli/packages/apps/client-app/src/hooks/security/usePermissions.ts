@@ -4,7 +4,7 @@
  */
 
 import { useCallback, useMemo } from "react"
-import { PERMISSIONS, type Permission, ROLE_PERMISSIONS } from "@/lib/constants/permissions"
+import { PERMISSIONS, type Permission, ROLE_PERMISSIONS } from "@health-v1/shared/constants/permissions"
 import { useAuthStore } from "@/stores/authStore"
 
 export function usePermissions() {

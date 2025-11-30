@@ -1,129 +1,43 @@
 import type * as React from "react"
 import { HelpButton, type HelpButtonProps } from "./help-button"
 import { cn } from "../lib/utils"
+import type {
+  ActionItem,
+  ComponentStructure,
+  FieldStructure,
+  OptionStructure,
+  ColumnStructure,
+  RowStructure,
+  ActionStructure,
+  SectionStructure,
+  DataPointStructure,
+  ValidationRules,
+  ComponentConfig as SharedComponentConfig,
+} from "@health-v1/shared/types/components/registry"
 
 /**
  * Component Registry - Centralized component configuration and customization
  * This allows for consistent hint/help buttons and component customization across the app
  */
 
-/**
- * Action Item - Available actions for voice commands and screen readers
- */
-export interface ActionItem {
-  readonly id: string
-  readonly label: string
-  readonly action: () => void | Promise<void>
-  readonly i18nKey?: string
-  readonly voiceCommand?: string | string[] // Voice command patterns that trigger this action
-  readonly confirmationRequired?: boolean
+// Re-export types from shared
+export type {
+  ActionItem,
+  ComponentStructure,
+  FieldStructure,
+  OptionStructure,
+  ColumnStructure,
+  RowStructure,
+  ActionStructure,
+  SectionStructure,
+  DataPointStructure,
+  ValidationRules,
 }
 
-/**
- * Component Structure - Exposes component's internal structure to LLM
- */
-export interface ComponentStructure {
-  readonly type:
-    | "form"
-    | "button"
-    | "dropdown"
-    | "table"
-    | "modal"
-    | "card"
-    | "input"
-    | "navigation"
-    | "other"
-  readonly fields?: FieldStructure[]
-  readonly options?: OptionStructure[]
-  readonly columns?: ColumnStructure[]
-  readonly rows?: RowStructure[]
-  readonly actions?: ActionStructure[]
-  readonly sections?: SectionStructure[]
-  readonly dataPoints?: DataPointStructure[]
-  readonly validation?: ValidationRules
-  readonly currentValue?: string | number | boolean
-  readonly content?: string
-  readonly label?: string
-  readonly placeholder?: string
-}
-
-export interface FieldStructure {
-  readonly id: string
-  readonly label: string
-  readonly placeholder?: string
-  readonly type: string
-  readonly required?: boolean
-  readonly validation?: ValidationRules
-  readonly ref?: { current: HTMLElement | null }
-}
-
-export interface OptionStructure {
-  readonly value: string | number
-  readonly label: string
-  readonly disabled?: boolean
-}
-
-export interface ColumnStructure {
-  readonly id: string
-  readonly label: string
-  readonly sortable?: boolean
-  readonly filterable?: boolean
-}
-
-export interface RowStructure {
-  readonly id: string
-  readonly data: Record<string, unknown>
-}
-
-export interface ActionStructure {
-  readonly id: string
-  readonly label: string
-  readonly type: "button" | "link" | "menu-item"
-  readonly ref?: { current: HTMLElement | null }
-  readonly confirmationRequired?: boolean
-}
-
-export interface SectionStructure {
-  readonly id: string
-  readonly label: string
-  readonly content?: string
-}
-
-export interface DataPointStructure {
-  readonly id: string
-  readonly label: string
-  readonly value: string | number
-}
-
-export interface ValidationRules {
-  readonly required?: boolean
-  readonly minLength?: number
-  readonly maxLength?: number
-  readonly pattern?: string
-  readonly min?: number
-  readonly max?: number
-  readonly errorMessage?: string
-}
-
-export interface ComponentConfig {
-  readonly showHelp?: boolean
-  readonly helpContent?: string | React.ReactNode
-  readonly helpTitle?: string
+// Extend ComponentConfig to include HelpButtonProps types
+export interface ComponentConfig extends Omit<SharedComponentConfig, "helpVariant" | "helpSize"> {
   readonly helpVariant?: HelpButtonProps["variant"]
   readonly helpSize?: HelpButtonProps["size"]
-  readonly className?: string
-  readonly customizations?: Readonly<Record<string, unknown>>
-  // Accessibility metadata
-  readonly ariaLabel?: string
-  readonly ariaLabelledBy?: string
-  readonly ariaDescribedBy?: string
-  readonly role?: string
-  readonly i18nKey?: string
-  // Voice command support
-  readonly voiceInteractable?: boolean // Whether component supports voice interaction (default: true)
-  readonly voiceDescription?: string // How to describe this component for voice commands
-  readonly actionItems?: ActionItem[] // Available actions for voice commands
-  readonly componentStructure?: ComponentStructure // Expose component structure to LLM
 }
 
 export interface ComponentWithHelpProps {

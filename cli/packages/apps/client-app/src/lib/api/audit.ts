@@ -3,7 +3,7 @@
  * Audit logging utilities for tracking sensitive operations
  */
 
-import { SECURITY_CONFIG } from "@/lib/constants/security"
+import { SECURITY_CONFIG } from "@health-v1/shared/constants/security"
 import { apiClient } from "./client"
 import { maskObject } from "./masking"
 import type { AuditEntry } from "./types"

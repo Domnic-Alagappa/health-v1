@@ -3,7 +3,8 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { API_BASE_URL } from "@/lib/constants/api"
+import { API_CONFIG } from "@health-v1/shared/api/config"
+const API_BASE_URL = API_CONFIG.BASE_URL
 import {
   getAccessToken,
   getRefreshToken,

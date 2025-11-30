@@ -8,39 +8,16 @@ import type { ReactNode } from "react"
 import { create } from "zustand"
 import { immer } from "zustand/middleware/immer"
 import { logAccessDenied } from "@/lib/api/audit"
-import type { Permission } from "@/lib/constants/permissions"
+import type { Permission } from "@health-v1/shared/constants/permissions"
 import { reorderTabsArray } from "@/lib/dragUtils"
 import { canAccessRoute, getRoutePermission } from "@/lib/navigation/permissionChecks"
 import { useAuditStore } from "@/stores/auditStore"
 import { useAuthStore } from "@/stores/authStore"
 
-export interface Tab {
-  id: string
-  label: string
-  path: string
-  icon?: ReactNode
-  closable?: boolean
-  allowDuplicate?: boolean // If true, allows multiple tabs with same path (for forms, etc.)
-  requiredPermission?: Permission // Permission required to open this tab
-  accessDenied?: boolean // True if access was denied
-}
+import type { Tab, TabState, TabActions, TabStore } from "@health-v1/shared/types/stores/tab"
 
-interface TabState {
-  tabs: Tab[]
-  activeTabId: string | null
-}
-
-interface TabActions {
-  openTab: (tab: Omit<Tab, "id">, navigate?: (path: string) => void) => void
-  closeTab: (tabId: string, navigate?: (path: string) => void) => void
-  setActiveTab: (tabId: string, navigate?: (path: string) => void) => void
-  closeAllTabs: (navigate?: (path: string) => void) => void
-  reorderTabs: (draggedId: string, targetIndex: number) => void
-  getTabById: (id: string) => Tab | undefined
-  getTabByPath: (path: string) => Tab | undefined
-}
-
-type TabStore = TabState & TabActions
+// Re-export types
+export type { Tab, TabState, TabActions, TabStore }
 
 // Maximum number of tabs to prevent memory issues
 const MAX_TABS = 50

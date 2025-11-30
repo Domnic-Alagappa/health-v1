@@ -5,7 +5,7 @@
  */
 
 import type { StateCreator } from "zustand"
-import { SECURITY_CONFIG } from "@/lib/constants/security"
+import { SECURITY_CONFIG } from "@health-v1/shared/constants/security"
 
 // Fields that should be encrypted in state
 const ENCRYPTED_FIELDS = ["ssn", "creditCard", "password", "token", "secret"]

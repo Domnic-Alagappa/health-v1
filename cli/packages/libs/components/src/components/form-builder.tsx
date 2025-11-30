@@ -96,28 +96,9 @@ export interface FormFieldGroup {
   defaultCollapsed?: boolean
 }
 
-export interface FormConfig {
-  id: string
-  title?: string
-  description?: string
-  fields: FormField[]
-  groups?: FormFieldGroup[]
-  submitLabel?: string
-  cancelLabel?: string
-  showCancel?: boolean
-  layout?: "single" | "two-column" | "three-column" | "four-column" | "custom"
-  gridColumns?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12
-  gap?: "none" | "sm" | "md" | "lg" | "xl"
-  className?: string
-}
-
-export interface FormBuilderProps {
-  config: FormConfig
-  onSubmit: (data: Record<string, unknown>) => void | Promise<void>
-  onCancel?: () => void
-  initialValues?: Record<string, unknown>
-  className?: string
-}
+// Form-builder has its own more detailed types
+// Re-export shared FormFieldProps for compatibility
+export type { FormFieldProps } from "@health-v1/shared/types/components/form"
 
 // Re-export the refactored FormBuilder component
 export { FormBuilder } from "@/components/forms/builder"

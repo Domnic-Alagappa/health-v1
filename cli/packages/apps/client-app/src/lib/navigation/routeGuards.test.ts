@@ -3,7 +3,7 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { PERMISSIONS } from "@/lib/constants/permissions"
+import { PERMISSIONS } from "@health-v1/shared/constants/permissions"
 import { useAuthStore } from "@/stores/authStore"
 import { checkRoutePermission, createRouteGuard } from "./routeGuards"
 

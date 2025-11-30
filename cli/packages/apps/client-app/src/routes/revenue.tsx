@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router"
 import { CreditCard, DollarSign, TrendingUp } from "lucide-react"
 import { ProtectedRoute } from "@/components/security/ProtectedRoute"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { PERMISSIONS } from "@/lib/constants/permissions"
+import { PERMISSIONS } from "@health-v1/shared/constants/permissions"
 
 export const Route = createFileRoute("/revenue")({
   component: RevenueComponent,

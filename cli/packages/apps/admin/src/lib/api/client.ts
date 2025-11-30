@@ -1,84 +1,19 @@
 /**
  * API Client Configuration
- * Centralized API client with environment-based configuration
+ * Re-export from shared package with admin-specific overrides if needed
  */
 
 import { env } from "../env"
+import { API_CONFIG as SHARED_API_CONFIG, API_ROUTES, getApiUrl } from "@health-v1/shared/api"
 
+// Use shared config but allow admin-specific env overrides
 export const API_CONFIG = {
-  BASE_URL: env.VITE_API_BASE_URL || "http://localhost:8080",
-  TIMEOUT: Number(import.meta.env.VITE_API_TIMEOUT) || 30000, // 30 seconds
-  RETRY_ATTEMPTS: Number(import.meta.env.VITE_API_RETRY_ATTEMPTS) || 3,
-  RETRY_DELAY: Number(import.meta.env.VITE_API_RETRY_DELAY) || 1000, // 1 second
+  ...SHARED_API_CONFIG,
+  BASE_URL: env.VITE_API_BASE_URL || SHARED_API_CONFIG.BASE_URL,
 } as const
 
-/**
- * API Routes
- */
-export const API_ROUTES = {
-  // Health check
-  HEALTH: "/health",
-
-  // Authentication
-  AUTH: {
-    LOGIN: "/auth/login",
-    LOGOUT: "/auth/logout",
-    REFRESH: "/auth/token",
-    USERINFO: "/auth/userinfo",
-  },
-
-  // Setup
-  SETUP: {
-    INITIALIZE: "/setup/initialize",
-    STATUS: "/setup/status",
-  },
-
-  // Users
-  USERS: {
-    LIST: "/users",
-    GET: (id: string) => `/users/${id}`,
-    CREATE: "/users",
-    UPDATE: (id: string) => `/users/${id}`,
-    DELETE: (id: string) => `/users/${id}`,
-  },
-
-  // Organizations
-  ORGANIZATIONS: {
-    LIST: "/organizations",
-    GET: (id: string) => `/organizations/${id}`,
-    CREATE: "/organizations",
-    UPDATE: (id: string) => `/organizations/${id}`,
-    DELETE: (id: string) => `/organizations/${id}`,
-  },
-
-  // Permissions
-  PERMISSIONS: {
-    LIST: "/permissions",
-    GET: (id: string) => `/permissions/${id}`,
-    CREATE: "/permissions",
-    UPDATE: (id: string) => `/permissions/${id}`,
-    DELETE: (id: string) => `/permissions/${id}`,
-  },
-
-  // Services
-  SERVICES: {
-    LIST: "/services",
-    GET: (id: string) => `/services/${id}`,
-    CREATE: "/services",
-    UPDATE: (id: string) => `/services/${id}`,
-    DELETE: (id: string) => `/services/${id}`,
-    STATUS: "/api/services/status",
-  },
-} as const
-
-/**
- * Create full API URL
- */
-export function getApiUrl(path: string): string {
-  const baseUrl = API_CONFIG.BASE_URL.replace(/\/$/, "")
-  const apiPath = path.startsWith("/") ? path : `/${path}`
-  return `${baseUrl}${apiPath}`
-}
+// Re-export routes and getApiUrl from shared
+export { API_ROUTES, getApiUrl }
 
 /**
  * API Client with fetch wrapper

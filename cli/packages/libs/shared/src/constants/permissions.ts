@@ -125,3 +125,4 @@ export const ROLE_PERMISSIONS: Record<string, Permission[]> = {
     PERMISSIONS.SCHEDULING.UPDATE,
   ],
 }
+

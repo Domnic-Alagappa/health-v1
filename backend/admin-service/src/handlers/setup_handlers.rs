@@ -1,5 +1,7 @@
 use axum::{Json, extract::State, http::StatusCode, response::IntoResponse};
 use serde::{Deserialize, Serialize};
+// Note: AppState is defined in api-service, but admin-service handlers are used by api-service
+// So we import from shared which has the generic type
 use shared::AppState;
 use std::sync::Arc;
 use uuid::Uuid;

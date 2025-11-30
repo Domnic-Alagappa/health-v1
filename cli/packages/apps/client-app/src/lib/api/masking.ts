@@ -4,7 +4,7 @@
  * Supports complete, partial, and contextual masking
  */
 
-import { type MaskingLevel, SECURITY_CONFIG } from "@/lib/constants/security"
+import { type MaskingLevel, SECURITY_CONFIG } from "@health-v1/shared/constants/security"
 
 export interface MaskingConfig {
   level: MaskingLevel

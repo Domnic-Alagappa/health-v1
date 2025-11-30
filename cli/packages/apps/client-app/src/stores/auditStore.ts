@@ -6,23 +6,13 @@
 import { create } from "zustand"
 import { immer } from "zustand/middleware/immer"
 import { maskObject } from "@/lib/api/masking"
-import type { AuditEntry } from "@/lib/api/types"
-import { SECURITY_CONFIG } from "@/lib/constants/security"
+import type { AuditEntry } from "@health-v1/shared/types/audit"
+import { SECURITY_CONFIG } from "@health-v1/shared/constants/security"
 
-interface AuditState {
-  entries: readonly AuditEntry[]
-  maxEntries: number
-}
+import type { AuditState, AuditActions, AuditStore } from "@health-v1/shared/types/stores/audit"
 
-interface AuditActions {
-  addEntry: (entry: Omit<AuditEntry, "id" | "timestamp" | "masked">) => void
-  clearOldEntries: () => void
-  exportEntries: (masked?: boolean) => AuditEntry[]
-  getEntriesByUser: (userId: string) => readonly AuditEntry[]
-  getEntriesByResource: (resource: string) => readonly AuditEntry[]
-}
-
-type AuditStore = AuditState & AuditActions
+// Re-export types
+export type { AuditState, AuditActions, AuditStore }
 
 const initialState: AuditState = {
   entries: [],

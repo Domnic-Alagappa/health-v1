@@ -4,7 +4,7 @@
  */
 
 import { logAccessDenied as logAccessDeniedAPI } from "@/lib/api/audit"
-import type { Permission } from "@/lib/constants/permissions"
+import type { Permission } from "@health-v1/shared/constants/permissions"
 import { useAuthStore } from "@/stores/authStore"
 
 export interface RouteGuardConfig {

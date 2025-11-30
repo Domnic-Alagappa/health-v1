@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Flex } from "@/components/ui/flex"
 import { Input } from "@/components/ui/input"
 import { Stack } from "@/components/ui/stack"
-import { PERMISSIONS } from "@/lib/constants/permissions"
+import { PERMISSIONS } from "@health-v1/shared/constants/permissions"
 import { useOpenTab } from "@/stores/tabStore"
 
 export const Route = createFileRoute("/patients")({

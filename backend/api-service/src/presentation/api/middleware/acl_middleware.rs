@@ -5,7 +5,8 @@ use axum::{
     http::StatusCode,
 };
 use std::sync::Arc;
-use shared::{AppState, RequestContext};
+use shared::RequestContext;
+use api_service::AppState;
 
 /// ACL middleware that checks permissions using both role-based and Zanzibar relationship-based authorization
 /// 

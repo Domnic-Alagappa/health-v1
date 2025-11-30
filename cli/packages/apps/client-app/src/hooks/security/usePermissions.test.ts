@@ -4,7 +4,7 @@
 
 import { renderHook } from "@testing-library/react"
 import { beforeEach, describe, expect, it } from "vitest"
-import { PERMISSIONS, ROLE_PERMISSIONS } from "@/lib/constants/permissions"
+import { PERMISSIONS, ROLE_PERMISSIONS } from "@health-v1/shared/constants/permissions"
 import { useAuthStore } from "@/stores/authStore"
 import { usePermissions } from "./usePermissions"
 
