@@ -1,6 +1,13 @@
 # Multi-stage build for React Client App
 # Build context should be ./cli directory
-FROM oven/bun:1.1.0-alpine AS deps
+FROM node:22-alpine AS deps
+
+# Install build dependencies, bash, and Bun
+RUN apk add --no-cache curl unzip python3 make g++ bash && \
+    curl -fsSL https://bun.sh/install | bash && \
+    mv /root/.bun/bin/bun /usr/local/bin/bun && \
+    chmod +x /usr/local/bin/bun && \
+    rm -rf /root/.bun
 
 # Set working directory
 WORKDIR /app
@@ -17,13 +24,19 @@ COPY packages/libs/shared/package.json ./packages/libs/shared/
 RUN bun install --frozen-lockfile || bun install
 
 # Build stage
-FROM oven/bun:1.1.0-alpine AS builder
+FROM node:22-alpine AS builder
+
+# Install build dependencies, bash, and Bun
+RUN apk add --no-cache curl unzip python3 make g++ bash && \
+    curl -fsSL https://bun.sh/install | bash && \
+    mv /root/.bun/bin/bun /usr/local/bin/bun && \
+    chmod +x /usr/local/bin/bun && \
+    rm -rf /root/.bun
 
 WORKDIR /app
 
 # Copy dependencies from deps stage
 COPY --from=deps /app/node_modules ./node_modules
-# Note: .bun directory not needed - Bun is already in the builder image
 
 # Copy all source files
 COPY package.json bun.lock* ./
