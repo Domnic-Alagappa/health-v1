@@ -16,13 +16,13 @@ let refreshPromise: Promise<string> | null = null
  */
 export function setTokens(access: string | null, refresh: string | null) {
   if (typeof window === "undefined") return
-  
+
   if (access) {
     sessionStorage.setItem(TOKEN_STORAGE_KEY_ACCESS, access)
   } else {
     sessionStorage.removeItem(TOKEN_STORAGE_KEY_ACCESS)
   }
-  
+
   if (refresh) {
     sessionStorage.setItem(TOKEN_STORAGE_KEY_REFRESH, refresh)
   } else {
@@ -186,4 +186,3 @@ function sanitizeErrorMessage(message: string): string {
 
   return message
 }
-

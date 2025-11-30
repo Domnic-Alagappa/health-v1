@@ -138,4 +138,3 @@ export async function deleteRelationship(relationshipId: string): Promise<void> 
     throw new Error(response.error.message)
   }
 }
-

@@ -65,4 +65,3 @@ export function getLayoutForRoute(pathname: string): LayoutType {
 export function shouldUseLayout(pathname: string, layout: LayoutType): boolean {
   return getLayoutForRoute(pathname) === layout
 }
-

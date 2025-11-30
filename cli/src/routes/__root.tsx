@@ -1,4 +1,4 @@
-import { createRootRoute, Outlet, useLocation, useNavigate, redirect } from "@tanstack/react-router"
+import { createRootRoute, Outlet, redirect, useLocation, useNavigate } from "@tanstack/react-router"
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools"
 import {
   Activity,
@@ -21,19 +21,14 @@ import { VoiceCommandChatbox } from "@/components/accessibility/VoiceCommandChat
 import { VoiceCommandFAB } from "@/components/accessibility/VoiceCommandFAB"
 import { VoiceCommandFeedback } from "@/components/accessibility/VoiceCommandFeedback"
 import { VoiceCommandIndicator } from "@/components/accessibility/VoiceCommandIndicator"
-import {
-  CenteredLayout,
-  CleanLayout,
-  FullLayout,
-  MinimalLayout,
-} from "@/components/layout/Layouts"
+import { CenteredLayout, CleanLayout, FullLayout, MinimalLayout } from "@/components/layout/Layouts"
 import { Box } from "@/components/ui/box"
 import { Container } from "@/components/ui/container"
 import { Flex } from "@/components/ui/flex"
-import { getLayoutForRoute } from "@/lib/layouts/routeLayouts"
 import { useDisclosure } from "@/hooks/ui/useDisclosure"
 import { initializeAccessibility, SkipToMainContent } from "@/lib/accessibility"
 import { PERMISSIONS, type Permission } from "@/lib/constants/permissions"
+import { getLayoutForRoute } from "@/lib/layouts/routeLayouts"
 import { useAuthStore } from "@/stores/authStore"
 import { useActiveTabId, useOpenTab, useSetActiveTab, useTabs } from "@/stores/tabStore"
 import { useSetSidebarCollapsed, useSidebarCollapsed } from "@/stores/uiStore"
@@ -50,7 +45,7 @@ export const Route = createRootRoute({
 
     // Check authentication
     const authStore = useAuthStore.getState()
-    
+
     // If no token in store, try to restore from sessionStorage
     if (!authStore.accessToken) {
       await authStore.checkAuth()

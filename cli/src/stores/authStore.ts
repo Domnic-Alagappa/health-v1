@@ -26,7 +26,7 @@ function loadTokensFromStorage(): { accessToken: string | null; refreshToken: st
   if (typeof window === "undefined") {
     return { accessToken: null, refreshToken: null }
   }
-  
+
   return {
     accessToken: sessionStorage.getItem(TOKEN_STORAGE_KEY_ACCESS),
     refreshToken: sessionStorage.getItem(TOKEN_STORAGE_KEY_REFRESH),
@@ -38,13 +38,13 @@ function loadTokensFromStorage(): { accessToken: string | null; refreshToken: st
  */
 function saveTokensToStorage(accessToken: string | null, refreshToken: string | null): void {
   if (typeof window === "undefined") return
-  
+
   if (accessToken) {
     sessionStorage.setItem(TOKEN_STORAGE_KEY_ACCESS, accessToken)
   } else {
     sessionStorage.removeItem(TOKEN_STORAGE_KEY_ACCESS)
   }
-  
+
   if (refreshToken) {
     sessionStorage.setItem(TOKEN_STORAGE_KEY_REFRESH, refreshToken)
   } else {
@@ -57,10 +57,10 @@ function saveTokensToStorage(accessToken: string | null, refreshToken: string | 
  */
 function loadUserFromStorage(): User | null {
   if (typeof window === "undefined") return null
-  
+
   const userStr = sessionStorage.getItem(USER_STORAGE_KEY)
   if (!userStr) return null
-  
+
   try {
     return JSON.parse(userStr) as User
   } catch {
@@ -73,7 +73,7 @@ function loadUserFromStorage(): User | null {
  */
 function saveUserToStorage(user: User | null): void {
   if (typeof window === "undefined") return
-  
+
   if (user) {
     sessionStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user))
   } else {
@@ -261,7 +261,7 @@ export const useAuthStore = create<AuthStore>()(
       // First try to restore from sessionStorage
       const storedTokens = loadTokensFromStorage()
       const storedUser = loadUserFromStorage()
-      
+
       if (storedTokens.accessToken && storedUser) {
         set((state) => {
           state.accessToken = storedTokens.accessToken
@@ -301,7 +301,7 @@ export const useAuthStore = create<AuthStore>()(
           }
           state.isLoading = false
         })
-        
+
         // Persist updated user info
         const currentUser = get().user
         if (currentUser) {
@@ -325,7 +325,7 @@ export const useAuthStore = create<AuthStore>()(
             }
             state.isLoading = false
           })
-          
+
           // Persist updated user info
           const currentUser = get().user
           if (currentUser) {
@@ -342,7 +342,7 @@ export const useAuthStore = create<AuthStore>()(
             state.role = null
             state.isLoading = false
           })
-          
+
           // Clear from sessionStorage
           saveTokensToStorage(null, null)
           saveUserToStorage(null)

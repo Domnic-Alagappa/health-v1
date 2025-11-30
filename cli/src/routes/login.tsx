@@ -1,13 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
-import { useState, useEffect } from "react"
+import { AlertCircle, Loader2 } from "lucide-react"
+import { useEffect, useState } from "react"
+import { Box } from "@/components/ui/box"
 import { Button } from "@/components/ui/button"
+import { Flex } from "@/components/ui/flex"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Box } from "@/components/ui/box"
-import { Flex } from "@/components/ui/flex"
 import { Stack } from "@/components/ui/stack"
 import { useAuthStore } from "@/stores/authStore"
-import { AlertCircle, Loader2 } from "lucide-react"
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
@@ -132,4 +132,3 @@ function LoginPage() {
     </Flex>
   )
 }
-

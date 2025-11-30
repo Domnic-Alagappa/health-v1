@@ -3,10 +3,10 @@
  * Select TTS voice with accent/quality options
  */
 
+import { useEffect, useState } from "react"
 import { Box } from "@/components/ui/box"
 import { Stack } from "@/components/ui/stack"
 import { useAccessibilityStore } from "@/stores/accessibilityStore"
-import { useEffect, useState } from "react"
 
 interface Voice {
   name: string
@@ -61,40 +61,43 @@ export function VoiceSelector() {
   })
 
   // Group voices by accent/quality
-  const groupedVoices = filteredVoices.reduce((acc, voice) => {
-    // Extract accent/quality from voice name
-    const name = voice.name.toLowerCase()
-    let category = "Other"
+  const groupedVoices = filteredVoices.reduce(
+    (acc, voice) => {
+      // Extract accent/quality from voice name
+      const name = voice.name.toLowerCase()
+      let category = "Other"
 
-    // Categorize voices by common patterns
-    if (name.includes("premium") || name.includes("enhanced") || name.includes("neural")) {
-      category = "Premium"
-    } else if (name.includes("us") || name.includes("american")) {
-      category = "American English"
-    } else if (name.includes("gb") || name.includes("british") || name.includes("uk")) {
-      category = "British English"
-    } else if (name.includes("australian") || name.includes("au")) {
-      category = "Australian English"
-    } else if (name.includes("canadian") || name.includes("ca")) {
-      category = "Canadian English"
-    } else if (name.includes("indian") || name.includes("in")) {
-      category = "Indian English"
-    } else if (name.includes("irish") || name.includes("ie")) {
-      category = "Irish English"
-    } else if (name.includes("south african") || name.includes("za")) {
-      category = "South African English"
-    } else if (name.includes("female") || name.includes("woman")) {
-      category = "Female Voices"
-    } else if (name.includes("male") || name.includes("man")) {
-      category = "Male Voices"
-    }
+      // Categorize voices by common patterns
+      if (name.includes("premium") || name.includes("enhanced") || name.includes("neural")) {
+        category = "Premium"
+      } else if (name.includes("us") || name.includes("american")) {
+        category = "American English"
+      } else if (name.includes("gb") || name.includes("british") || name.includes("uk")) {
+        category = "British English"
+      } else if (name.includes("australian") || name.includes("au")) {
+        category = "Australian English"
+      } else if (name.includes("canadian") || name.includes("ca")) {
+        category = "Canadian English"
+      } else if (name.includes("indian") || name.includes("in")) {
+        category = "Indian English"
+      } else if (name.includes("irish") || name.includes("ie")) {
+        category = "Irish English"
+      } else if (name.includes("south african") || name.includes("za")) {
+        category = "South African English"
+      } else if (name.includes("female") || name.includes("woman")) {
+        category = "Female Voices"
+      } else if (name.includes("male") || name.includes("man")) {
+        category = "Male Voices"
+      }
 
-    if (!acc[category]) {
-      acc[category] = []
-    }
-    acc[category].push(voice)
-    return acc
-  }, {} as Record<string, Voice[]>)
+      if (!acc[category]) {
+        acc[category] = []
+      }
+      acc[category].push(voice)
+      return acc
+    },
+    {} as Record<string, Voice[]>
+  )
 
   // Sort categories by priority
   const categoryOrder = [
@@ -270,4 +273,3 @@ export function VoiceSelector() {
     </Stack>
   )
 }
-

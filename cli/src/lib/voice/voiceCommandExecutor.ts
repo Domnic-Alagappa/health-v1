@@ -139,49 +139,52 @@ export class VoiceCommandExecutor {
 
   private async executeOpenPatient(patientNameOrId: string): Promise<boolean> {
     if (!patientNameOrId) {
-      this.speak('I need to know which patient to open. Please specify a patient name or ID.')
+      this.speak("I need to know which patient to open. Please specify a patient name or ID.")
       return false
     }
 
     const normalizedName = patientNameOrId.toLowerCase().trim()
-    
+
     // Try to find patient by name or ID
     const { openTab } = useTabStore.getState()
-    
+
     // Check if it's a known patient (like "john doe")
-    if (normalizedName.includes('john') && normalizedName.includes('doe')) {
+    if (normalizedName.includes("john") && normalizedName.includes("doe")) {
       // Open patient with ID "john-doe-123" (from the mock data in patients.tsx)
       openTab({
-        id: 'patient-john-doe-123',
-        label: 'John Doe',
-        path: '/patients/john-doe-123',
-        icon: 'User',
+        id: "patient-john-doe-123",
+        label: "John Doe",
+        path: "/patients/john-doe-123",
+        icon: "User",
       })
-      
+
       // Navigate to the patient page
-      if (typeof window !== 'undefined' && (window as any).__tanstackRouter) {
-        (window as any).__tanstackRouter.navigate({ to: '/patients/$patientId', params: { patientId: 'john-doe-123' } })
+      if (typeof window !== "undefined" && (window as any).__tanstackRouter) {
+        ;(window as any).__tanstackRouter.navigate({
+          to: "/patients/$patientId",
+          params: { patientId: "john-doe-123" },
+        })
       }
-      
+
       this.speak(`Opening patient record for ${patientNameOrId}.`)
       return true
     }
-    
+
     // For other patients, try to navigate to patients list and search
     this.speak(`Searching for patient ${patientNameOrId}.`)
-    
+
     // Open patients list
     openTab({
-      id: 'patients-list',
-      label: 'Patients',
-      path: '/patients',
-      icon: 'Users',
+      id: "patients-list",
+      label: "Patients",
+      path: "/patients",
+      icon: "Users",
     })
-    
-    if (typeof window !== 'undefined' && (window as any).__tanstackRouter) {
-      (window as any).__tanstackRouter.navigate({ to: '/patients' })
+
+    if (typeof window !== "undefined" && (window as any).__tanstackRouter) {
+      ;(window as any).__tanstackRouter.navigate({ to: "/patients" })
     }
-    
+
     return true
   }
 
