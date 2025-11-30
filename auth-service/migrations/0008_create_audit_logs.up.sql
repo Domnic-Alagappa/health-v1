@@ -1,5 +1,17 @@
 -- Migration: Create audit_logs table
 -- Description: Store audit trail for key management and security operations
+-- Related Entity: None (infrastructure table)
+--
+-- Tables Created:
+--   - audit_logs
+--
+-- Indexes Created:
+--   - idx_audit_logs_user_id (B-tree, on user_id)
+--   - idx_audit_logs_action (B-tree, on action)
+--   - idx_audit_logs_resource (B-tree, on resource)
+--   - idx_audit_logs_resource_id (B-tree, on resource_id)
+--   - idx_audit_logs_created_at (B-tree, on created_at)
+--   - idx_audit_logs_resource_action (B-tree composite, on resource, action)
 
 CREATE TABLE IF NOT EXISTS audit_logs (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

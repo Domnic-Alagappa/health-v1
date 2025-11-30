@@ -1,0 +1,59 @@
+[package]
+name = "api-service"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[[bin]]
+name = "api-service"
+path = "src/main.rs"
+
+[[bin]]
+name = "setup"
+path = "src/bin/setup.rs"
+
+[dependencies]
+shared = { path = "../shared" }
+authz-core = { path = "../authz-core" }
+admin-service = { path = "../admin-service" }
+
+# Web framework
+axum.workspace = true
+tower.workspace = true
+tower-http.workspace = true
+
+# Database
+sqlx.workspace = true
+
+# Serialization
+serde.workspace = true
+serde_json.workspace = true
+
+# Async
+tokio.workspace = true
+async-trait.workspace = true
+
+# Configuration
+config.workspace = true
+dotenv.workspace = true
+
+# Logging
+tracing.workspace = true
+tracing-subscriber.workspace = true
+
+# Error handling
+anyhow.workspace = true
+thiserror.workspace = true
+
+# UUID
+uuid.workspace = true
+
+# Time
+chrono.workspace = true
+
+# Password hashing
+bcrypt.workspace = true
+
+# CLI tools
+dialoguer.workspace = true
+

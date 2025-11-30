@@ -1,0 +1,34 @@
+[package]
+name = "admin-service"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+shared = { path = "../shared" }
+authz-core = { path = "../authz-core" }
+
+# Web framework
+axum.workspace = true
+
+# Serialization
+serde.workspace = true
+serde_json.workspace = true
+
+# Async
+tokio.workspace = true
+async-trait.workspace = true
+
+# Error handling
+anyhow.workspace = true
+thiserror.workspace = true
+
+# UUID
+uuid.workspace = true
+
+# Time
+chrono.workspace = true
+
+# Password hashing
+bcrypt.workspace = true
+

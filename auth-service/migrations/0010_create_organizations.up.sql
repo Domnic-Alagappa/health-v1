@@ -1,5 +1,16 @@
 -- Migration: Create organizations table
 -- Description: Organization/tenant management for multi-tenant support
+-- Related Entity: src/domain/entities/organization.rs (Organization)
+--
+-- Tables Created:
+--   - organizations
+--
+-- Indexes Created:
+--   - idx_organizations_slug (B-tree, on slug - unique)
+--   - idx_organizations_domain (B-tree, on domain)
+--
+-- Triggers Created:
+--   - update_organizations_updated_at - Updates updated_at before row update
 
 CREATE TABLE IF NOT EXISTS organizations (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

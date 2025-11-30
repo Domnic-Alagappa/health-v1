@@ -1,5 +1,20 @@
 -- Migration: Create roles and permissions tables
 -- Description: RBAC tables for role-based access control
+-- Related Entities: 
+--   - src/domain/entities/role.rs (Role)
+--   - src/domain/entities/permission.rs (Permission)
+--
+-- Tables Created:
+--   - roles
+--   - permissions
+--
+-- Indexes Created:
+--   - idx_roles_name (B-tree, on roles.name)
+--   - idx_permissions_name (B-tree, on permissions.name)
+--   - idx_permissions_resource_action (B-tree composite, on permissions.resource, permissions.action)
+--
+-- Triggers Created:
+--   - update_roles_updated_at - Updates updated_at before row update
 
 CREATE TABLE IF NOT EXISTS roles (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

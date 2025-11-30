@@ -49,11 +49,11 @@ services:
       - health-network
     restart: unless-stopped
 
-  # Auth Service (Rust Backend)
+  # API Service (Rust Backend)
   auth-service:
     build:
-      context: ./auth-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: backend/api-service/Dockerfile
     container_name: health-auth-service
     environment:
       # Server

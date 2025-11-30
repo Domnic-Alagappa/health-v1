@@ -1,5 +1,15 @@
 -- Migration: Seed initial roles, permissions, and super user
 -- Description: Create default roles and permissions, and initial super user
+-- Related Entities: 
+--   - src/domain/entities/role.rs (Role)
+--   - src/domain/entities/permission.rs (Permission)
+--   - src/domain/entities/user.rs (User)
+--
+-- Data Seeded:
+--   - Default roles: admin, doctor, nurse, receptionist
+--   - Permissions for: patients, users, clinical, orders, results, pharmacy, scheduling, revenue, analytics, settings
+--   - Role-permission assignments for doctor, nurse, receptionist
+--   - Initial super user: admin@example.com (password placeholder)
 
 -- Insert default roles
 INSERT INTO roles (id, name, description) VALUES

@@ -1,0 +1,51 @@
+[package]
+name = "shared"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+# Database
+sqlx.workspace = true
+
+# Encryption
+aes-gcm.workspace = true
+ring.workspace = true
+pbkdf2.workspace = true
+base64.workspace = true
+hex.workspace = true
+
+# Serialization
+serde.workspace = true
+serde_json.workspace = true
+
+# Async
+tokio.workspace = true
+async-trait.workspace = true
+
+# Configuration
+config.workspace = true
+dotenv.workspace = true
+
+# Error handling
+anyhow.workspace = true
+thiserror.workspace = true
+
+# UUID
+uuid.workspace = true
+
+# Time
+chrono.workspace = true
+
+# Password hashing
+bcrypt.workspace = true
+sha2.workspace = true
+
+# HTTP client
+reqwest.workspace = true
+
+# AWS SDK
+aws-sdk-s3.workspace = true
+aws-sdk-kms.workspace = true
+aws-config.workspace = true
+

@@ -1,5 +1,16 @@
 -- Migration: Create refresh_tokens table
 -- Description: Store refresh tokens for JWT token revocation
+-- Related Entity: None (infrastructure table)
+--
+-- Tables Created:
+--   - refresh_tokens
+--
+-- Indexes Created:
+--   - idx_refresh_tokens_user_id (B-tree, on user_id)
+--   - idx_refresh_tokens_token_hash (B-tree, on token_hash - unique)
+--   - idx_refresh_tokens_expires_at (B-tree, on expires_at)
+--   - idx_refresh_tokens_is_revoked (B-tree, on is_revoked)
+--   - idx_refresh_tokens_expired_revoked (B-tree Partial, on expires_at, is_revoked WHERE expires_at < NOW() OR is_revoked = true)
 
 CREATE TABLE IF NOT EXISTS refresh_tokens (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

@@ -1,5 +1,18 @@
 -- Migration: Create setup_status table
 -- Description: Track one-time initial setup completion
+-- Related Entity: None (infrastructure table)
+--
+-- Tables Created:
+--   - setup_status
+--
+-- Constraints:
+--   - CHECK constraint ensures only one setup_completed = true record exists
+--
+-- Triggers Created:
+--   - update_setup_status_updated_at - Updates updated_at before row update
+--
+-- Initial Data:
+--   - Inserts initial record with setup_completed = false
 
 CREATE TABLE IF NOT EXISTS setup_status (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

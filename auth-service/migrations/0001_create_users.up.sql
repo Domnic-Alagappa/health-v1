@@ -1,5 +1,21 @@
 -- Migration: Create users table
 -- Description: Core user table with authentication fields and super user flag
+-- Related Entity: src/domain/entities/user.rs (User)
+--
+-- Tables Created:
+--   - users
+--
+-- Indexes Created:
+--   - idx_users_email (B-tree, on email)
+--   - idx_users_username (B-tree, on username)
+--   - idx_users_is_active (B-tree, on is_active)
+--   - idx_users_is_super_user (B-tree, on is_super_user)
+--
+-- Functions Created:
+--   - update_updated_at_column() - Trigger function for updating updated_at timestamp
+--
+-- Triggers Created:
+--   - update_users_updated_at - Updates updated_at before row update
 
 CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

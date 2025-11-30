@@ -1,4 +1,21 @@
--- Add audit fields to all tables
+-- Migration: Add audit fields to all tables
+-- Description: Adds comprehensive audit fields (request_id, created_by, updated_by, system_id, version) to all tables
+-- Related Entities: All domain entities
+--
+-- Schema Changes:
+--   - Adds audit fields to: users, roles, permissions, relationships, encryption_keys, organizations
+--   - Updates update_updated_at_column() function to also increment version
+--
+-- Indexes Created:
+--   - idx_users_request_id (B-tree, on users.request_id)
+--   - idx_users_created_by (B-tree, on users.created_by)
+--   - idx_users_updated_by (B-tree, on users.updated_by)
+--   - idx_roles_request_id (B-tree, on roles.request_id)
+--   - idx_permissions_request_id (B-tree, on permissions.request_id)
+--   - idx_relationships_request_id (B-tree, on relationships.request_id)
+--
+-- Functions Modified:
+--   - update_updated_at_column() - Now also increments version field
 
 -- Users table
 ALTER TABLE users 

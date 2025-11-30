@@ -1,5 +1,20 @@
 -- Migration: Create junction tables for user-roles and role-permissions
 -- Description: Many-to-many relationships for RBAC
+-- Related Entities: None (junction tables)
+--
+-- Tables Created:
+--   - user_roles (junction: users <-> roles)
+--   - role_permissions (junction: roles <-> permissions)
+--
+-- Indexes Created:
+--   - idx_user_roles_user_id (B-tree, on user_roles.user_id)
+--   - idx_user_roles_role_id (B-tree, on user_roles.role_id)
+--   - idx_role_permissions_role_id (B-tree, on role_permissions.role_id)
+--   - idx_role_permissions_permission_id (B-tree, on role_permissions.permission_id)
+--
+-- Unique Constraints:
+--   - user_roles: (user_id, role_id)
+--   - role_permissions: (role_id, permission_id)
 
 CREATE TABLE IF NOT EXISTS user_roles (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

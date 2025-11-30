@@ -1,5 +1,14 @@
 -- Migration: Create passkey_credentials table
 -- Description: Store WebAuthn/Passkey credentials for dashboard authentication
+-- Related Entity: None (infrastructure table)
+--
+-- Tables Created:
+--   - passkey_credentials
+--
+-- Indexes Created:
+--   - idx_passkey_credentials_user_id (B-tree, on user_id)
+--   - idx_passkey_credentials_credential_id (B-tree, on credential_id - unique)
+--   - idx_passkey_credentials_is_active (B-tree, on is_active)
 
 CREATE TABLE IF NOT EXISTS passkey_credentials (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
