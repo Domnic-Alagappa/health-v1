@@ -5,6 +5,7 @@ pub mod crdt;
 pub mod rls;
 pub mod migrations;
 pub mod db_service;
+pub mod queries;
 
 pub use local_db::LocalDb;
 pub use live_db::LiveDb;

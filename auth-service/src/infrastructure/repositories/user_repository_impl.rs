@@ -1,6 +1,7 @@
 use crate::domain::entities::User;
 use crate::domain::repositories::UserRepository;
 use crate::infrastructure::database::DatabaseService;
+use crate::infrastructure::database::queries::users::*;
 use crate::shared::AppResult;
 use async_trait::async_trait;
 use std::sync::Arc;
@@ -19,19 +20,7 @@ impl UserRepositoryImpl {
 #[async_trait]
 impl UserRepository for UserRepositoryImpl {
     async fn create(&self, user: User) -> AppResult<User> {
-        sqlx::query_as::<_, User>(
-            r#"
-            INSERT INTO users (
-                id, email, username, password_hash, is_active, is_verified, is_super_user, 
-                organization_id, created_at, updated_at, last_login,
-                request_id, created_by, updated_by, system_id, version
-            )
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
-            RETURNING id, email, username, password_hash, is_active, is_verified, is_super_user, 
-                      organization_id, created_at, updated_at, last_login,
-                      request_id, created_by, updated_by, system_id, version
-            "#
-        )
+        sqlx::query_as::<_, User>(USER_INSERT)
         .bind(user.id)
         .bind(user.email)
         .bind(user.username)
@@ -54,15 +43,7 @@ impl UserRepository for UserRepositoryImpl {
     }
 
     async fn find_by_id(&self, id: Uuid) -> AppResult<Option<User>> {
-        sqlx::query_as::<_, User>(
-            r#"
-            SELECT id, email, username, password_hash, is_active, is_verified, is_super_user, 
-                   organization_id, created_at, updated_at, last_login,
-                   request_id, created_by, updated_by, system_id, version
-            FROM users
-            WHERE id = $1
-            "#
-        )
+        sqlx::query_as::<_, User>(USER_FIND_BY_ID)
         .bind(id)
         .fetch_optional(self.database_service.pool())
         .await
@@ -70,15 +51,7 @@ impl UserRepository for UserRepositoryImpl {
     }
 
     async fn find_by_email(&self, email: &str) -> AppResult<Option<User>> {
-        sqlx::query_as::<_, User>(
-            r#"
-            SELECT id, email, username, password_hash, is_active, is_verified, is_super_user, 
-                   organization_id, created_at, updated_at, last_login,
-                   request_id, created_by, updated_by, system_id, version
-            FROM users
-            WHERE email = $1
-            "#
-        )
+        sqlx::query_as::<_, User>(USER_FIND_BY_EMAIL)
         .bind(email)
         .fetch_optional(self.database_service.pool())
         .await
@@ -86,15 +59,7 @@ impl UserRepository for UserRepositoryImpl {
     }
 
     async fn find_by_username(&self, username: &str) -> AppResult<Option<User>> {
-        sqlx::query_as::<_, User>(
-            r#"
-            SELECT id, email, username, password_hash, is_active, is_verified, is_super_user, 
-                   organization_id, created_at, updated_at, last_login,
-                   request_id, created_by, updated_by, system_id, version
-            FROM users
-            WHERE username = $1
-            "#
-        )
+        sqlx::query_as::<_, User>(USER_FIND_BY_USERNAME)
         .bind(username)
         .fetch_optional(self.database_service.pool())
         .await
@@ -107,18 +72,7 @@ impl UserRepository for UserRepositoryImpl {
         // Increment version for update
         user.version += 1;
         
-        sqlx::query_as::<_, User>(
-            r#"
-            UPDATE users
-            SET email = $2, username = $3, password_hash = $4, is_active = $5, is_verified = $6, 
-                is_super_user = $7, organization_id = $8, updated_at = $9, last_login = $10,
-                request_id = $11, updated_by = $12, version = $13
-            WHERE id = $1 AND version = $14
-            RETURNING id, email, username, password_hash, is_active, is_verified, is_super_user, 
-                      organization_id, created_at, updated_at, last_login,
-                      request_id, created_by, updated_by, system_id, version
-            "#
-        )
+        sqlx::query_as::<_, User>(USER_UPDATE)
         .bind(user.id)
         .bind(user.email)
         .bind(user.username)
@@ -139,12 +93,7 @@ impl UserRepository for UserRepositoryImpl {
     }
 
     async fn delete(&self, id: Uuid) -> AppResult<()> {
-        sqlx::query(
-            r#"
-            DELETE FROM users
-            WHERE id = $1
-            "#
-        )
+        sqlx::query(USER_DELETE)
         .bind(id)
         .execute(self.database_service.pool())
         .await
@@ -154,16 +103,7 @@ impl UserRepository for UserRepositoryImpl {
     }
 
     async fn list(&self, limit: u32, offset: u32) -> AppResult<Vec<User>> {
-        sqlx::query_as::<_, User>(
-            r#"
-            SELECT id, email, username, password_hash, is_active, is_verified, is_super_user, 
-                   organization_id, created_at, updated_at, last_login,
-                   request_id, created_by, updated_by, system_id, version
-            FROM users
-            ORDER BY created_at DESC
-            LIMIT $1 OFFSET $2
-            "#
-        )
+        sqlx::query_as::<_, User>(USER_LIST)
         .bind(limit as i64)
         .bind(offset as i64)
         .fetch_all(self.database_service.pool())

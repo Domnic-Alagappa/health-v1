@@ -1,6 +1,7 @@
 use crate::domain::entities::Role;
 use crate::domain::repositories::RoleRepository;
 use crate::infrastructure::database::DatabaseService;
+use crate::infrastructure::database::queries::roles::*;
 use crate::shared::AppResult;
 use async_trait::async_trait;
 use sqlx::Row;
@@ -24,15 +25,7 @@ impl RoleRepository for RoleRepositoryImpl {
         let role_id = role.id;
         
         // Insert role with audit fields
-        sqlx::query(
-            r#"
-            INSERT INTO roles (
-                id, name, description, created_at, updated_at,
-                request_id, created_by, updated_by, system_id, version
-            )
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-            "#
-        )
+        sqlx::query(ROLE_INSERT)
         .bind(role.id)
         .bind(&role.name)
         .bind(&role.description)
@@ -50,13 +43,7 @@ impl RoleRepository for RoleRepositoryImpl {
         // Insert permissions
         let now = Utc::now();
         for permission_id in &role.permissions {
-            sqlx::query(
-                r#"
-                INSERT INTO role_permissions (role_id, permission_id, created_at)
-                VALUES ($1, $2, $3)
-                ON CONFLICT (role_id, permission_id) DO NOTHING
-                "#
-            )
+            sqlx::query(ROLE_PERMISSION_INSERT)
             .bind(role_id)
             .bind(permission_id)
             .bind(now)
@@ -72,14 +59,7 @@ impl RoleRepository for RoleRepositoryImpl {
     async fn find_by_id(&self, id: Uuid) -> AppResult<Option<Role>> {
         // Use query_as with FromRow - but we need to handle permissions separately
         // Since permissions are stored in a separate table, we'll fetch role first then permissions
-        let row = sqlx::query(
-            r#"
-            SELECT id, name, description, request_id, created_at, updated_at,
-                   created_by, updated_by, system_id, version
-            FROM roles
-            WHERE id = $1
-            "#
-        )
+        let row = sqlx::query(ROLE_FIND_BY_ID)
         .bind(id)
         .fetch_optional(self.database_service.pool())
         .await
@@ -107,14 +87,7 @@ impl RoleRepository for RoleRepositoryImpl {
     }
 
     async fn find_by_name(&self, name: &str) -> AppResult<Option<Role>> {
-        let row = sqlx::query(
-            r#"
-            SELECT id, name, description, request_id, created_at, updated_at,
-                   created_by, updated_by, system_id, version
-            FROM roles
-            WHERE name = $1
-            "#
-        )
+        let row = sqlx::query(ROLE_FIND_BY_NAME)
         .bind(name)
         .fetch_optional(self.database_service.pool())
         .await
@@ -142,14 +115,7 @@ impl RoleRepository for RoleRepositoryImpl {
     }
 
     async fn list(&self) -> AppResult<Vec<Role>> {
-        let rows = sqlx::query(
-            r#"
-            SELECT id, name, description, request_id, created_at, updated_at,
-                   created_by, updated_by, system_id, version
-            FROM roles
-            ORDER BY name
-            "#
-        )
+        let rows = sqlx::query(ROLE_LIST)
         .fetch_all(self.database_service.pool())
         .await
         .map_err(|e| crate::shared::AppError::Database(e))?;
@@ -177,13 +143,7 @@ impl RoleRepository for RoleRepositoryImpl {
     }
 
     async fn add_permission_to_role(&self, role_id: Uuid, permission_id: Uuid) -> AppResult<()> {
-        sqlx::query(
-            r#"
-            INSERT INTO role_permissions (role_id, permission_id, created_at)
-            VALUES ($1, $2, $3)
-            ON CONFLICT (role_id, permission_id) DO NOTHING
-            "#
-        )
+        sqlx::query(ROLE_PERMISSION_INSERT)
         .bind(role_id)
         .bind(permission_id)
         .bind(Utc::now())
@@ -195,12 +155,7 @@ impl RoleRepository for RoleRepositoryImpl {
     }
 
     async fn remove_permission_from_role(&self, role_id: Uuid, permission_id: Uuid) -> AppResult<()> {
-        sqlx::query(
-            r#"
-            DELETE FROM role_permissions
-            WHERE role_id = $1 AND permission_id = $2
-            "#
-        )
+        sqlx::query(ROLE_PERMISSION_DELETE)
         .bind(role_id)
         .bind(permission_id)
             .execute(self.database_service.pool())
@@ -211,14 +166,7 @@ impl RoleRepository for RoleRepositoryImpl {
     }
 
     async fn get_role_permissions(&self, role_id: Uuid) -> AppResult<Vec<Uuid>> {
-        let rows = sqlx::query(
-            r#"
-            SELECT permission_id
-            FROM role_permissions
-            WHERE role_id = $1
-            ORDER BY created_at
-            "#
-        )
+        let rows = sqlx::query(ROLE_PERMISSIONS_SELECT)
         .bind(role_id)
         .fetch_all(self.database_service.pool())
         .await
@@ -231,16 +179,7 @@ impl RoleRepository for RoleRepositoryImpl {
     }
 
     async fn get_user_roles(&self, user_id: Uuid) -> AppResult<Vec<Role>> {
-        let rows = sqlx::query(
-            r#"
-            SELECT r.id, r.name, r.description, r.request_id, r.created_at, r.updated_at,
-                   r.created_by, r.updated_by, r.system_id, r.version
-            FROM roles r
-            INNER JOIN user_roles ur ON r.id = ur.role_id
-            WHERE ur.user_id = $1
-            ORDER BY r.name
-            "#
-        )
+        let rows = sqlx::query(USER_ROLES_SELECT)
         .bind(user_id)
         .fetch_all(self.database_service.pool())
         .await

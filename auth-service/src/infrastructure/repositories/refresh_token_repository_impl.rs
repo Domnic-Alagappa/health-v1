@@ -1,4 +1,5 @@
 use crate::domain::repositories::refresh_token_repository::{RefreshToken, RefreshTokenRepository};
+use crate::infrastructure::database::queries::refresh_tokens::*;
 use crate::shared::AppResult;
 use async_trait::async_trait;
 use sqlx::{PgPool, Row};
@@ -17,12 +18,7 @@ impl RefreshTokenRepositoryImpl {
 #[async_trait]
 impl RefreshTokenRepository for RefreshTokenRepositoryImpl {
     async fn create(&self, token: RefreshToken) -> AppResult<RefreshToken> {
-        sqlx::query(
-            r#"
-            INSERT INTO refresh_tokens (id, user_id, token_hash, expires_at, created_at, revoked_at, is_revoked)
-            VALUES ($1, $2, $3, $4, $5, $6, $7)
-            "#
-        )
+        sqlx::query(REFRESH_TOKEN_INSERT)
         .bind(token.id)
         .bind(token.user_id)
         .bind(&token.token_hash)
@@ -38,13 +34,7 @@ impl RefreshTokenRepository for RefreshTokenRepositoryImpl {
     }
 
     async fn find_by_token_hash(&self, token_hash: &str) -> AppResult<Option<RefreshToken>> {
-        let row = sqlx::query(
-            r#"
-            SELECT id, user_id, token_hash, expires_at, created_at, revoked_at, is_revoked
-            FROM refresh_tokens
-            WHERE token_hash = $1 AND is_revoked = false AND expires_at > NOW()
-            "#
-        )
+        let row = sqlx::query(REFRESH_TOKEN_FIND_BY_HASH)
         .bind(token_hash)
         .fetch_optional(&self.pool)
         .await
@@ -66,14 +56,7 @@ impl RefreshTokenRepository for RefreshTokenRepositoryImpl {
     }
 
     async fn find_by_user_id(&self, user_id: Uuid) -> AppResult<Vec<RefreshToken>> {
-        let rows = sqlx::query(
-            r#"
-            SELECT id, user_id, token_hash, expires_at, created_at, revoked_at, is_revoked
-            FROM refresh_tokens
-            WHERE user_id = $1
-            ORDER BY created_at DESC
-            "#
-        )
+        let rows = sqlx::query(REFRESH_TOKEN_FIND_BY_USER_ID)
         .bind(user_id)
         .fetch_all(&self.pool)
         .await
@@ -95,13 +78,7 @@ impl RefreshTokenRepository for RefreshTokenRepositoryImpl {
     }
 
     async fn revoke_token(&self, token_hash: &str) -> AppResult<()> {
-        sqlx::query(
-            r#"
-            UPDATE refresh_tokens
-            SET is_revoked = true, revoked_at = NOW()
-            WHERE token_hash = $1 AND is_revoked = false
-            "#
-        )
+        sqlx::query(REFRESH_TOKEN_REVOKE)
         .bind(token_hash)
         .execute(&self.pool)
         .await
@@ -111,13 +88,7 @@ impl RefreshTokenRepository for RefreshTokenRepositoryImpl {
     }
 
     async fn revoke_all_user_tokens(&self, user_id: Uuid) -> AppResult<()> {
-        sqlx::query(
-            r#"
-            UPDATE refresh_tokens
-            SET is_revoked = true, revoked_at = NOW()
-            WHERE user_id = $1 AND is_revoked = false
-            "#
-        )
+        sqlx::query(REFRESH_TOKEN_REVOKE_ALL_USER)
         .bind(user_id)
         .execute(&self.pool)
         .await
@@ -127,12 +98,7 @@ impl RefreshTokenRepository for RefreshTokenRepositoryImpl {
     }
 
     async fn delete_expired_tokens(&self) -> AppResult<u64> {
-        let result = sqlx::query(
-            r#"
-            DELETE FROM refresh_tokens
-            WHERE expires_at < NOW() AND is_revoked = true
-            "#
-        )
+        let result = sqlx::query(REFRESH_TOKEN_DELETE_EXPIRED)
         .execute(&self.pool)
         .await
         .map_err(|e| crate::shared::AppError::Database(e))?;

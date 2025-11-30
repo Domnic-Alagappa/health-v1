@@ -1,4 +1,5 @@
 use sqlx::PgPool;
+use crate::infrastructure::database::queries::common::*;
 use crate::shared::AppResult;
 use std::time::Duration;
 
@@ -20,7 +21,7 @@ impl DatabaseService {
 
     /// Check database health with a simple query
     pub async fn health_check(&self) -> AppResult<bool> {
-        sqlx::query("SELECT 1")
+        sqlx::query(HEALTH_CHECK)
             .execute(&self.pool)
             .await
             .map(|_| true)
@@ -38,7 +39,7 @@ impl DatabaseService {
 
     /// Get database connection info
     pub async fn get_connection_info(&self) -> AppResult<String> {
-        let row: (String,) = sqlx::query_as("SELECT version()")
+        let row: (String,) = sqlx::query_as(VERSION_SELECT)
             .fetch_one(&self.pool)
             .await
             .map_err(|e| crate::shared::AppError::Database(e))?;
