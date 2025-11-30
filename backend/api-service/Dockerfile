@@ -26,7 +26,7 @@ COPY backend/shared/src backend/shared/src
 COPY backend/authz-core/src backend/authz-core/src
 COPY backend/admin-service/src backend/admin-service/src
 COPY backend/api-service/src backend/api-service/src
-COPY backend/api-service/migrations backend/api-service/migrations
+COPY backend/migrations backend/migrations
 
 # Build the application
 # Since we're using runtime SQLx queries (not compile-time macros), 
@@ -59,7 +59,7 @@ WORKDIR /app
 
 # Copy binary from builder
 COPY --from=builder /app/api-service /app/api-service
-COPY --from=builder /app/backend/api-service/migrations /app/migrations
+COPY --from=builder /app/backend/migrations /app/migrations
 
 # Set ownership
 RUN chown -R appuser:appuser /app

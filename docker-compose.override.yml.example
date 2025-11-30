@@ -8,8 +8,8 @@ services:
   auth-service:
     # Mount source code for development (hot reload)
     volumes:
-      - ./auth-service/src:/app/src:ro
-      - ./auth-service/migrations:/app/migrations:ro
+      - ./backend/api-service/src:/app/src:ro
+      - ./backend/migrations:/app/migrations:ro
     # Override environment for development
     environment:
       LOG_LEVEL: debug

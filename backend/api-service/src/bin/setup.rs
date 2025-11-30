@@ -1,12 +1,12 @@
 use std::process;
 use dialoguer::{Input, Password, Select};
 use dotenv::dotenv;
-use auth_service::config::Settings;
-use auth_service::infrastructure::database::{create_pool, DatabaseService};
-use auth_service::infrastructure::repositories::{
+use shared::config::Settings;
+use shared::infrastructure::database::{create_pool, DatabaseService};
+use shared::infrastructure::repositories::{
     SetupRepositoryImpl, UserRepositoryImpl,
 };
-use auth_service::application::use_cases::setup::{
+use admin_service::use_cases::setup::{
     SetupOrganizationUseCase, CreateSuperAdminUseCase,
 };
 
@@ -43,8 +43,8 @@ async fn main() {
     };
 
     // Create database service and verify health
-    let db_service = DatabaseService::new(pool.clone());
-    match db_service.health_check().await {
+    let database_service = std::sync::Arc::new(DatabaseService::new(pool.clone()));
+    match database_service.health_check().await {
         Ok(_) => println!("✓ Database health check passed\n"),
         Err(e) => {
             eprintln!("Database health check failed: {}", e);
@@ -55,7 +55,7 @@ async fn main() {
     // Run migrations
     println!("Running database migrations...");
     let migrations_dir = std::path::Path::new("./migrations");
-    match auth_service::infrastructure::database::migrations::run_migrations(&pool, migrations_dir).await {
+    match shared::infrastructure::database::migrations::run_migrations(&pool, migrations_dir).await {
         Ok(_) => println!("✓ Migrations completed\n"),
         Err(e) => {
             eprintln!("Failed to run migrations: {}", e);
@@ -65,7 +65,7 @@ async fn main() {
 
     // Initialize repositories
     let setup_repository = Box::new(SetupRepositoryImpl::new(pool.clone()));
-    let user_repository = Box::new(UserRepositoryImpl::new(pool.clone()));
+    let user_repository = Box::new(UserRepositoryImpl::new(database_service.clone()));
 
     // Check if setup is already completed
     let is_completed = match setup_repository.is_setup_completed().await {
