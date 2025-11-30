@@ -39,7 +39,12 @@
     "release": "standard-version --config .versionrc.json",
     "release:minor": "standard-version --release-as minor --config .versionrc.json",
     "release:major": "standard-version --release-as major --config .versionrc.json",
-    "release:patch": "standard-version --release-as patch --config .versionrc.json"
+    "release:patch": "standard-version --release-as patch --config .versionrc.json",
+    "audit": "npm install --package-lock-only && (bunx npm audit || true) && rm -f package-lock.json",
+    "security:audit": "bun audit",
+    "security:audit:ci": "bunx npm install --package-lock-only && bunx npm audit --audit-level=moderate; rm -f package-lock.json",
+    "security:semgrep": "semgrep --config .semgrep.yml",
+    "security:secrets": "gitleaks detect --source . --verbose"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.11",

@@ -1,0 +1,30 @@
+# Gitleaks configuration
+title = "Health V1 Secrets Detection"
+
+[extend]
+# Use default gitleaks rules
+useDefault = true
+
+[allowlist]
+description = "Allowlist for known false positives"
+paths = [
+    '''\.gitleaksignore''',
+    '''\.git/''',
+    '''node_modules/''',
+    '''dist/''',
+    '''build/''',
+    '''target/''',
+    '''\.lock$''',
+    '''\.test\.(ts|tsx|js|jsx)$''',
+    '''\.spec\.(ts|tsx|js|jsx)$''',
+    '''routeTree\.gen\.ts$''',
+]
+
+[allowlist.regexes]
+description = "Regex patterns to allow"
+regexes = [
+    '''example.*key''',
+    '''test.*secret''',
+    '''placeholder.*token''',
+]
+

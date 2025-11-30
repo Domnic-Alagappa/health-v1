@@ -1,0 +1,23 @@
+# Gitleaks ignore patterns
+# Add patterns here to exclude false positives from secrets scanning
+
+# Example patterns (uncomment and modify as needed):
+# **/node_modules/**
+# **/dist/**
+# **/build/**
+# **/*.lock
+# **/package-lock.json
+# **/bun.lock
+# **/Cargo.lock
+
+# Test files
+# **/*.test.{ts,tsx,js,jsx}
+# **/*.spec.{ts,tsx,js,jsx}
+
+# Generated files
+# **/routeTree.gen.ts
+# **/gen/**
+
+# Documentation
+# **/*.md
+

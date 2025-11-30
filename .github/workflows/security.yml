@@ -1,0 +1,153 @@
+name: Security Scanning
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  bun-audit:
+    name: Bun Dependency Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      
+      - name: Install dependencies
+        working-directory: ./cli
+        run: bun install
+      
+      - name: Generate package-lock.json for audit
+        working-directory: ./cli
+        run: bunx npm install --package-lock-only
+      
+      - name: Run npm audit
+        working-directory: ./cli
+        run: bunx npm audit --audit-level=moderate
+        continue-on-error: true
+      
+      - name: Cleanup package-lock.json
+        working-directory: ./cli
+        if: always()
+        run: rm -f package-lock.json
+
+  semgrep:
+    name: Semgrep Static Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Run Semgrep
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: >-
+            p/security-audit
+            p/owasp-top-ten
+            p/javascript
+            p/typescript
+            p/react
+          generateSarif: "1"
+          paths: >-
+            cli/src
+          extra_args: >-
+            --exclude="**/node_modules/**" --exclude="**/dist/**" --exclude="**/build/**" --exclude="**/target/**" --exclude="**/*.test.{ts,tsx,js,jsx}" --exclude="**/*.spec.{ts,tsx,js,jsx}" --exclude="**/routeTree.gen.ts"
+      
+      - name: Upload SARIF results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: semgrep.sarif
+
+  gitleaks:
+    name: Gitleaks Secrets Scanning
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          config-path: .gitleaks.toml
+          exit-code: 1
+          no-git: false
+          verbose: true
+
+  cargo-audit:
+    name: Rust Cargo Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+      
+      - name: Install cargo-audit
+        run: cargo install cargo-audit --features vendored-openssl
+      
+      - name: Run cargo-audit (auth-service)
+        working-directory: ./auth-service
+        run: cargo audit
+        continue-on-error: true
+      
+      - name: Run cargo-audit (Tauri)
+        working-directory: ./cli/src-tauri
+        run: cargo audit
+        continue-on-error: true
+
+  cargo-deny:
+    name: Rust Cargo Deny
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+      
+      - name: Install cargo-deny
+        run: cargo install cargo-deny
+      
+      - name: Run cargo-deny (auth-service)
+        working-directory: ./auth-service
+        run: cargo deny check
+        continue-on-error: true
+      
+      - name: Run cargo-deny (Tauri)
+        working-directory: ./cli/src-tauri
+        run: cargo deny check || true
+        continue-on-error: true
+
+  security-summary:
+    name: Security Scan Summary
+    runs-on: ubuntu-latest
+    needs: [bun-audit, semgrep, gitleaks, cargo-audit, cargo-deny]
+    if: always()
+    steps:
+      - name: Check scan results
+        run: |
+          echo "## Security Scan Summary" >> $GITHUB_STEP_SUMMARY
+          echo "| Scan Type | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Bun Audit | ${{ needs.bun-audit.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Semgrep | ${{ needs.semgrep.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Gitleaks | ${{ needs.gitleaks.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Cargo Audit | ${{ needs.cargo-audit.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Cargo Deny | ${{ needs.cargo-deny.result }} |" >> $GITHUB_STEP_SUMMARY
+
