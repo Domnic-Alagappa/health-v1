@@ -1,14 +1,40 @@
-use crate::infrastructure::zanzibar::RelationshipStore;
+use crate::infrastructure::zanzibar::{RelationshipStore, GraphPermissionChecker, GraphCache};
+use crate::domain::repositories::RelationshipRepository;
 use crate::shared::AppResult;
 use std::collections::HashSet;
+use std::sync::Arc;
 
 pub struct PermissionChecker {
     store: RelationshipStore,
+    graph_cache: Option<Arc<GraphCache>>,
+    use_graph_for_deep_queries: bool,
 }
 
 impl PermissionChecker {
     pub fn new(store: RelationshipStore) -> Self {
-        Self { store }
+        Self {
+            store,
+            graph_cache: None,
+            use_graph_for_deep_queries: false,
+        }
+    }
+    
+    /// Create with graph cache enabled
+    pub fn with_graph_cache(
+        store: RelationshipStore,
+        graph_cache: Arc<GraphCache>,
+        use_graph_for_deep_queries: bool,
+    ) -> Self {
+        Self {
+            store,
+            graph_cache: Some(graph_cache),
+            use_graph_for_deep_queries,
+        }
+    }
+    
+    /// Check if query is complex enough to use graph (depth > 2)
+    fn should_use_graph(&self) -> bool {
+        self.use_graph_for_deep_queries && self.graph_cache.is_some()
     }
 
     /// Check if user has relation on object
@@ -19,6 +45,21 @@ impl PermissionChecker {
     /// 4. Group role inheritance: user#member@group → group#has_role@role → role#relation@resource
     /// Returns true if ANY path grants permission (union, not override)
     pub async fn check(&self, user: &str, relation: &str, object: &str) -> AppResult<bool> {
+        // Use graph-based checker if available and enabled
+        if self.should_use_graph() {
+            if let Some(cache) = &self.graph_cache {
+                // Try to get cached graph
+                if let Some(graph) = cache.get_cached() {
+                    let graph_checker = GraphPermissionChecker::new(graph);
+                    if let Ok(result) = graph_checker.check(user, relation, object) {
+                        return Ok(result);
+                    }
+                    // Fall through to database-based check if graph check fails
+                }
+            }
+        }
+        
+        // Fallback to database-based check (original implementation)
         // 1. Direct user permission check
         if self.store.check(user, relation, object).await? {
             return Ok(true);
@@ -62,6 +103,24 @@ impl PermissionChecker {
         }
 
         Ok(false)
+    }
+    
+    /// Check permission using graph (for complex queries)
+    pub async fn check_with_graph(
+        &self,
+        user: &str,
+        relation: &str,
+        object: &str,
+        repository: &dyn RelationshipRepository,
+    ) -> AppResult<bool> {
+        if let Some(cache) = &self.graph_cache {
+            let graph = cache.get_or_build(repository).await?;
+            let graph_checker = GraphPermissionChecker::new(graph);
+            graph_checker.check(user, relation, object)
+        } else {
+            // Fallback to regular check
+            self.check(user, relation, object).await
+        }
     }
     
     /// Check if user can access a specific app

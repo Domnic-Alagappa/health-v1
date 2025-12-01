@@ -183,5 +183,10 @@ impl RelationshipStore {
         let all = self.repository.find_by_user(user).await?;
         Ok(all.into_iter().filter(|r| r.is_valid()).collect())
     }
+    
+    /// Get repository (for graph building)
+    pub fn repository(&self) -> &dyn RelationshipRepository {
+        self.repository.as_ref()
+    }
 }
 

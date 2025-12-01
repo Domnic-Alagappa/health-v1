@@ -169,3 +169,14 @@ pub const RELATIONSHIP_DELETE_BY_TUPLE: &str = r#"
     AND deleted_at IS NULL
 "#;
 
+/// List all relationships (for graph building)
+/// Only returns non-deleted relationships
+pub const RELATIONSHIP_LIST_ALL: &str = r#"
+    SELECT id, "user", relation, object, created_at, valid_from, expires_at, 
+           is_active, metadata, deleted_at, deleted_by, request_id, updated_at, 
+           created_by, updated_by, system_id, version
+    FROM relationships
+    WHERE deleted_at IS NULL
+    ORDER BY created_at DESC
+"#;
+

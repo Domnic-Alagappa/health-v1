@@ -136,5 +136,12 @@ impl RelationshipRepository for RelationshipRepositoryImpl {
         
         Ok(())
     }
+    
+    async fn list_all(&self) -> AppResult<Vec<Relationship>> {
+        sqlx::query_as::<_, Relationship>(RELATIONSHIP_LIST_ALL)
+        .fetch_all(&self.pool)
+        .await
+        .map_err(|e| crate::shared::AppError::Database(e))
+    }
 }
 
