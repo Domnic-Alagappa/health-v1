@@ -78,17 +78,32 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         settings.oidc.jwt_expiration,
     );
 
+    // Initialize Zanzibar services (needed for RoleRepository)
+    let relationship_store = Arc::new(shared::infrastructure::zanzibar::RelationshipStore::new(
+        Box::new(shared::infrastructure::repositories::RelationshipRepositoryImpl::new(pool.clone())),
+    ));
+    
+    let permission_repository = Arc::new(shared::infrastructure::repositories::PermissionRepositoryImpl::new(pool.clone()));
+    
     // Initialize use cases using DatabaseService
     let get_permissions_use_case = authz_core::authorization::GetUserPermissionsUseCase::new(
         Box::new(shared::infrastructure::repositories::UserRepositoryImpl::new(database_service.clone())),
-        Box::new(shared::infrastructure::repositories::RoleRepositoryImpl::new(database_service.clone())),
+        Box::new(shared::infrastructure::repositories::RoleRepositoryImpl::new(
+            database_service.clone(),
+            relationship_store.clone(),
+            permission_repository.clone(),
+        )),
         Box::new(shared::infrastructure::repositories::PermissionRepositoryImpl::new(pool.clone())),
     );
 
     let login_use_case = Arc::new(authz_core::auth::LoginUseCase::new(
         Box::new(shared::infrastructure::repositories::UserRepositoryImpl::new(database_service.clone())),
         Box::new(shared::infrastructure::repositories::RefreshTokenRepositoryImpl::new(pool.clone())),
-        Box::new(shared::infrastructure::repositories::RoleRepositoryImpl::new(database_service.clone())),
+        Box::new(shared::infrastructure::repositories::RoleRepositoryImpl::new(
+            database_service.clone(),
+            relationship_store.clone(),
+            permission_repository.clone(),
+        )),
         Box::new(shared::infrastructure::repositories::PermissionRepositoryImpl::new(pool.clone())),
         token_manager_clone,
     ));
@@ -108,11 +123,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         get_permissions_use_case,
     ));
 
-    // Initialize Zanzibar services
-    let relationship_store = Arc::new(shared::infrastructure::zanzibar::RelationshipStore::new(
-        Box::new(shared::infrastructure::repositories::RelationshipRepositoryImpl::new(pool.clone())),
-    ));
-    
+    // Permission checker (uses relationship_store)
     let permission_checker = Arc::new(shared::infrastructure::zanzibar::PermissionChecker::new(
         shared::infrastructure::zanzibar::RelationshipStore::new(
             Box::new(shared::infrastructure::repositories::RelationshipRepositoryImpl::new(pool.clone())),
@@ -133,6 +144,59 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         Box::new(shared::infrastructure::repositories::UserRepositoryImpl::new(database_service.clone())),
     ));
 
+    // Initialize master key
+    info!("Initializing master key...");
+    use shared::infrastructure::encryption::MasterKey;
+    use std::path::Path;
+    let master_key = if let Some(path) = &settings.encryption.master_key_path {
+        // Load from file
+        MasterKey::from_file(Path::new(path))
+            .map_err(|e| format!("Failed to load master key from file: {}", e))?
+    } else if let Ok(_) = std::env::var("MASTER_KEY") {
+        // Load from environment (hex-encoded)
+        MasterKey::from_env("MASTER_KEY")
+            .map_err(|e| format!("Failed to load master key from environment: {}", e))?
+    } else {
+        // Generate new master key (first-time setup)
+        info!("Generating new master key...");
+        let key = MasterKey::generate()
+            .map_err(|e| format!("Failed to generate master key: {}", e))?;
+        // Save if path is configured
+        if let Some(path) = &settings.encryption.master_key_path {
+            std::fs::create_dir_all(Path::new(path).parent().unwrap())
+                .map_err(|e| format!("Failed to create master key directory: {}", e))?;
+            key.save_to_file(Path::new(path))
+                .map_err(|e| format!("Failed to save master key: {}", e))?;
+            info!("Generated and saved master key to: {}", path);
+        } else {
+            tracing::warn!("Master key generated but not saved. Set MASTER_KEY_PATH or MASTER_KEY env var.");
+        }
+        key
+    };
+    info!("Master key initialized");
+
+    // Initialize vault (OpenBao/KMS)
+    info!("Initializing vault...");
+    use shared::config::providers::ProviderConfig;
+    use shared::infrastructure::providers::create_kms_provider;
+    let provider_config = ProviderConfig::from_env()
+        .map_err(|e| format!("Failed to load provider config: {}", e))?;
+    let vault = create_kms_provider(&provider_config.kms)
+        .map_err(|e| format!("Failed to create KMS provider: {}", e))?;
+    info!("Vault initialized");
+
+    // Create DEK Manager
+    use shared::infrastructure::encryption::DekManager;
+    let dek_manager = Arc::new(DekManager::new(master_key, vault));
+    info!("DEK Manager initialized");
+
+    // Create role repository (uses relationship_store and permission_repository)
+    let role_repository = Arc::new(shared::infrastructure::repositories::RoleRepositoryImpl::new(
+        database_service.clone(),
+        relationship_store.clone(),
+        permission_repository.clone(),
+    ));
+
     // Create application state
     use api_service::AppState;
     let app_state = AppState {
@@ -148,6 +212,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         setup_repository,
         setup_organization_use_case,
         create_super_admin_use_case,
+        dek_manager,
+        role_repository,
     };
 
     // Build application router with state, middleware, and CORS

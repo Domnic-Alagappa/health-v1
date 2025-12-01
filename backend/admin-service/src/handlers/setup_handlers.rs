@@ -108,6 +108,194 @@ pub async fn initialize_setup(
         }
     };
 
+    // Generate DEK for organization
+    if let Err(e) = state.dek_manager.generate_dek(org_id, "organization").await {
+        return (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(serde_json::json!({
+                "error": format!("Failed to generate organization DEK: {}", e)
+            })),
+        )
+            .into_response();
+    }
+
+    // Generate DEK for super admin user
+    if let Err(e) = state.dek_manager.generate_dek(admin_user.id, "user").await {
+        return (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(serde_json::json!({
+                "error": format!("Failed to generate user DEK: {}", e)
+            })),
+        )
+            .into_response();
+    }
+
+    // Create Zanzibar relationships
+    let user_str = format!("user:{}", admin_user.id);
+    let org_str = format!("organization:{}", org_id);
+    
+    // Organization ownership and membership
+    if let Err(e) = state.relationship_store.add(&user_str, "owner", &org_str).await {
+        return (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(serde_json::json!({
+                "error": format!("Failed to create owner relationship: {}", e)
+            })),
+        )
+            .into_response();
+    }
+    
+    if let Err(e) = state.relationship_store.add(&user_str, "member", &org_str).await {
+        return (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(serde_json::json!({
+                "error": format!("Failed to create member relationship: {}", e)
+            })),
+        )
+            .into_response();
+    }
+    
+    // Admin role relationship
+    if let Err(e) = state.relationship_store.add(&user_str, "has_role", "role:admin").await {
+        return (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(serde_json::json!({
+                "error": format!("Failed to create admin role relationship: {}", e)
+            })),
+        )
+            .into_response();
+    }
+    
+    // Reverse: organization admin
+    if let Err(e) = state.relationship_store.add(&org_str, "admin", &user_str).await {
+        return (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(serde_json::json!({
+                "error": format!("Failed to create organization admin relationship: {}", e)
+            })),
+        )
+            .into_response();
+    }
+
+    // App access relationships - admin gets access to all apps
+    if let Err(e) = state.relationship_store.add(&user_str, "can_access", "app:admin-ui").await {
+        return (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(serde_json::json!({
+                "error": format!("Failed to create admin-ui access: {}", e)
+            })),
+        )
+            .into_response();
+    }
+    
+    if let Err(e) = state.relationship_store.add(&user_str, "can_access", "app:client-app").await {
+        return (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(serde_json::json!({
+                "error": format!("Failed to create client-app access: {}", e)
+            })),
+        )
+            .into_response();
+    }
+    
+    if let Err(e) = state.relationship_store.add(&user_str, "can_access", "app:mobile").await {
+        return (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(serde_json::json!({
+                "error": format!("Failed to create mobile access: {}", e)
+            })),
+        )
+            .into_response();
+    }
+
+    // Create role-to-app relationships for all roles
+    // Admin role
+    if let Err(e) = state.relationship_store.add("role:admin", "can_access", "app:admin-ui").await {
+        return (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(serde_json::json!({
+                "error": format!("Failed to create role:admin → admin-ui relationship: {}", e)
+            })),
+        )
+            .into_response();
+    }
+    
+    if let Err(e) = state.relationship_store.add("role:admin", "can_access", "app:client-app").await {
+        return (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(serde_json::json!({
+                "error": format!("Failed to create role:admin → client-app relationship: {}", e)
+            })),
+        )
+            .into_response();
+    }
+    
+    if let Err(e) = state.relationship_store.add("role:admin", "can_access", "app:mobile").await {
+        return (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(serde_json::json!({
+                "error": format!("Failed to create role:admin → mobile relationship: {}", e)
+            })),
+        )
+            .into_response();
+    }
+
+    // Doctor role
+    if let Err(e) = state.relationship_store.add("role:doctor", "can_access", "app:client-app").await {
+        return (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(serde_json::json!({
+                "error": format!("Failed to create role:doctor → client-app relationship: {}", e)
+            })),
+        )
+            .into_response();
+    }
+    
+    if let Err(e) = state.relationship_store.add("role:doctor", "can_access", "app:mobile").await {
+        return (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(serde_json::json!({
+                "error": format!("Failed to create role:doctor → mobile relationship: {}", e)
+            })),
+        )
+            .into_response();
+    }
+
+    // Nurse role
+    if let Err(e) = state.relationship_store.add("role:nurse", "can_access", "app:client-app").await {
+        return (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(serde_json::json!({
+                "error": format!("Failed to create role:nurse → client-app relationship: {}", e)
+            })),
+        )
+            .into_response();
+    }
+    
+    if let Err(e) = state.relationship_store.add("role:nurse", "can_access", "app:mobile").await {
+        return (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(serde_json::json!({
+                "error": format!("Failed to create role:nurse → mobile relationship: {}", e)
+            })),
+        )
+            .into_response();
+    }
+
+    // Receptionist role
+    if let Err(e) = state.relationship_store.add("role:receptionist", "can_access", "app:client-app").await {
+        return (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(serde_json::json!({
+                "error": format!("Failed to create role:receptionist → client-app relationship: {}", e)
+            })),
+        )
+            .into_response();
+    }
+
+    // Admin role assignment is already done via Zanzibar relationship above
+    // No need to insert into user_roles table anymore
+
     (
         StatusCode::OK,
         Json(SetupResponse {

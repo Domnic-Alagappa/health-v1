@@ -25,6 +25,18 @@ impl RelationshipRepository for RelationshipRepositoryImpl {
         .bind(&relationship.relation)
         .bind(&relationship.object)
         .bind(relationship.created_at)
+        .bind(relationship.valid_from)
+        .bind(relationship.expires_at)
+        .bind(relationship.is_active)
+        .bind(&relationship.metadata)
+        .bind(relationship.deleted_at)
+        .bind(relationship.deleted_by)
+        .bind(&relationship.request_id)
+        .bind(relationship.updated_at)
+        .bind(relationship.created_by)
+        .bind(relationship.updated_by)
+        .bind(&relationship.system_id)
+        .bind(relationship.version)
         .fetch_one(&self.pool)
         .await
         .map_err(|e| crate::shared::AppError::Database(e))
@@ -83,11 +95,41 @@ impl RelationshipRepository for RelationshipRepositoryImpl {
         Ok(())
     }
 
+    async fn update(&self, relationship: Relationship) -> AppResult<Relationship> {
+        sqlx::query_as::<_, Relationship>(RELATIONSHIP_UPDATE)
+        .bind(relationship.id)
+        .bind(relationship.valid_from)
+        .bind(relationship.expires_at)
+        .bind(relationship.is_active)
+        .bind(&relationship.metadata)
+        .bind(relationship.deleted_at)
+        .bind(relationship.deleted_by)
+        .bind(&relationship.request_id)
+        .bind(relationship.updated_at)
+        .bind(relationship.updated_by)
+        .bind(&relationship.system_id)
+        .bind(relationship.version)
+        .fetch_one(&self.pool)
+        .await
+        .map_err(|e| crate::shared::AppError::Database(e))
+    }
+
     async fn delete_by_tuple(&self, user: &str, relation: &str, object: &str) -> AppResult<()> {
         sqlx::query(RELATIONSHIP_DELETE_BY_TUPLE)
         .bind(user)
         .bind(relation)
         .bind(object)
+        .execute(&self.pool)
+        .await
+        .map_err(|e| crate::shared::AppError::Database(e))?;
+        
+        Ok(())
+    }
+    
+    async fn soft_delete(&self, id: Uuid, deleted_by: Option<Uuid>) -> AppResult<()> {
+        sqlx::query(RELATIONSHIP_SOFT_DELETE)
+        .bind(id)
+        .bind(deleted_by)
         .execute(&self.pool)
         .await
         .map_err(|e| crate::shared::AppError::Database(e))?;

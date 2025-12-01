@@ -1,7 +1,8 @@
 use crate::domain::entities::Role;
-use crate::domain::repositories::RoleRepository;
+use crate::domain::repositories::{RoleRepository, PermissionRepository};
 use crate::infrastructure::database::DatabaseService;
 use crate::infrastructure::database::queries::roles::*;
+use crate::infrastructure::zanzibar::RelationshipStore;
 use crate::shared::AppResult;
 use async_trait::async_trait;
 use sqlx::Row;
@@ -11,11 +12,21 @@ use chrono::Utc;
 
 pub struct RoleRepositoryImpl {
     database_service: Arc<DatabaseService>,
+    relationship_store: Arc<RelationshipStore>,
+    permission_repository: Arc<dyn PermissionRepository>,
 }
 
 impl RoleRepositoryImpl {
-    pub fn new(database_service: Arc<DatabaseService>) -> Self {
-        Self { database_service }
+    pub fn new(
+        database_service: Arc<DatabaseService>,
+        relationship_store: Arc<RelationshipStore>,
+        permission_repository: Arc<dyn PermissionRepository>,
+    ) -> Self {
+        Self {
+            database_service,
+            relationship_store,
+            permission_repository,
+        }
     }
 }
 
@@ -40,16 +51,17 @@ impl RoleRepository for RoleRepositoryImpl {
         .await
         .map_err(|e| crate::shared::AppError::Database(e))?;
 
-        // Insert permissions
-        let now = Utc::now();
+        // Insert permissions into Zanzibar
+        // Get permission details to create Zanzibar relationships
         for permission_id in &role.permissions {
-            sqlx::query(ROLE_PERMISSION_INSERT)
-            .bind(role_id)
-            .bind(permission_id)
-            .bind(now)
-            .execute(self.database_service.pool())
-            .await
-            .map_err(|e| crate::shared::AppError::Database(e))?;
+            if let Some(permission) = self.permission_repository.find_by_id(*permission_id).await? {
+                let role_str = format!("role:{}", role.name);
+                let resource_str = format!("resource:{}", permission.resource);
+                // Create relationship: role:{name}#{action}@{resource}
+                self.relationship_store
+                    .add(&role_str, &permission.action, &resource_str)
+                    .await?;
+            }
         }
 
         // Fetch the created role with permissions
@@ -143,71 +155,113 @@ impl RoleRepository for RoleRepositoryImpl {
     }
 
     async fn add_permission_to_role(&self, role_id: Uuid, permission_id: Uuid) -> AppResult<()> {
-        sqlx::query(ROLE_PERMISSION_INSERT)
-        .bind(role_id)
-        .bind(permission_id)
-        .bind(Utc::now())
-            .execute(self.database_service.pool())
-        .await
-        .map_err(|e| crate::shared::AppError::Database(e))?;
+        // Get role and permission details
+        let role = self.find_by_id(role_id).await?
+            .ok_or_else(|| crate::shared::AppError::NotFound(
+                format!("Role {} not found", role_id)
+            ))?;
+        
+        let permission = self.permission_repository.find_by_id(permission_id).await?
+            .ok_or_else(|| crate::shared::AppError::NotFound(
+                format!("Permission {} not found", permission_id)
+            ))?;
+        
+        // Create Zanzibar relationship: role:{name}#{action}@{resource}
+        let role_str = format!("role:{}", role.name);
+        let resource_str = format!("resource:{}", permission.resource);
+        
+        self.relationship_store
+            .add(&role_str, &permission.action, &resource_str)
+            .await?;
         
         Ok(())
     }
 
     async fn remove_permission_from_role(&self, role_id: Uuid, permission_id: Uuid) -> AppResult<()> {
-        sqlx::query(ROLE_PERMISSION_DELETE)
-        .bind(role_id)
-        .bind(permission_id)
-            .execute(self.database_service.pool())
-        .await
-        .map_err(|e| crate::shared::AppError::Database(e))?;
+        // Get role and permission details
+        let role = self.find_by_id(role_id).await?
+            .ok_or_else(|| crate::shared::AppError::NotFound(
+                format!("Role {} not found", role_id)
+            ))?;
+        
+        let permission = self.permission_repository.find_by_id(permission_id).await?
+            .ok_or_else(|| crate::shared::AppError::NotFound(
+                format!("Permission {} not found", permission_id)
+            ))?;
+        
+        // Remove Zanzibar relationship: role:{name}#{action}@{resource}
+        let role_str = format!("role:{}", role.name);
+        let resource_str = format!("resource:{}", permission.resource);
+        
+        self.relationship_store
+            .soft_delete(&role_str, &permission.action, &resource_str, None)
+            .await?;
         
         Ok(())
     }
 
     async fn get_role_permissions(&self, role_id: Uuid) -> AppResult<Vec<Uuid>> {
-        let rows = sqlx::query(ROLE_PERMISSIONS_SELECT)
+        // Get role name directly from database to avoid recursion
+        let row = sqlx::query(ROLE_FIND_BY_ID)
         .bind(role_id)
-        .fetch_all(self.database_service.pool())
+        .fetch_optional(self.database_service.pool())
         .await
         .map_err(|e| crate::shared::AppError::Database(e))?;
-
-        Ok(rows.into_iter().map(|r| {
-            r.try_get::<Uuid, _>("permission_id")
-                .unwrap_or_else(|_| Uuid::nil())
-        }).filter(|id| *id != Uuid::nil()).collect())
+        
+        let role_name = if let Some(row) = row {
+            row.get::<String, _>("name")
+        } else {
+            return Ok(Vec::new());
+        };
+        
+        let role_str = format!("role:{}", role_name);
+        
+        // Get all relationships for this role
+        let relationships = self.relationship_store
+            .get_valid_relationships(&role_str)
+            .await?;
+        
+        // Extract permissions from relationships
+        // Format: role:{name}#{action}@{resource}
+        let mut permission_ids = Vec::new();
+        for rel in relationships {
+            if rel.object.starts_with("resource:") {
+                let resource = rel.object.strip_prefix("resource:").unwrap_or(&rel.object);
+                let action = &rel.relation;
+                
+                // Find permission by resource and action
+                if let Some(permission) = self.permission_repository
+                    .find_by_resource_and_action(resource, action)
+                    .await?
+                {
+                    permission_ids.push(permission.id);
+                }
+            }
+        }
+        
+        Ok(permission_ids)
     }
 
     async fn get_user_roles(&self, user_id: Uuid) -> AppResult<Vec<Role>> {
-        let rows = sqlx::query(USER_ROLES_SELECT)
-        .bind(user_id)
-        .fetch_all(self.database_service.pool())
-        .await
-        .map_err(|e| crate::shared::AppError::Database(e))?;
-
+        let user_str = format!("user:{}", user_id);
+        
+        // Get all relationships where user has_role
+        let relationships = self.relationship_store
+            .get_valid_relationships(&user_str)
+            .await?;
+        
         let mut roles = Vec::new();
-        for row in rows {
-            let role_id: Uuid = row.try_get("id")
-                .map_err(|e| crate::shared::AppError::Database(sqlx::Error::ColumnDecode {
-                    index: "id".to_string(),
-                    source: Box::new(e),
-                }))?;
-            let permissions = self.get_role_permissions(role_id).await?;
-            roles.push(Role {
-                id: role_id,
-                name: row.get("name"),
-                description: row.get("description"),
-                permissions,
-                request_id: row.get("request_id"),
-                created_at: row.get("created_at"),
-                updated_at: row.get("updated_at"),
-                created_by: row.get("created_by"),
-                updated_by: row.get("updated_by"),
-                system_id: row.get("system_id"),
-                version: row.get("version"),
-            });
+        for rel in relationships {
+            if rel.relation == "has_role" && rel.object.starts_with("role:") {
+                let role_name = rel.object.strip_prefix("role:").unwrap_or(&rel.object);
+                
+                // Find role by name (this will call get_role_permissions, but that's OK)
+                if let Some(role) = self.find_by_name(role_name).await? {
+                    roles.push(role);
+                }
+            }
         }
-
+        
         Ok(roles)
     }
 }

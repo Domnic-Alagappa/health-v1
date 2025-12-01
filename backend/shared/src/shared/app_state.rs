@@ -1,9 +1,10 @@
 use std::sync::Arc;
 use sqlx::PgPool;
-use crate::domain::repositories::SetupRepository;
+use crate::domain::repositories::{SetupRepository, RoleRepository};
 use crate::infrastructure::database::DatabaseService;
 use crate::infrastructure::oidc::TokenManager;
 use crate::infrastructure::zanzibar::{PermissionChecker, RelationshipStore};
+use crate::infrastructure::encryption::DekManager;
 
 /// Application state that holds shared services and use cases.
 /// Note: Use case types are provided by the consuming crate (e.g., api-service)
@@ -21,5 +22,7 @@ pub struct AppState<LoginUseCase, RefreshTokenUseCase, LogoutUseCase, UserInfoUs
     pub setup_repository: Arc<dyn SetupRepository>,
     pub setup_organization_use_case: Arc<SetupOrganizationUseCase>,
     pub create_super_admin_use_case: Arc<CreateSuperAdminUseCase>,
+    pub dek_manager: Arc<DekManager>,
+    pub role_repository: Arc<dyn RoleRepository>,
 }
 
