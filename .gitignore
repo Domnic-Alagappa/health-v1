@@ -15,6 +15,7 @@ build/
 *.local
 cli/packages/apps/*/dist/
 cli/packages/apps/*/build/
+cli/packages/libs/*/dist/
 
 # ============================================
 # Rust/Cargo (Tauri)

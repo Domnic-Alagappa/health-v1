@@ -57,6 +57,7 @@ services:
     build:
       context: .
       dockerfile: backend/api-service/Dockerfile
+      target: runner-dev
       args:
         BUILD_MODE: dev
         SKIP_CHECKS: "true"
@@ -111,6 +112,12 @@ services:
       - "${API_SERVICE_PORT:-8080}:8080"
     volumes:
       - api_service_data:/app/data
+      # Mount source code for hot reload in dev mode (only src directories)
+      - ./backend/api-service/src:/app/backend/api-service/src
+      - ./backend/shared/src:/app/backend/shared/src
+      - ./backend/authz-core/src:/app/backend/authz-core/src
+      - ./backend/admin-service/src:/app/backend/admin-service/src
+      - ./backend/migrations:/app/backend/migrations
     depends_on:
       postgres:
         condition: service_healthy
@@ -131,7 +138,9 @@ services:
     build:
       context: ./cli
       dockerfile: packages/apps/admin/Dockerfile
+      target: runner-dev
       args:
+        BUILD_MODE: dev
         VITE_API_BASE_URL: ${ADMIN_UI_API_BASE_URL:-http://localhost:8080}
         SKIP_TYPE_CHECK: "true"
     container_name: health-admin-ui
@@ -144,8 +153,15 @@ services:
       VITE_ENABLE_LOCALSTACK: ${VITE_ENABLE_LOCALSTACK:-false}
       VITE_ENABLE_NATS: ${VITE_ENABLE_NATS:-false}
       VITE_ENABLE_KAFKA: ${VITE_ENABLE_KAFKA:-false}
+    volumes:
+      # Mount source code for hot reload in dev mode
+      - ./cli/packages/apps/admin:/app/packages/apps/admin
+      - ./cli/packages/libs/components:/app/packages/libs/components
+      - ./cli/packages/libs/shared:/app/packages/libs/shared
+      - ./cli/package.json:/app/package.json
+      - ./cli/biome.json:/app/biome.json
     ports:
-      - "${ADMIN_UI_PORT:-5174}:80"
+      - "${ADMIN_UI_PORT:-5174}:5174"
     depends_on:
       - api-service
     healthcheck:
@@ -163,7 +179,9 @@ services:
     build:
       context: ./cli
       dockerfile: packages/apps/client-app/Dockerfile
+      target: runner-dev
       args:
+        BUILD_MODE: dev
         VITE_API_BASE_URL: ${CLIENT_APP_API_BASE_URL:-http://localhost:8080}
         SKIP_TYPE_CHECK: "true"
     container_name: health-client-app
@@ -171,8 +189,15 @@ services:
       VITE_API_BASE_URL: ${CLIENT_APP_API_BASE_URL:-http://localhost:8080}
       VITE_OIDC_ISSUER: ${VITE_OIDC_ISSUER:-http://localhost:8080}
       VITE_OIDC_CLIENT_ID: ${VITE_OIDC_CLIENT_ID:-default-client}
+    volumes:
+      # Mount source code for hot reload in dev mode
+      - ./cli/packages/apps/client-app:/app/packages/apps/client-app
+      - ./cli/packages/libs/components:/app/packages/libs/components
+      - ./cli/packages/libs/shared:/app/packages/libs/shared
+      - ./cli/package.json:/app/package.json
+      - ./cli/biome.json:/app/biome.json
     ports:
-      - "${CLIENT_APP_PORT:-5175}:80"
+      - "${CLIENT_APP_PORT:-5173}:5173"
     depends_on:
       - api-service
     healthcheck:

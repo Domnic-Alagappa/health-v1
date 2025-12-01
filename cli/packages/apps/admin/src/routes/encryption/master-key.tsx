@@ -25,7 +25,6 @@ import { ProtectedPage, ProtectedButton } from "../../lib/permissions";
 import {
   getMasterKeyStatus,
   rotateMasterKey,
-  type MasterKeyStatus,
 } from "../../lib/api/encryption";
 import { useState } from "react";
 

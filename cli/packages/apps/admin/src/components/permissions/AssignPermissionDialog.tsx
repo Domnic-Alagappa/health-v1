@@ -16,9 +16,7 @@ import {
   Input,
   Label,
   Select,
-  SelectContent,
   SelectItem,
-  SelectTrigger,
   SelectValue,
 } from "@health-v1/ui-components";
 import { assignPermission, type AssignPermissionRequest } from "../../lib/api/permissions";

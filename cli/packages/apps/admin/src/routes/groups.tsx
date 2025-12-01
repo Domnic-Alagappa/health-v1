@@ -4,7 +4,6 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  Button,
   Card,
   CardContent,
   CardDescription,
@@ -21,7 +20,7 @@ import {
 } from "@health-v1/ui-components";
 import { Plus, Search, Users, Edit, Trash2 } from "lucide-react";
 import { ProtectedPage, ProtectedButton } from "../lib/permissions";
-import { listGroups, createGroup, deleteGroup, type Group } from "../lib/api/groups";
+import { listGroups, deleteGroup, type Group } from "../lib/api/groups";
 import { useState } from "react";
 
 export function GroupsPage() {
@@ -33,14 +32,12 @@ export function GroupsPage() {
     queryFn: listGroups,
   });
 
-  const groups = groupsResponse?.data?.groups || groupsResponse?.data || [];
-
-  const createMutation = useMutation({
-    mutationFn: createGroup,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["groups"] });
-    },
-  });
+  // Normalize groups to always be an array
+  const groups: Group[] = Array.isArray(groupsResponse?.data?.groups)
+    ? groupsResponse.data.groups
+    : Array.isArray(groupsResponse?.data)
+    ? groupsResponse.data
+    : [];
 
   const deleteMutation = useMutation({
     mutationFn: deleteGroup,
@@ -49,7 +46,7 @@ export function GroupsPage() {
     },
   });
 
-  const filteredGroups = groups.filter((group) =>
+  const filteredGroups = groups.filter((group: Group) =>
     group.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -118,7 +115,7 @@ export function GroupsPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredGroups.map((group) => (
+                    {filteredGroups.map((group: Group) => (
                       <TableRow key={group.id}>
                         <TableCell className="font-medium">{group.name}</TableCell>
                         <TableCell>{group.description || "-"}</TableCell>

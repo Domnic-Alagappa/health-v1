@@ -6,7 +6,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import {
-  Button,
   Card,
   CardContent,
   CardDescription,
@@ -22,19 +21,10 @@ import {
   TableRow,
   Badge,
 } from "@health-v1/ui-components";
-import { Plus, Search, Shield, Trash2, Calendar, User } from "lucide-react";
+import { Plus, Search, Shield, Trash2, User } from "lucide-react";
 import { ProtectedPage, ProtectedButton } from "../lib/permissions";
-import { getUserPermissions, revokePermission, type PermissionInfo } from "../lib/api/permissions";
+import { getUserPermissions, revokePermission } from "../lib/api/permissions";
 import { AssignPermissionDialog } from "../components/permissions/AssignPermissionDialog";
-
-interface PermissionRow {
-  id: string;
-  subject: string;
-  relation: string;
-  object: string;
-  expires_at?: string;
-  valid_from?: string;
-}
 
 export function PermissionsPage() {
   const [searchQuery, setSearchQuery] = useState("");

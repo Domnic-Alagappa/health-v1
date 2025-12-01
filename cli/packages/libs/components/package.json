@@ -3,23 +3,61 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts",
-    "./button": "./src/components/button.tsx",
-    "./input": "./src/components/input.tsx",
-    "./label": "./src/components/label.tsx",
-    "./box": "./src/components/box.tsx",
-    "./flex": "./src/components/flex.tsx",
-    "./stack": "./src/components/stack.tsx",
-    "./card": "./src/components/card.tsx",
-    "./avatar": "./src/components/avatar.tsx",
-    "./dropdown-menu": "./src/components/dropdown-menu.tsx",
-    "./badge": "./src/components/badge.tsx",
-    "./container": "./src/components/container.tsx"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./button": {
+      "types": "./dist/components/button.d.ts",
+      "default": "./dist/components/button.js"
+    },
+    "./input": {
+      "types": "./dist/components/input.d.ts",
+      "default": "./dist/components/input.js"
+    },
+    "./label": {
+      "types": "./dist/components/label.d.ts",
+      "default": "./dist/components/label.js"
+    },
+    "./box": {
+      "types": "./dist/components/box.d.ts",
+      "default": "./dist/components/box.js"
+    },
+    "./flex": {
+      "types": "./dist/components/flex.d.ts",
+      "default": "./dist/components/flex.js"
+    },
+    "./stack": {
+      "types": "./dist/components/stack.d.ts",
+      "default": "./dist/components/stack.js"
+    },
+    "./card": {
+      "types": "./dist/components/card.d.ts",
+      "default": "./dist/components/card.js"
+    },
+    "./avatar": {
+      "types": "./dist/components/avatar.d.ts",
+      "default": "./dist/components/avatar.js"
+    },
+    "./dropdown-menu": {
+      "types": "./dist/components/dropdown-menu.d.ts",
+      "default": "./dist/components/dropdown-menu.js"
+    },
+    "./badge": {
+      "types": "./dist/components/badge.d.ts",
+      "default": "./dist/components/badge.js"
+    },
+    "./container": {
+      "types": "./dist/components/container.d.ts",
+      "default": "./dist/components/container.js"
+    }
   },
   "scripts": {
+    "build": "tsup",
+    "clean": "rm -rf dist",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -42,6 +80,7 @@
   "devDependencies": {
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
+    "tsup": "^8.0.0",
     "typescript": "^5.9.3"
   },
   "peerDependencies": {

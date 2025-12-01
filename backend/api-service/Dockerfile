@@ -38,33 +38,50 @@ COPY backend/migrations backend/migrations
 ENV RUST_BACKTRACE=1
 
 # Build based on mode and skip checks flag
+# In dev mode, we skip building here - cargo run will build on first start
 WORKDIR /app/backend
-RUN if [ "$SKIP_CHECKS" = "true" ]; then \
-        echo "Skipping type checks, building directly in dev mode..."; \
-        if [ "$BUILD_MODE" = "dev" ]; then \
-            RUSTFLAGS="-A warnings" cargo build --bin api-service || \
-            (echo "Build failed, trying with release mode..." && cargo build --release --bin api-service); \
-        else \
-            RUSTFLAGS="-A warnings" cargo build --release --bin api-service; \
-        fi; \
+RUN if [ "$BUILD_MODE" = "dev" ]; then \
+        echo "Dev mode: Skipping build, will use cargo run directly"; \
+    elif [ "$SKIP_CHECKS" = "true" ]; then \
+        echo "Skipping type checks, building in release mode..."; \
+        RUSTFLAGS="-A warnings" cargo build --release --bin api-service; \
+        cp target/release/api-service /app/api-service; \
     else \
         echo "Running full build with checks..."; \
-        if [ "$BUILD_MODE" = "dev" ]; then \
-            cargo build --bin api-service; \
-        else \
-            cargo build --release --bin api-service; \
-        fi; \
-    fi
-
-# Copy the binary to a known location
-RUN if [ "$BUILD_MODE" = "dev" ]; then \
-        cp target/debug/api-service /app/api-service; \
-    else \
+        cargo build --release --bin api-service; \
         cp target/release/api-service /app/api-service; \
     fi
 
-# Runtime stage
-FROM debian:trixie-slim
+# Dev stage - runs cargo directly (when BUILD_MODE=dev)
+FROM rust:1.91-slim AS runner-dev
+
+# Install build and runtime dependencies
+RUN apt-get update && apt-get install -y \
+    pkg-config \
+    libssl-dev \
+    libpq-dev \
+    ca-certificates \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
+WORKDIR /app/backend
+
+# Copy workspace files and source code from builder
+COPY --from=builder /app/backend .
+
+# Expose port
+EXPOSE 8080
+
+# In dev mode, use cargo run - it will build on first start
+# Source code is mounted as volume in docker-compose for hot reload
+# Note: First run will compile everything
+# For true hot reload, install cargo-watch: cargo install cargo-watch
+# Then use: cargo watch -x 'run --bin api-service'
+CMD ["cargo", "run", "--bin", "api-service"]
+
+# Production runtime stage
+FROM debian:trixie-slim AS runner-prod
 
 # Install runtime dependencies
 RUN apt-get update && apt-get install -y \
@@ -80,7 +97,7 @@ RUN useradd -r -s /bin/false appuser
 # Set working directory
 WORKDIR /app
 
-# Copy binary from builder
+# Copy binary from builder (only exists in production build)
 COPY --from=builder /app/api-service /app/api-service
 COPY --from=builder /app/backend/migrations /app/migrations
 

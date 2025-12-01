@@ -6,7 +6,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
-  Button,
   Card,
   CardContent,
   CardDescription,
@@ -25,7 +24,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@health-v1/ui-components";
-import { Plus, Search, FileText, MousePointerClick, FormInput, Globe } from "lucide-react";
+import { Plus, Search, FileText, Globe } from "lucide-react";
 import { ProtectedPage, ProtectedButton } from "../lib/permissions";
 import {
   listPages,
@@ -33,9 +32,6 @@ import {
   listFieldsForPage,
   listApis,
   type UiPage,
-  type UiButton,
-  type UiField,
-  type UiApiEndpoint,
 } from "../lib/api/ui-entities";
 import { RegisterPageForm } from "../components/ui-entities/RegisterPageForm";
 import { RegisterButtonForm } from "../components/ui-entities/RegisterButtonForm";
@@ -56,7 +52,7 @@ export function UiEntitiesPage() {
   const [showButtonForm, setShowButtonForm] = useState(false);
   const [showFieldForm, setShowFieldForm] = useState(false);
   const [showApiForm, setShowApiForm] = useState(false);
-  const [selectedPageId, setSelectedPageId] = useState<string>("");
+  const [selectedPageId] = useState<string>("");
 
   const { data: pagesResponse, isLoading: isLoadingPages } = useQuery({
     queryKey: ["uiPages"],

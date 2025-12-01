@@ -3,7 +3,7 @@
  * Wraps TanStack Router routes to check page access before rendering
  */
 
-import { Navigate, useRouterState } from "@tanstack/react-router";
+import { Navigate } from "@tanstack/react-router";
 import { useCanAccess } from "./context";
 
 interface ProtectedRouteProps {

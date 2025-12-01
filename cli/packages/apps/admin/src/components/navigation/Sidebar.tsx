@@ -4,7 +4,7 @@
  */
 
 import { Link, useLocation } from "@tanstack/react-router";
-import { usePermissions } from "../../lib/permissions";
+import { useCanAccess } from "../../lib/permissions";
 import {
   LayoutDashboard,
   Users,
@@ -85,13 +85,39 @@ const navItems: NavItem[] = [
 
 export function Sidebar() {
   const location = useLocation();
-  const { canAccess } = usePermissions();
+  
+  // Check permissions for all nav items upfront
+  const canViewDashboard = useCanAccess("can_view", "page:dashboard");
+  const canViewUsers = useCanAccess("can_view", "page:users");
+  const canViewOrganizations = useCanAccess("can_view", "page:organizations");
+  const canViewPermissions = useCanAccess("can_view", "page:permissions");
+  const canViewRoles = useCanAccess("can_view", "page:roles");
+  const canViewGroups = useCanAccess("can_view", "page:groups");
+  const canViewUiEntities = useCanAccess("can_view", "page:ui-entities");
+  const canViewEncryption = useCanAccess("can_view", "page:encryption");
+  const canViewServices = useCanAccess("can_view", "page:services");
+  
+  // Check permissions for encryption sub-items
+  const canViewDeks = useCanAccess("can_view", "page:encryption-deks");
+  const canViewMasterKey = useCanAccess("can_view", "page:encryption-master-key");
+
+  // Permission map
+  const permissionMap: Record<string, boolean> = {
+    "page:dashboard": canViewDashboard,
+    "page:users": canViewUsers,
+    "page:organizations": canViewOrganizations,
+    "page:permissions": canViewPermissions,
+    "page:roles": canViewRoles,
+    "page:groups": canViewGroups,
+    "page:ui-entities": canViewUiEntities,
+    "page:encryption": canViewEncryption,
+    "page:services": canViewServices,
+  };
 
   // Filter nav items based on permissions
   const visibleItems = navItems.filter((item) => {
     if (!item.permission) return true;
-    // Check if user has can_view permission for the page
-    return canAccess(item.permission, "can_view");
+    return permissionMap[item.permission] ?? false;
   });
 
   return (
@@ -110,7 +136,7 @@ export function Sidebar() {
             return (
               <div key={item.path} className="space-y-1">
                 <Link
-                  to={item.path}
+                  to={item.path as any}
                   className={cn(
                     "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors",
                     isActive
@@ -124,7 +150,7 @@ export function Sidebar() {
                 {/* Encryption sub-items */}
                 {isActive && (
                   <div className="ml-6 space-y-1">
-                    {canAccess("page:encryption-deks", "can_view") && (
+                    {canViewDeks && (
                       <Link
                         to="/encryption/deks"
                         className={cn(
@@ -138,7 +164,7 @@ export function Sidebar() {
                         DEK Management
                       </Link>
                     )}
-                    {canAccess("page:encryption-master-key", "can_view") && (
+                    {canViewMasterKey && (
                       <Link
                         to="/encryption/master-key"
                         className={cn(

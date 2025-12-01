@@ -34,7 +34,6 @@ import { ProtectedPage, ProtectedButton } from "../../lib/permissions";
 import {
   listDekStatuses,
   rotateUserDek,
-  type DekStatus,
   type RotateDekRequest,
 } from "../../lib/api/encryption";
 
