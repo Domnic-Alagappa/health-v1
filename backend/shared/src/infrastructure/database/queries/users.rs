@@ -1,8 +1,9 @@
 /// Common SELECT field list for users table
+/// Order must match User struct field order for sqlx::FromRow
 pub const USER_SELECT_ALL_FIELDS: &str = r#"
     id, email, username, password_hash, is_active, is_verified, is_super_user, 
-    organization_id, created_at, updated_at, last_login,
-    request_id, created_by, updated_by, system_id, version
+    organization_id, last_login, request_id, created_at, updated_at,
+    created_by, updated_by, system_id, version
 "#;
 
 /// Insert a new user
@@ -14,15 +15,15 @@ pub const USER_INSERT: &str = r#"
     )
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
     RETURNING id, email, username, password_hash, is_active, is_verified, is_super_user, 
-              organization_id, created_at, updated_at, last_login,
-              request_id, created_by, updated_by, system_id, version
+              organization_id, last_login, request_id, created_at, updated_at,
+              created_by, updated_by, system_id, version
 "#;
 
 /// Find user by ID
 pub const USER_FIND_BY_ID: &str = r#"
     SELECT id, email, username, password_hash, is_active, is_verified, is_super_user, 
-           organization_id, created_at, updated_at, last_login,
-           request_id, created_by, updated_by, system_id, version
+           organization_id, last_login, request_id, created_at, updated_at,
+           created_by, updated_by, system_id, version
     FROM users
     WHERE id = $1
 "#;
@@ -30,8 +31,8 @@ pub const USER_FIND_BY_ID: &str = r#"
 /// Find user by email
 pub const USER_FIND_BY_EMAIL: &str = r#"
     SELECT id, email, username, password_hash, is_active, is_verified, is_super_user, 
-           organization_id, created_at, updated_at, last_login,
-           request_id, created_by, updated_by, system_id, version
+           organization_id, last_login, request_id, created_at, updated_at,
+           created_by, updated_by, system_id, version
     FROM users
     WHERE email = $1
 "#;
@@ -39,8 +40,8 @@ pub const USER_FIND_BY_EMAIL: &str = r#"
 /// Find user by username
 pub const USER_FIND_BY_USERNAME: &str = r#"
     SELECT id, email, username, password_hash, is_active, is_verified, is_super_user, 
-           organization_id, created_at, updated_at, last_login,
-           request_id, created_by, updated_by, system_id, version
+           organization_id, last_login, request_id, created_at, updated_at,
+           created_by, updated_by, system_id, version
     FROM users
     WHERE username = $1
 "#;
@@ -53,8 +54,8 @@ pub const USER_UPDATE: &str = r#"
         request_id = $11, updated_by = $12, version = $13
     WHERE id = $1 AND version = $14
     RETURNING id, email, username, password_hash, is_active, is_verified, is_super_user, 
-              organization_id, created_at, updated_at, last_login,
-              request_id, created_by, updated_by, system_id, version
+              organization_id, last_login, request_id, created_at, updated_at,
+              created_by, updated_by, system_id, version
 "#;
 
 /// Delete user by ID
@@ -66,8 +67,8 @@ pub const USER_DELETE: &str = r#"
 /// List users with pagination
 pub const USER_LIST: &str = r#"
     SELECT id, email, username, password_hash, is_active, is_verified, is_super_user, 
-           organization_id, created_at, updated_at, last_login,
-           request_id, created_by, updated_by, system_id, version
+           organization_id, last_login, request_id, created_at, updated_at,
+           created_by, updated_by, system_id, version
     FROM users
     ORDER BY created_at DESC
     LIMIT $1 OFFSET $2

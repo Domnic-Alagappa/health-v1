@@ -20,6 +20,7 @@ impl UserRepositoryImpl {
 #[async_trait]
 impl UserRepository for UserRepositoryImpl {
     async fn create(&self, user: User) -> AppResult<User> {
+        let location = concat!(file!(), ":", line!());
         sqlx::query_as::<_, User>(USER_INSERT)
         .bind(user.id)
         .bind(user.email)
@@ -39,23 +40,37 @@ impl UserRepository for UserRepositoryImpl {
         .bind(user.version)
         .fetch_one(self.database_service.pool())
         .await
-        .map_err(|e| crate::shared::AppError::Database(e))
+        .map_err(|e| {
+            let err = crate::shared::AppError::Database(e);
+            err.log_with_operation(location, "user_repository.create");
+            err
+        })
     }
 
     async fn find_by_id(&self, id: Uuid) -> AppResult<Option<User>> {
+        let location = concat!(file!(), ":", line!());
         sqlx::query_as::<_, User>(USER_FIND_BY_ID)
         .bind(id)
         .fetch_optional(self.database_service.pool())
         .await
-        .map_err(|e| crate::shared::AppError::Database(e))
+        .map_err(|e| {
+            let err = crate::shared::AppError::Database(e);
+            err.log_with_operation(location, "user_repository.find_by_id");
+            err
+        })
     }
 
     async fn find_by_email(&self, email: &str) -> AppResult<Option<User>> {
+        let location = concat!(file!(), ":", line!());
         sqlx::query_as::<_, User>(USER_FIND_BY_EMAIL)
         .bind(email)
         .fetch_optional(self.database_service.pool())
         .await
-        .map_err(|e| crate::shared::AppError::Database(e))
+        .map_err(|e| {
+            let err = crate::shared::AppError::Database(e);
+            err.log_with_operation(location, "user_repository.find_by_email");
+            err
+        })
     }
 
     async fn find_by_username(&self, username: &str) -> AppResult<Option<User>> {

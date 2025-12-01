@@ -20,12 +20,15 @@ async fn main() -> Result<(), String> {
     // Load environment variables
     dotenv::dotenv().ok();
 
-    // Initialize tracing
-    tracing_subscriber::fmt::init();
-
     // Load configuration
     let settings = shared::config::Settings::from_env()
-        .map_err(|e| format!("Failed to load configuration: {}", e))?;
+        .map_err(|e| {
+            eprintln!("Failed to load configuration: {}", e);
+            format!("Failed to load configuration: {}", e)
+        })?;
+
+    // Initialize logger with settings
+    shared::infrastructure::logging::init_from_settings(&settings.logging);
 
     info!("Starting api-service on {}:{}", settings.server.host, settings.server.port);
 

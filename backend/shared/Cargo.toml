@@ -51,6 +51,7 @@ aws-config.workspace = true
 
 # Logging
 tracing.workspace = true
+tracing-subscriber = { workspace = true, features = ["json", "env-filter"] }
 
 # Web framework (for request context)
 axum.workspace = true

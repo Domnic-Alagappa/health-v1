@@ -39,10 +39,12 @@ pub async fn initialize_setup(
     State(state): State<Arc<ConcreteAppState>>,
     Json(request): Json<SetupRequest>,
 ) -> impl IntoResponse {
+    let location = concat!(file!(), ":", line!());
     // Check if setup is already completed
     let is_completed = match state.setup_repository.is_setup_completed().await {
         Ok(c) => c,
         Err(e) => {
+            e.log_with_operation(location, "initialize_setup");
             return (
                 StatusCode::INTERNAL_SERVER_ERROR,
                 Json(serde_json::json!({
@@ -76,6 +78,7 @@ pub async fn initialize_setup(
     {
         Ok(id) => id,
         Err(e) => {
+            e.log_with_operation(location, "initialize_setup");
             return (
                 StatusCode::BAD_REQUEST,
                 Json(serde_json::json!({
@@ -99,6 +102,7 @@ pub async fn initialize_setup(
     {
         Ok(user) => user,
         Err(e) => {
+            e.log_with_operation(location, "initialize_setup");
             return (
                 StatusCode::BAD_REQUEST,
                 Json(serde_json::json!({
@@ -111,6 +115,7 @@ pub async fn initialize_setup(
 
     // Generate DEK for organization
     if let Err(e) = state.dek_manager.generate_dek(org_id, "organization").await {
+        e.log_with_operation(location, "initialize_setup");
         return (
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(serde_json::json!({
@@ -122,6 +127,7 @@ pub async fn initialize_setup(
 
     // Generate DEK for super admin user
     if let Err(e) = state.dek_manager.generate_dek(admin_user.id, "user").await {
+        e.log_with_operation(location, "initialize_setup");
         return (
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(serde_json::json!({
@@ -137,6 +143,7 @@ pub async fn initialize_setup(
     
     // Organization ownership and membership
     if let Err(e) = state.relationship_store.add(&user_str, "owner", &org_str).await {
+        e.log_with_operation(location, "initialize_setup");
         return (
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(serde_json::json!({
@@ -147,6 +154,7 @@ pub async fn initialize_setup(
     }
     
     if let Err(e) = state.relationship_store.add(&user_str, "member", &org_str).await {
+        e.log_with_operation(location, "initialize_setup");
         return (
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(serde_json::json!({
@@ -158,6 +166,7 @@ pub async fn initialize_setup(
     
     // Admin role relationship
     if let Err(e) = state.relationship_store.add(&user_str, "has_role", "role:admin").await {
+        e.log_with_operation(location, "initialize_setup");
         return (
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(serde_json::json!({
@@ -169,6 +178,7 @@ pub async fn initialize_setup(
     
     // Reverse: organization admin
     if let Err(e) = state.relationship_store.add(&org_str, "admin", &user_str).await {
+        e.log_with_operation(location, "initialize_setup");
         return (
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(serde_json::json!({
@@ -180,6 +190,7 @@ pub async fn initialize_setup(
 
     // App access relationships - admin gets access to all apps
     if let Err(e) = state.relationship_store.add(&user_str, "can_access", "app:admin-ui").await {
+        e.log_with_operation(location, "initialize_setup");
         return (
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(serde_json::json!({
@@ -190,6 +201,7 @@ pub async fn initialize_setup(
     }
     
     if let Err(e) = state.relationship_store.add(&user_str, "can_access", "app:client-app").await {
+        e.log_with_operation(location, "initialize_setup");
         return (
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(serde_json::json!({
@@ -200,6 +212,7 @@ pub async fn initialize_setup(
     }
     
     if let Err(e) = state.relationship_store.add(&user_str, "can_access", "app:mobile").await {
+        e.log_with_operation(location, "initialize_setup");
         return (
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(serde_json::json!({
@@ -212,6 +225,7 @@ pub async fn initialize_setup(
     // Create role-to-app relationships for all roles
     // Admin role
     if let Err(e) = state.relationship_store.add("role:admin", "can_access", "app:admin-ui").await {
+        e.log_with_operation(location, "initialize_setup");
         return (
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(serde_json::json!({
@@ -222,6 +236,7 @@ pub async fn initialize_setup(
     }
     
     if let Err(e) = state.relationship_store.add("role:admin", "can_access", "app:client-app").await {
+        e.log_with_operation(location, "initialize_setup");
         return (
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(serde_json::json!({
@@ -232,6 +247,7 @@ pub async fn initialize_setup(
     }
     
     if let Err(e) = state.relationship_store.add("role:admin", "can_access", "app:mobile").await {
+        e.log_with_operation(location, "initialize_setup");
         return (
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(serde_json::json!({
@@ -243,6 +259,7 @@ pub async fn initialize_setup(
 
     // Doctor role
     if let Err(e) = state.relationship_store.add("role:doctor", "can_access", "app:client-app").await {
+        e.log_with_operation(location, "initialize_setup");
         return (
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(serde_json::json!({
@@ -253,6 +270,7 @@ pub async fn initialize_setup(
     }
     
     if let Err(e) = state.relationship_store.add("role:doctor", "can_access", "app:mobile").await {
+        e.log_with_operation(location, "initialize_setup");
         return (
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(serde_json::json!({
@@ -264,6 +282,7 @@ pub async fn initialize_setup(
 
     // Nurse role
     if let Err(e) = state.relationship_store.add("role:nurse", "can_access", "app:client-app").await {
+        e.log_with_operation(location, "initialize_setup");
         return (
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(serde_json::json!({
@@ -274,6 +293,7 @@ pub async fn initialize_setup(
     }
     
     if let Err(e) = state.relationship_store.add("role:nurse", "can_access", "app:mobile").await {
+        e.log_with_operation(location, "initialize_setup");
         return (
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(serde_json::json!({
@@ -285,6 +305,7 @@ pub async fn initialize_setup(
 
     // Receptionist role
     if let Err(e) = state.relationship_store.add("role:receptionist", "can_access", "app:client-app").await {
+        e.log_with_operation(location, "initialize_setup");
         return (
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(serde_json::json!({
@@ -313,6 +334,7 @@ pub async fn initialize_setup(
 pub async fn check_setup_status(
     State(state): State<Arc<ConcreteAppState>>,
 ) -> impl IntoResponse {
+    let location = concat!(file!(), ":", line!());
     match state.setup_repository.is_setup_completed().await {
         Ok(is_completed) => (
             StatusCode::OK,
@@ -321,13 +343,16 @@ pub async fn check_setup_status(
             })),
         )
             .into_response(),
-        Err(e) => (
+        Err(e) => {
+            e.log_with_operation(location, "check_setup_status");
+            (
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(serde_json::json!({
                 "error": format!("Failed to check setup status: {}", e)
             })),
         )
-            .into_response(),
+                .into_response()
+        }
     }
 }
 

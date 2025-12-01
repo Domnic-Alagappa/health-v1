@@ -75,25 +75,46 @@ impl LoginUseCase {
     }
 
     pub async fn execute(&self, request: LoginRequest) -> AppResult<LoginResponse> {
+        let location = concat!(file!(), ":", line!());
         // Find user by email
         let user = self.user_repository
             .find_by_email(&request.email)
-            .await?
-            .ok_or_else(|| shared::AppError::Authentication("Invalid credentials".to_string()))?;
+            .await
+            .map_err(|e| {
+                e.log_with_operation(location, "login");
+                e
+            })?
+            .ok_or_else(|| {
+                let err = shared::AppError::Authentication("Invalid credentials".to_string());
+                err.log_with_operation(location, "login");
+                err
+            })?;
 
         // Verify password
         if !verify(&request.password, &user.password_hash)
-            .map_err(|_| shared::AppError::Authentication("Password verification failed".to_string()))? {
-            return Err(shared::AppError::Authentication("Invalid credentials".to_string()));
+            .map_err(|_| {
+                let err = shared::AppError::Authentication("Password verification failed".to_string());
+                err.log_with_operation(location, "login");
+                err
+            })? {
+            let err = shared::AppError::Authentication("Invalid credentials".to_string());
+            err.log_with_operation(location, "login");
+            return Err(err);
         }
 
         // Check if user is active
         if !user.is_active {
-            return Err(shared::AppError::Authentication("User account is inactive".to_string()));
+            let err = shared::AppError::Authentication("User account is inactive".to_string());
+            err.log_with_operation(location, "login");
+            return Err(err);
         }
 
         // Get user roles and permissions
-        let (primary_role, permissions) = self.get_user_role_and_permissions(user.id, user.is_super_user).await?;
+        let (primary_role, permissions) = self.get_user_role_and_permissions(user.id, user.is_super_user).await
+            .map_err(|e| {
+                e.log_with_operation(location, "login");
+                e
+            })?;
 
         // Generate tokens with role and permissions in claims
         let access_token = self.token_manager.generate_access_token_with_permissions(

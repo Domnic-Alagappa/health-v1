@@ -8,9 +8,11 @@ pub async fn login(
     State(state): State<Arc<AppState>>,
     Json(request): Json<LoginRequest>,
 ) -> impl IntoResponse {
+    let location = concat!(file!(), ":", line!());
     match state.login_use_case.execute(request).await {
         Ok(response) => (StatusCode::OK, Json(response)).into_response(),
         Err(e) => {
+            e.log_with_operation(location, "login");
             let status = match e {
                 shared::AppError::Authentication(_) => StatusCode::UNAUTHORIZED,
                 shared::AppError::NotFound(_) => StatusCode::NOT_FOUND,
@@ -46,9 +48,11 @@ pub async fn refresh_token(
     State(state): State<Arc<AppState>>,
     Json(request): Json<RefreshTokenRequest>,
 ) -> impl IntoResponse {
+    let location = concat!(file!(), ":", line!());
     match state.refresh_token_use_case.execute(request).await {
         Ok(response) => (StatusCode::OK, Json(response)).into_response(),
         Err(e) => {
+            e.log_with_operation(location, "refresh_token");
             let status = match e {
                 shared::AppError::Authentication(_) => StatusCode::UNAUTHORIZED,
                 shared::AppError::NotFound(_) => StatusCode::NOT_FOUND,
@@ -63,10 +67,14 @@ pub async fn userinfo(
     State(state): State<Arc<AppState>>,
     context: RequestContext,
 ) -> impl IntoResponse {
+    let location = concat!(file!(), ":", line!());
     // Use user_id from request context (set by auth_middleware)
     match state.userinfo_use_case.execute(context.user_id).await {
         Ok(response) => (StatusCode::OK, Json(response)).into_response(),
         Err(e) => {
+            let log_context = shared::infrastructure::logging::LogContext::from_request_context(&context)
+                .with_operation("userinfo".to_string());
+            e.log_with_context(location, &log_context);
             let status = match e {
                 shared::AppError::NotFound(_) => StatusCode::NOT_FOUND,
                 shared::AppError::Authentication(_) => StatusCode::UNAUTHORIZED,

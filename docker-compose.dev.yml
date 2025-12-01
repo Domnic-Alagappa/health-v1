@@ -203,6 +203,10 @@ services:
       - ./cli/packages/libs/shared:/app/packages/libs/shared
       - ./cli/package.json:/app/package.json
       - ./cli/biome.json:/app/biome.json
+      # Exclude node_modules from mount to avoid version conflicts
+      - /app/packages/apps/client-app/node_modules
+      - /app/packages/libs/components/node_modules
+      - /app/packages/libs/shared/node_modules
     ports:
       - "${CLIENT_APP_PORT:-5173}:5173"
     depends_on:

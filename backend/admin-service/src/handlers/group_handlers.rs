@@ -54,19 +54,23 @@ pub async fn create_group(
         state.relationship_store.clone(),
     );
     
+    let location = concat!(file!(), ":", line!());
     match use_case.execute(&request.name, request.description, request.organization_id).await {
         Ok(group) => (
             StatusCode::CREATED,
             Json(GroupResponse::from(group)),
         )
             .into_response(),
-        Err(e) => (
+        Err(e) => {
+            e.log_with_operation(location, "create_group");
+            (
             StatusCode::BAD_REQUEST,
             Json(serde_json::json!({
                 "error": format!("Failed to create group: {}", e)
             })),
         )
-            .into_response(),
+                .into_response()
+        }
     }
 }
 
@@ -79,6 +83,7 @@ pub async fn get_group(
     
     let group_repository = GroupRepositoryImpl::new(state.database_pool.as_ref().clone());
     
+    let location = concat!(file!(), ":", line!());
     match group_repository.find_by_id(id).await {
         Ok(Some(group)) => (
             StatusCode::OK,
@@ -92,13 +97,16 @@ pub async fn get_group(
             })),
         )
             .into_response(),
-        Err(e) => (
+        Err(e) => {
+            e.log_with_operation(location, "get_group");
+            (
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(serde_json::json!({
                 "error": format!("Failed to get group: {}", e)
             })),
         )
-            .into_response(),
+                .into_response()
+        }
     }
 }
 
@@ -110,6 +118,7 @@ pub async fn list_groups(
     
     let group_repository = GroupRepositoryImpl::new(state.database_pool.as_ref().clone());
     
+    let location = concat!(file!(), ":", line!());
     match group_repository.find_all().await {
         Ok(groups) => (
             StatusCode::OK,
@@ -118,13 +127,16 @@ pub async fn list_groups(
             })),
         )
             .into_response(),
-        Err(e) => (
+        Err(e) => {
+            e.log_with_operation(location, "list_groups");
+            (
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(serde_json::json!({
                 "error": format!("Failed to list groups: {}", e)
             })),
         )
-            .into_response(),
+                .into_response()
+        }
     }
 }
 
@@ -142,6 +154,7 @@ pub async fn add_user_to_group(
         state.relationship_store.clone(),
     );
     
+    let location = concat!(file!(), ":", line!());
     match use_case.execute(user_id, group_id).await {
         Ok(_) => (
             StatusCode::OK,
@@ -151,13 +164,16 @@ pub async fn add_user_to_group(
             })),
         )
             .into_response(),
-        Err(e) => (
+        Err(e) => {
+            e.log_with_operation(location, "add_user_to_group");
+            (
             StatusCode::BAD_REQUEST,
             Json(serde_json::json!({
                 "error": format!("Failed to add user to group: {}", e)
             })),
         )
-            .into_response(),
+                .into_response()
+        }
     }
 }
 
@@ -169,6 +185,7 @@ pub async fn remove_user_from_group(
     let user_str = format!("user:{}", user_id);
     let group_str = format!("group:{}", group_id);
     
+    let location = concat!(file!(), ":", line!());
     match state.relationship_store.soft_delete(&user_str, "member", &group_str, None).await {
         Ok(_) => (
             StatusCode::OK,
@@ -178,13 +195,16 @@ pub async fn remove_user_from_group(
             })),
         )
             .into_response(),
-        Err(e) => (
+        Err(e) => {
+            e.log_with_operation(location, "remove_user_from_group");
+            (
             StatusCode::BAD_REQUEST,
             Json(serde_json::json!({
                 "error": format!("Failed to remove user from group: {}", e)
             })),
         )
-            .into_response(),
+                .into_response()
+        }
     }
 }
 
@@ -208,6 +228,7 @@ pub async fn assign_role_to_group(
         state.relationship_store.clone(),
     );
     
+    let location = concat!(file!(), ":", line!());
     match use_case.execute(group_id, role_id).await {
         Ok(_) => (
             StatusCode::OK,
@@ -217,13 +238,16 @@ pub async fn assign_role_to_group(
             })),
         )
             .into_response(),
-        Err(e) => (
+        Err(e) => {
+            e.log_with_operation(location, "assign_role_to_group");
+            (
             StatusCode::BAD_REQUEST,
             Json(serde_json::json!({
                 "error": format!("Failed to assign role to group: {}", e)
             })),
         )
-            .into_response(),
+                .into_response()
+        }
     }
 }
 
@@ -236,6 +260,7 @@ pub async fn delete_group(
     
     let group_repository = GroupRepositoryImpl::new(state.database_pool.as_ref().clone());
     
+    let location = concat!(file!(), ":", line!());
     match group_repository.soft_delete(id, None).await {
         Ok(_) => (
             StatusCode::OK,
@@ -245,13 +270,16 @@ pub async fn delete_group(
             })),
         )
             .into_response(),
-        Err(e) => (
+        Err(e) => {
+            e.log_with_operation(location, "delete_group");
+            (
             StatusCode::BAD_REQUEST,
             Json(serde_json::json!({
                 "error": format!("Failed to delete group: {}", e)
             })),
         )
-            .into_response(),
+                .into_response()
+        }
     }
 }
 
