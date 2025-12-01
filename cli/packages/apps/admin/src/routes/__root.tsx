@@ -1,10 +1,11 @@
-import { Outlet } from "@tanstack/react-router";
+import { Outlet, useLocation } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { Sidebar } from "../components/navigation/Sidebar";
 
 export function RootComponent() {
+  const location = useLocation();
   // Check if we're on the login page
-  const isLoginPage = window.location.pathname === "/login";
+  const isLoginPage = location.pathname === "/login";
 
   return (
     <>

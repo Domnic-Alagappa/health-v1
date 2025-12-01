@@ -5,6 +5,9 @@ help: ## Show this help message
 	@echo ''
 	@echo 'Available targets:'
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "  %-15s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+	@echo ''
+	@echo 'Note: Service profiles are controlled by ENABLE_* flags in .env file'
+	@echo '      docker-compose will automatically respect these flags'
 
 build: ## Build all Docker images
 	docker-compose build
@@ -13,10 +16,10 @@ build-dev: ## Build all Docker images in dev mode (skips type checks)
 	docker-compose -f docker-compose.dev.yml build
 
 up-build-all: ## Build and start all services including optional ones
-	docker-compose --profile client --profile localstack --profile nats --profile kafka up -d --build --force-recreate --remove-orphans
+	@./scripts/docker-compose-with-profiles.sh docker-compose.yml up -d --build --force-recreate --remove-orphans
 
 up-build-dev: ## Build and start all services in dev mode (skips type checks)
-	docker-compose -f docker-compose.dev.yml --profile client --profile localstack --profile nats --profile kafka up -d --build --force-recreate --remove-orphans
+	@./scripts/docker-compose-with-profiles.sh docker-compose.dev.yml up -d --build --force-recreate --remove-orphans
 
 down: ## Stop all services
 	docker-compose down

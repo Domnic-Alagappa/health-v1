@@ -11,6 +11,8 @@ import { GroupsPage } from "./routes/groups";
 import { UiEntitiesPage } from "./routes/ui-entities";
 import { DekManagementPage } from "./routes/encryption/deks";
 import { MasterKeyManagementPage } from "./routes/encryption/master-key";
+import { EncryptionIndexPage } from "./routes/encryption/index";
+import { ZanzibarRelationshipsPage } from "./routes/zanzibar-relationships";
 
 // Root route
 const rootRoute = createRootRoute({
@@ -74,6 +76,12 @@ const uiEntitiesRoute = createRoute({
 });
 
 // Encryption routes
+const encryptionIndexRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/encryption",
+  component: EncryptionIndexPage,
+});
+
 const dekManagementRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/encryption/deks",
@@ -93,6 +101,13 @@ const servicesRoute = createRoute({
   component: ServicesPage,
 });
 
+// Zanzibar Relationships route
+const zanzibarRelationshipsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/zanzibar-relationships",
+  component: ZanzibarRelationshipsPage,
+});
+
 // Route tree
 const routeTree = rootRoute.addChildren([
   loginRoute,
@@ -103,9 +118,11 @@ const routeTree = rootRoute.addChildren([
   rolesRoute,
   groupsRoute,
   uiEntitiesRoute,
+  encryptionIndexRoute,
   dekManagementRoute,
   masterKeyManagementRoute,
   servicesRoute,
+  zanzibarRelationshipsRoute,
 ]);
 
 // Create router

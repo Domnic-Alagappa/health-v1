@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-NATS_URL="${NATS_URL:-nats://localhost:4222}"
-NATS_HTTP_PORT="${NATS_HTTP_PORT:-8222}"
+NATS_URL="${NATS_URL:-nats://localhost:4225}"
+NATS_HTTP_PORT="${NATS_HTTP_PORT:-8225}"
 
 echo "Waiting for NATS to be ready..."
 until curl -f -s "http://localhost:${NATS_HTTP_PORT}/healthz" > /dev/null 2>&1; do

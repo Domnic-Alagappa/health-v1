@@ -15,6 +15,7 @@ import {
   FileText,
   Key,
   Settings,
+  Network,
 } from "lucide-react";
 import { cn } from "@health-v1/ui-components";
 
@@ -48,6 +49,12 @@ const navItems: NavItem[] = [
     name: "Permissions",
     path: "/permissions",
     icon: Shield,
+    permission: "page:permissions",
+  },
+  {
+    name: "Zanzibar Relationships",
+    path: "/zanzibar-relationships",
+    icon: Network,
     permission: "page:permissions",
   },
   {
