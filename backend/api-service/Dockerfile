@@ -41,11 +41,19 @@ ENV RUST_BACKTRACE=1
 WORKDIR /app/backend
 RUN if [ "$SKIP_CHECKS" = "true" ]; then \
         echo "Skipping type checks, building directly in dev mode..."; \
-        RUSTFLAGS="-A warnings" cargo build --${BUILD_MODE} --bin api-service || \
-        (echo "Build failed, trying with release mode..." && cargo build --release --bin api-service); \
+        if [ "$BUILD_MODE" = "dev" ]; then \
+            RUSTFLAGS="-A warnings" cargo build --bin api-service || \
+            (echo "Build failed, trying with release mode..." && cargo build --release --bin api-service); \
+        else \
+            RUSTFLAGS="-A warnings" cargo build --release --bin api-service; \
+        fi; \
     else \
         echo "Running full build with checks..."; \
-        cargo build --${BUILD_MODE} --bin api-service; \
+        if [ "$BUILD_MODE" = "dev" ]; then \
+            cargo build --bin api-service; \
+        else \
+            cargo build --release --bin api-service; \
+        fi; \
     fi
 
 # Copy the binary to a known location
