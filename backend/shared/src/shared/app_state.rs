@@ -3,7 +3,7 @@ use sqlx::PgPool;
 use crate::domain::repositories::{SetupRepository, RoleRepository};
 use crate::infrastructure::database::DatabaseService;
 use crate::infrastructure::oidc::TokenManager;
-use crate::infrastructure::zanzibar::{PermissionChecker, RelationshipStore};
+use crate::infrastructure::zanzibar::{PermissionChecker, RelationshipStore, GraphCache};
 use crate::infrastructure::encryption::DekManager;
 
 /// Application state that holds shared services and use cases.
@@ -24,5 +24,6 @@ pub struct AppState<LoginUseCase, RefreshTokenUseCase, LogoutUseCase, UserInfoUs
     pub create_super_admin_use_case: Arc<CreateSuperAdminUseCase>,
     pub dek_manager: Arc<DekManager>,
     pub role_repository: Arc<dyn RoleRepository>,
+    pub graph_cache: Option<Arc<GraphCache>>,
 }
 

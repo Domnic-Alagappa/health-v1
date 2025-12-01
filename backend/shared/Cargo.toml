@@ -58,3 +58,6 @@ axum.workspace = true
 # OIDC/JWT
 jsonwebtoken.workspace = true
 
+# Graph algorithms
+petgraph = "0.6"
+

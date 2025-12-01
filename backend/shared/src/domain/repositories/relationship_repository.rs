@@ -15,5 +15,6 @@ pub trait RelationshipRepository: Send + Sync {
     async fn delete(&self, id: Uuid) -> AppResult<()>;
     async fn delete_by_tuple(&self, user: &str, relation: &str, object: &str) -> AppResult<()>;
     async fn soft_delete(&self, id: Uuid, deleted_by: Option<Uuid>) -> AppResult<()>;
+    async fn list_all(&self) -> AppResult<Vec<Relationship>>;
 }
 
