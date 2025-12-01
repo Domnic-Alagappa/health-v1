@@ -29,7 +29,7 @@ base64 = "0.22"
 hex = "0.4"
 
 # OIDC/JWT
-jsonwebtoken = "9.3"
+jsonwebtoken = "10.2"
 oauth2 = "5.0"
 josekit = "0.10"
 
