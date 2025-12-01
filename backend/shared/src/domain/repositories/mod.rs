@@ -6,6 +6,7 @@ pub mod permission_repository;
 pub mod refresh_token_repository;
 pub mod setup_repository;
 pub mod group_repository;
+pub mod ui_entity_repository;
 
 pub use user_repository::UserRepository;
 pub use key_repository::KeyRepository;
@@ -15,4 +16,5 @@ pub use permission_repository::PermissionRepository;
 pub use refresh_token_repository::RefreshTokenRepository;
 pub use setup_repository::SetupRepository;
 pub use group_repository::GroupRepository;
+pub use ui_entity_repository::UiEntityRepository;
 

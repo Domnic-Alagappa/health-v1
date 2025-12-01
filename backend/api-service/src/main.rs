@@ -248,6 +248,34 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/users/{id}", axum::routing::get(admin_service::handlers::get_user))
         .route("/users/{id}", axum::routing::post(admin_service::handlers::update_user))
         .route("/users/{id}", axum::routing::delete(admin_service::handlers::delete_user))
+        // UI Entity routes
+        .route("/api/admin/ui/pages", axum::routing::post(admin_service::handlers::register_page))
+        .route("/api/admin/ui/pages", axum::routing::get(admin_service::handlers::list_pages))
+        .route("/api/admin/ui/pages/{id}/buttons", axum::routing::get(admin_service::handlers::list_buttons_for_page))
+        .route("/api/admin/ui/pages/{id}/fields", axum::routing::get(admin_service::handlers::list_fields_for_page))
+        .route("/api/admin/ui/buttons", axum::routing::post(admin_service::handlers::register_button))
+        .route("/api/admin/ui/fields", axum::routing::post(admin_service::handlers::register_field))
+        .route("/api/admin/ui/apis", axum::routing::post(admin_service::handlers::register_api))
+        .route("/api/admin/ui/apis", axum::routing::get(admin_service::handlers::list_apis))
+        // Permission check routes
+        .route("/api/admin/permissions/check", axum::routing::post(admin_service::handlers::check_permission))
+        .route("/api/admin/permissions/check-batch", axum::routing::post(admin_service::handlers::check_permissions_batch))
+        .route("/api/admin/permissions/user/{id}", axum::routing::get(admin_service::handlers::get_user_permissions))
+        .route("/api/admin/permissions/user/{id}/pages", axum::routing::get(admin_service::handlers::get_user_pages))
+        .route("/api/admin/permissions/user/{id}/buttons/{page}", axum::routing::get(admin_service::handlers::get_user_buttons))
+        .route("/api/admin/permissions/user/{id}/fields/{page}", axum::routing::get(admin_service::handlers::get_user_fields))
+        // Permission assignment routes
+        .route("/api/admin/permissions/assign", axum::routing::post(admin_service::handlers::assign_permission))
+        .route("/api/admin/permissions/assign-batch", axum::routing::post(admin_service::handlers::assign_permissions_batch))
+        .route("/api/admin/permissions/revoke", axum::routing::delete(admin_service::handlers::revoke_permission))
+        // Groups routes
+        .route("/api/admin/groups", axum::routing::get(admin_service::handlers::list_groups))
+        .route("/api/admin/groups", axum::routing::post(admin_service::handlers::create_group))
+        .route("/api/admin/groups/{id}", axum::routing::get(admin_service::handlers::get_group))
+        .route("/api/admin/groups/{id}", axum::routing::delete(admin_service::handlers::delete_group))
+        .route("/api/admin/groups/{group_id}/users/{user_id}", axum::routing::post(admin_service::handlers::add_user_to_group))
+        .route("/api/admin/groups/{group_id}/users/{user_id}", axum::routing::delete(admin_service::handlers::remove_user_from_group))
+        .route("/api/admin/groups/{group_id}/roles/{role_id}", axum::routing::post(admin_service::handlers::assign_role_to_group))
         .with_state(app_state_arc.clone())
         .layer(axum::middleware::from_fn_with_state(
             app_state_arc.clone(),

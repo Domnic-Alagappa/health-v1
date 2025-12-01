@@ -6,6 +6,8 @@ import { OrganizationsPage } from "./routes/organizations";
 import { PermissionsPage } from "./routes/permissions";
 import { ServicesPage } from "./routes/services";
 import { UsersPage } from "./routes/users";
+import { RolesPage } from "./routes/roles";
+import { GroupsPage } from "./routes/groups";
 
 // Root route
 const rootRoute = createRootRoute({
@@ -47,6 +49,20 @@ const permissionsRoute = createRoute({
   component: PermissionsPage,
 });
 
+// Roles route
+const rolesRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/roles",
+  component: RolesPage,
+});
+
+// Groups route
+const groupsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/groups",
+  component: GroupsPage,
+});
+
 // Services route
 const servicesRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -61,6 +77,8 @@ const routeTree = rootRoute.addChildren([
   organizationsRoute,
   usersRoute,
   permissionsRoute,
+  rolesRoute,
+  groupsRoute,
   servicesRoute,
 ]);
 

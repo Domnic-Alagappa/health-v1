@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import Router from "./router";
+import { PermissionProvider } from "./lib/permissions";
 import "./index.css";
 
 // Create a client
@@ -42,7 +43,9 @@ async function init() {
   ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
-        <Router />
+        <PermissionProvider>
+          <Router />
+        </PermissionProvider>
       </QueryClientProvider>
     </React.StrictMode>
   );
