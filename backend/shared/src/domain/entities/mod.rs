@@ -9,6 +9,9 @@ pub mod ui_page;
 pub mod ui_button;
 pub mod ui_field;
 pub mod ui_api_endpoint;
+pub mod module;
+pub mod policy_template;
+pub mod policy_assignment;
 
 pub use user::User;
 pub use role::Role;
@@ -21,4 +24,7 @@ pub use ui_page::UiPage;
 pub use ui_button::UiButton;
 pub use ui_field::UiField;
 pub use ui_api_endpoint::UiApiEndpoint;
+pub use module::Module;
+pub use policy_template::PolicyTemplate;
+pub use policy_assignment::PolicyAssignment;
 

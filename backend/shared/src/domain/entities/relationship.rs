@@ -12,6 +12,7 @@ pub struct Relationship {
     pub user: String,        // user:123
     pub relation: String,    // member
     pub object: String,      // group:456
+    pub organization_id: Option<Uuid>, // Organization scoping (nullable for global relationships)
     pub created_at: DateTime<Utc>,
     // Time-bound fields
     pub valid_from: Option<DateTime<Utc>>,      // When permission becomes valid
@@ -33,12 +34,23 @@ pub struct Relationship {
 
 impl Relationship {
     pub fn new(user: String, relation: String, object: String) -> Self {
+        Self::new_with_organization(user, relation, object, None)
+    }
+    
+    /// Create relationship with organization scoping
+    pub fn new_with_organization(
+        user: String,
+        relation: String,
+        object: String,
+        organization_id: Option<Uuid>,
+    ) -> Self {
         let now = Utc::now();
         Self {
             id: Uuid::new_v4(),
             user,
             relation,
             object,
+            organization_id,
             created_at: now,
             valid_from: Some(now),
             expires_at: None,
@@ -62,7 +74,18 @@ impl Relationship {
         object: String,
         expires_at: DateTime<Utc>,
     ) -> Self {
-        let mut rel = Self::new(user, relation, object);
+        Self::new_with_expiration_and_org(user, relation, object, expires_at, None)
+    }
+    
+    /// Create time-bound relationship with organization
+    pub fn new_with_expiration_and_org(
+        user: String,
+        relation: String,
+        object: String,
+        expires_at: DateTime<Utc>,
+        organization_id: Option<Uuid>,
+    ) -> Self {
+        let mut rel = Self::new_with_organization(user, relation, object, organization_id);
         rel.expires_at = Some(expires_at);
         rel
     }
@@ -75,7 +98,19 @@ impl Relationship {
         valid_from: DateTime<Utc>,
         expires_at: Option<DateTime<Utc>>,
     ) -> Self {
-        let mut rel = Self::new(user, relation, object);
+        Self::new_with_validity_and_org(user, relation, object, valid_from, expires_at, None)
+    }
+    
+    /// Create relationship with validity window and organization
+    pub fn new_with_validity_and_org(
+        user: String,
+        relation: String,
+        object: String,
+        valid_from: DateTime<Utc>,
+        expires_at: Option<DateTime<Utc>>,
+        organization_id: Option<Uuid>,
+    ) -> Self {
+        let mut rel = Self::new_with_organization(user, relation, object, organization_id);
         rel.valid_from = Some(valid_from);
         rel.expires_at = expires_at;
         rel
@@ -193,8 +228,14 @@ impl Relationship {
     }
 
     /// Format as Zanzibar tuple string: user:123#member@group:456
+    /// Includes organization context if present
     pub fn to_tuple_string(&self) -> String {
-        format!("{}#{}@{}", self.user, self.relation, self.object)
+        let base = format!("{}#{}@{}", self.user, self.relation, self.object);
+        if let Some(org_id) = self.organization_id {
+            format!("{} [org:{}]", base, org_id)
+        } else {
+            base
+        }
     }
 
     /// Parse from tuple string

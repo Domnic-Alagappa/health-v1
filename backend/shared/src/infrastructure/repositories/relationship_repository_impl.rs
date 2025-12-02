@@ -24,6 +24,7 @@ impl RelationshipRepository for RelationshipRepositoryImpl {
         .bind(&relationship.user)
         .bind(&relationship.relation)
         .bind(&relationship.object)
+        .bind(relationship.organization_id)
         .bind(relationship.created_at)
         .bind(relationship.valid_from)
         .bind(relationship.expires_at)
@@ -142,6 +143,44 @@ impl RelationshipRepository for RelationshipRepositoryImpl {
         .fetch_all(&self.pool)
         .await
         .map_err(|e| crate::shared::AppError::Database(e))
+    }
+    
+    async fn find_by_user_and_org(&self, user: &str, organization_id: Uuid) -> AppResult<Vec<Relationship>> {
+        sqlx::query_as::<_, Relationship>(RELATIONSHIP_FIND_BY_USER_AND_ORG)
+        .bind(user)
+        .bind(organization_id)
+        .fetch_all(&self.pool)
+        .await
+        .map_err(|e| crate::shared::AppError::Database(e))
+    }
+    
+    async fn find_by_organization(&self, organization_id: Uuid) -> AppResult<Vec<Relationship>> {
+        sqlx::query_as::<_, Relationship>(RELATIONSHIP_FIND_BY_ORGANIZATION)
+        .bind(organization_id)
+        .fetch_all(&self.pool)
+        .await
+        .map_err(|e| crate::shared::AppError::Database(e))
+    }
+    
+    async fn find_by_user_object_relation_org(
+        &self,
+        user: &str,
+        object: &str,
+        relation: &str,
+        organization_id: Option<Uuid>,
+    ) -> AppResult<Option<Relationship>> {
+        if let Some(org_id) = organization_id {
+            sqlx::query_as::<_, Relationship>(RELATIONSHIP_FIND_BY_USER_OBJECT_RELATION_ORG)
+            .bind(user)
+            .bind(object)
+            .bind(relation)
+            .bind(org_id)
+            .fetch_optional(&self.pool)
+            .await
+            .map_err(|e| crate::shared::AppError::Database(e))
+        } else {
+            self.find_by_user_object_relation(user, object, relation).await
+        }
     }
 }
 

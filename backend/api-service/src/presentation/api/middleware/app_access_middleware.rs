@@ -1,17 +1,22 @@
 use axum::{
-    extract::Request,
+    extract::{Request, State},
     http::{HeaderMap, StatusCode},
     middleware::Next,
     response::Response,
 };
 use shared::infrastructure::zanzibar::PermissionChecker;
+use shared::infrastructure::repositories::UserRepositoryImpl;
+use shared::domain::repositories::UserRepository;
+use shared::RequestContext;
 use std::sync::Arc;
+use super::super::AppState;
 
 /// Middleware to check if user can access the app
-/// Checks X-App-Name header and verifies user has access via Zanzibar
+/// Checks X-App-Name header and verifies user has access via Zanzibar with organization scoping
 pub async fn app_access_middleware(
+    State(state): State<Arc<AppState>>,
     headers: HeaderMap,
-    mut request: Request,
+    request: Request,
     next: Next,
 ) -> Result<Response, StatusCode> {
     // Get app name from header
@@ -23,14 +28,32 @@ pub async fn app_access_middleware(
             StatusCode::BAD_REQUEST
         })?;
 
-    // Get user from request extensions (set by auth middleware)
-    let user_id = request
+    // Get request context (set by auth middleware)
+    let context = request
         .extensions()
-        .get::<uuid::Uuid>()
-        .copied()
+        .get::<RequestContext>()
         .ok_or_else(|| {
-            tracing::warn!("User ID not found in request extensions");
+            tracing::warn!("Request context not found in request extensions");
             StatusCode::UNAUTHORIZED
+        })?;
+
+    let user_id = context.user_id;
+
+    // Get user's organization_id from database
+    let user_repository = UserRepositoryImpl::new(state.database_service.clone());
+    let user = user_repository
+        .find_by_id(user_id)
+        .await
+        .map_err(|e| {
+            tracing::error!("Failed to fetch user: {}", e);
+            StatusCode::INTERNAL_SERVER_ERROR
+        })?;
+
+    let organization_id = user
+        .and_then(|u| u.organization_id)
+        .ok_or_else(|| {
+            tracing::warn!("User {} has no organization_id", user_id);
+            StatusCode::FORBIDDEN
         })?;
 
     // Get permission checker from request extensions
@@ -42,15 +65,15 @@ pub async fn app_access_middleware(
             StatusCode::INTERNAL_SERVER_ERROR
         })?;
 
-    // Check if user can access the app
+    // Check if user can access the app within their organization
     let user_str = format!("user:{}", user_id);
-    match permission_checker.can_access_app(&user_str, app_name).await {
+    match permission_checker.can_access_app_with_org(&user_str, app_name, organization_id).await {
         Ok(true) => {
             // User has access, continue
             Ok(next.run(request).await)
         }
         Ok(false) => {
-            tracing::warn!("User {} denied access to app {}", user_id, app_name);
+            tracing::warn!("User {} denied access to app {} in organization {}", user_id, app_name, organization_id);
             Err(StatusCode::FORBIDDEN)
         }
         Err(e) => {

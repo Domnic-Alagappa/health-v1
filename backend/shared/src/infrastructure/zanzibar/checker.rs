@@ -3,6 +3,7 @@ use crate::domain::repositories::RelationshipRepository;
 use crate::shared::AppResult;
 use std::collections::HashSet;
 use std::sync::Arc;
+use uuid::Uuid;
 
 pub struct PermissionChecker {
     store: RelationshipStore,
@@ -46,8 +47,22 @@ impl PermissionChecker {
     /// 5. Group role inheritance: user#member@group → group#has_role@role → role#relation@resource
     /// Returns true if ANY path grants permission (union, not override)
     pub async fn check(&self, user: &str, relation: &str, object: &str) -> AppResult<bool> {
+        self.check_with_organization(user, relation, object, None).await
+    }
+    
+    /// Check if user has relation on object with organization scoping
+    /// Supports hierarchical object format: organization:{org_id}/app:{app}/module:{module}/resource:{id}
+    /// When organization_id is provided, filters relationships to that organization
+    pub async fn check_with_organization(
+        &self,
+        user: &str,
+        relation: &str,
+        object: &str,
+        organization_id: Option<Uuid>,
+    ) -> AppResult<bool> {
         // First, check for wildcard permission (super admin bypass)
         // This must be checked first to ensure super admins have access to everything
+        // Note: Wildcard check doesn't filter by organization (global permission)
         if self.store.check(user, "*", "*").await? {
             return Ok(true);
         }
@@ -59,6 +74,7 @@ impl PermissionChecker {
                 if let Some(graph) = cache.get_cached() {
                     let graph_checker = GraphPermissionChecker::new(graph);
                     if let Ok(result) = graph_checker.check(user, relation, object) {
+                        // TODO: Add organization filtering to graph checker
                         return Ok(result);
                     }
                     // Fall through to database-based check if graph check fails
@@ -67,20 +83,25 @@ impl PermissionChecker {
         }
         
         // Fallback to database-based check (original implementation)
-        // 1. Direct user permission check
-        if self.store.check(user, relation, object).await? {
+        // 1. Direct user permission check (with organization filtering)
+        if self.store.check_with_organization(user, relation, object, organization_id).await? {
             return Ok(true);
         }
 
-        // 2. Get all user relationships (only valid ones)
-        let user_relationships = self.store.get_valid_relationships(user).await?;
+        // 2. Get all user relationships (only valid ones, filtered by organization if provided)
+        let user_relationships = if let Some(org_id) = organization_id {
+            self.store.get_valid_relationships_by_org(user, org_id).await?
+        } else {
+            self.store.get_valid_relationships(user).await?
+        };
         
         // 3. Check role-based permissions
         for rel in &user_relationships {
             if rel.relation == "has_role" {
                 // User has a role, check if role has the relation
                 let role_str = &rel.object; // e.g., "role:admin"
-                if self.store.check(role_str, relation, object).await? {
+                // Check role permission with same organization context
+                if self.store.check_with_organization(role_str, relation, object, organization_id).await? {
                     return Ok(true);
                 }
             }
@@ -91,17 +112,28 @@ impl PermissionChecker {
             if rel.relation == "member" {
                 let group_str = &rel.object; // e.g., "group:doctors"
                 
-                // 4a. Direct group permission
-                if self.store.check(group_str, relation, object).await? {
+                // 4a. Direct group permission (with organization context)
+                if self.store.check_with_organization(group_str, relation, object, organization_id).await? {
                     return Ok(true);
                 }
                 
                 // 4b. Group role inheritance: group#has_role@role → role#relation@resource
-                let group_relationships = self.store.get_valid_relationships(group_str).await?;
+                // Get group relationships (filtered by organization if provided)
+                let group_relationships = if let Some(org_id) = organization_id {
+                    // For groups, we need to check relationships in the same org
+                    // Groups themselves might not have organization_id, but their relationships should
+                    self.store.get_valid_relationships(group_str).await?
+                        .into_iter()
+                        .filter(|r| r.organization_id == organization_id || r.organization_id.is_none())
+                        .collect()
+                } else {
+                    self.store.get_valid_relationships(group_str).await?
+                };
+                
                 for group_rel in &group_relationships {
                     if group_rel.relation == "has_role" {
                         let role_str = &group_rel.object;
-                        if self.store.check(role_str, relation, object).await? {
+                        if self.store.check_with_organization(role_str, relation, object, organization_id).await? {
                             return Ok(true);
                         }
                     }
@@ -132,17 +164,26 @@ impl PermissionChecker {
     
     /// Check if user can access a specific app
     /// Supports all inheritance paths: user → role → app, user → group → role → app
+    /// Uses hierarchical format: organization:{org_id}/app:{app_name}
     pub async fn can_access_app(&self, user: &str, app_name: &str) -> AppResult<bool> {
+        // Legacy format for backward compatibility
         let app_str = format!("app:{}", app_name);
+        self.check(user, "can_access", &app_str).await
+    }
+    
+    /// Check if user can access a specific app within an organization
+    /// Uses hierarchical format: organization:{org_id}/app:{app_name}
+    pub async fn can_access_app_with_org(
+        &self,
+        user: &str,
+        app_name: &str,
+        organization_id: Uuid,
+    ) -> AppResult<bool> {
+        // Use hierarchical object format
+        let app_str = format!("organization:{}/app:{}", organization_id, app_name);
         
-        // 1. Direct user-to-app check
-        if self.check(user, "can_access", &app_str).await? {
-            return Ok(true);
-        }
-        
-        // The check() method already handles all inheritance paths
-        // So we can just use it
-        Ok(false)
+        // Check with organization context
+        self.check_with_organization(user, "can_access", &app_str, Some(organization_id)).await
     }
     
     /// Get all permissions for a user (union of all sources)
