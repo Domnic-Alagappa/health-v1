@@ -12,6 +12,8 @@ pub mod ui_api_endpoint;
 pub mod module;
 pub mod policy_template;
 pub mod policy_assignment;
+pub mod session;
+pub mod request_log;
 
 pub use user::User;
 pub use role::Role;
@@ -27,4 +29,6 @@ pub use ui_api_endpoint::UiApiEndpoint;
 pub use module::Module;
 pub use policy_template::PolicyTemplate;
 pub use policy_assignment::PolicyAssignment;
+pub use session::Session;
+pub use request_log::RequestLog;
 

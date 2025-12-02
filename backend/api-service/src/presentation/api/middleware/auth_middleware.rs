@@ -7,7 +7,10 @@ use axum::{
 use std::sync::Arc;
 use uuid::Uuid;
 use shared::RequestContext;
+use shared::domain::repositories::UserRepository;
+use shared::infrastructure::repositories::UserRepositoryImpl;
 use super::super::AppState;
+use super::session_middleware::get_session;
 
 /// Authentication middleware that validates JWT tokens and extracts user context
 pub async fn auth_middleware(
@@ -67,17 +70,67 @@ pub async fn auth_middleware(
         .cloned()
         .unwrap_or_else(|| Uuid::new_v4().to_string());
 
-    // Create request context
-    let context = RequestContext::new(
-        request_id,
-        user_id,
-        claims.email,
-        claims.role,
-        claims.permissions.unwrap_or_default(),
-    );
+    // Get user to retrieve organization_id
+    let user_repository = UserRepositoryImpl::new(state.database_service.clone());
+    let user = user_repository.find_by_id(user_id).await
+        .map_err(|e| {
+            tracing::error!("Failed to fetch user: {}", e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                axum::Json(serde_json::json!({
+                    "error": "Failed to fetch user information"
+                })),
+            )
+        })?;
 
-    // Insert context into request extensions for handlers to use
-    request.extensions_mut().insert(context);
+    let organization_id = user.and_then(|u| u.organization_id);
+
+    // Get session from extensions (set by session_middleware)
+    if let Some(session) = get_session(&request) {
+        // Authenticate the session if it's a ghost session
+        if session.is_ghost_session() {
+            if let Err(e) = state.session_service.authenticate_session(
+                session.id,
+                user_id,
+                organization_id,
+            ).await {
+                tracing::warn!("Failed to authenticate session: {}", e);
+                // Continue anyway - session will be authenticated on next request
+            }
+        }
+
+        // Create request context with session information
+        let mut context = RequestContext::new(
+            request_id,
+            user_id,
+            claims.email,
+            claims.role,
+            claims.permissions.unwrap_or_default(),
+        )
+        .with_session(session.id)
+        .with_ip_address(session.ip_address);
+
+        if let Some(org_id) = organization_id {
+            context = context.with_organization(org_id);
+        }
+
+        request.extensions_mut().insert(context);
+    } else {
+        // No session found - create context without session info
+        let mut context = RequestContext::new(
+            request_id,
+            user_id,
+            claims.email,
+            claims.role,
+            claims.permissions.unwrap_or_default(),
+        );
+
+        if let Some(org_id) = organization_id {
+            context = context.with_organization(org_id);
+        }
+
+        request.extensions_mut().insert(context);
+    }
 
     let response = next.run(request).await;
     Ok(response)

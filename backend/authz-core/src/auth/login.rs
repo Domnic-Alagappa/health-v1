@@ -162,6 +162,7 @@ impl LoginUseCase {
             refresh_token: refresh_token_string,
             expires_in: 3600,
             user: user_response,
+            session_token: None, // Will be set by handler if session exists
         })
     }
 }

@@ -236,15 +236,15 @@ pub async fn initialize_setup(
     for app_name in &apps {
         let app_object = format!("organization:{}/app:{}", org_id, app_name);
         if let Err(e) = state.relationship_store.add_with_organization(&user_str, "can_access", &app_object, Some(org_id)).await {
-            e.log_with_operation(location, "initialize_setup");
-            return (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(serde_json::json!({
+        e.log_with_operation(location, "initialize_setup");
+        return (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(serde_json::json!({
                     "error": format!("Failed to create {} access: {}", app_name, e)
-                })),
-            )
-                .into_response();
-        }
+            })),
+        )
+            .into_response();
+    }
         relationships_created.push(RelationshipInfo {
             user: user_str.clone(),
             relation: "can_access".to_string(),
@@ -261,15 +261,15 @@ pub async fn initialize_setup(
     for app_name in &apps {
         let app_object = format!("organization:{}/app:{}", org_id, app_name);
         if let Err(e) = state.relationship_store.add_with_organization("role:admin", "can_access", &app_object, Some(org_id)).await {
-            e.log_with_operation(location, "initialize_setup");
-            return (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(serde_json::json!({
+        e.log_with_operation(location, "initialize_setup");
+        return (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(serde_json::json!({
                     "error": format!("Failed to create role:admin → {} relationship: {}", app_name, e)
-                })),
-            )
-                .into_response();
-        }
+            })),
+        )
+            .into_response();
+    }
         relationships_created.push(RelationshipInfo {
             user: "role:admin".to_string(),
             relation: "can_access".to_string(),
@@ -284,15 +284,15 @@ pub async fn initialize_setup(
     for app_name in &doctor_apps {
         let app_object = format!("organization:{}/app:{}", org_id, app_name);
         if let Err(e) = state.relationship_store.add_with_organization("role:doctor", "can_access", &app_object, Some(org_id)).await {
-            e.log_with_operation(location, "initialize_setup");
-            return (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(serde_json::json!({
+        e.log_with_operation(location, "initialize_setup");
+        return (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(serde_json::json!({
                     "error": format!("Failed to create role:doctor → {} relationship: {}", app_name, e)
-                })),
-            )
-                .into_response();
-        }
+            })),
+        )
+            .into_response();
+    }
         relationships_created.push(RelationshipInfo {
             user: "role:doctor".to_string(),
             relation: "can_access".to_string(),
@@ -306,15 +306,15 @@ pub async fn initialize_setup(
     for app_name in &doctor_apps {
         let app_object = format!("organization:{}/app:{}", org_id, app_name);
         if let Err(e) = state.relationship_store.add_with_organization("role:nurse", "can_access", &app_object, Some(org_id)).await {
-            e.log_with_operation(location, "initialize_setup");
-            return (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(serde_json::json!({
+        e.log_with_operation(location, "initialize_setup");
+        return (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(serde_json::json!({
                     "error": format!("Failed to create role:nurse → {} relationship: {}", app_name, e)
-                })),
-            )
-                .into_response();
-        }
+            })),
+        )
+            .into_response();
+    }
         relationships_created.push(RelationshipInfo {
             user: "role:nurse".to_string(),
             relation: "can_access".to_string(),

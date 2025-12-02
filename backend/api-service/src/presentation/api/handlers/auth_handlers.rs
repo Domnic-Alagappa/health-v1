@@ -1,4 +1,4 @@
-use axum::{Json, extract::State, http::StatusCode, response::IntoResponse};
+use axum::{Json, extract::{State, Request}, http::StatusCode, response::IntoResponse};
 use authz_core::dto::{LoginRequest, RefreshTokenRequest};
 use shared::RequestContext;
 use super::super::AppState;
@@ -6,11 +6,58 @@ use std::sync::Arc;
 
 pub async fn login(
     State(state): State<Arc<AppState>>,
-    Json(request): Json<LoginRequest>,
+    request: Request,
 ) -> impl IntoResponse {
     let location = concat!(file!(), ":", line!());
-    match state.login_use_case.execute(request).await {
-        Ok(response) => (StatusCode::OK, Json(response)).into_response(),
+    
+    // Split request into parts to access extensions and body separately
+    let (parts, body) = request.into_parts();
+    
+    // Get session from request extensions (set by session_middleware)
+    let session = parts.extensions.get::<shared::domain::entities::Session>().cloned();
+    
+    // Extract JSON from body
+    let body_bytes = match axum::body::to_bytes(body, usize::MAX).await {
+        Ok(bytes) => bytes,
+        Err(e) => {
+            return (StatusCode::BAD_REQUEST, Json(serde_json::json!({"error": format!("Failed to read body: {}", e)}))).into_response();
+        }
+    };
+    
+    let login_request: LoginRequest = match serde_json::from_slice(&body_bytes) {
+        Ok(req) => req,
+        Err(e) => {
+            return (StatusCode::BAD_REQUEST, Json(serde_json::json!({"error": format!("Invalid JSON: {}", e)}))).into_response();
+        }
+    };
+    
+    match state.login_use_case.execute(login_request).await {
+        Ok(mut response) => {
+            // If we have a session, authenticate it
+            if let Some(sess) = session {
+                // Extract user_id from login response
+                if let Ok(user_id) = uuid::Uuid::parse_str(&response.user.id) {
+                    // Get user's organization_id
+                    use shared::domain::repositories::UserRepository;
+                    use shared::infrastructure::repositories::UserRepositoryImpl;
+                    let user_repository = UserRepositoryImpl::new(state.database_service.clone());
+                    if let Ok(Some(user)) = user_repository.find_by_id(user_id).await {
+                        // Authenticate the session
+                        if let Err(e) = state.session_service.authenticate_session(
+                            sess.id,
+                            user_id,
+                            user.organization_id,
+                        ).await {
+                            tracing::warn!("Failed to authenticate session on login: {}", e);
+                        } else {
+                            // Add session_token to response
+                            response.session_token = Some(sess.session_token.clone());
+                        }
+                    }
+                }
+            }
+            (StatusCode::OK, Json(response)).into_response()
+        },
         Err(e) => {
             e.log_with_operation(location, "login");
             let status = match e {

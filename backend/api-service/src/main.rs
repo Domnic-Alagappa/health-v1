@@ -279,6 +279,17 @@ async fn main() -> Result<(), String> {
         permission_repository.clone(),
     ));
 
+    // Initialize session service
+    info!("Initializing session service...");
+    let session_repository = Arc::new(shared::infrastructure::repositories::SessionRepositoryImpl::new(database_service.clone()));
+    let session_cache = Arc::new(shared::infrastructure::session::SessionCache::new());
+    let session_service = Arc::new(shared::infrastructure::session::SessionService::new(
+        session_repository,
+        session_cache,
+        24, // Session TTL: 24 hours
+    ));
+    info!("Session service initialized");
+
     // Create application state
     use api_service::AppState;
     let app_state = AppState {
@@ -297,6 +308,7 @@ async fn main() -> Result<(), String> {
         dek_manager,
         role_repository,
         graph_cache: Some(graph_cache),
+        session_service,
     };
 
     // Build application router with state, middleware, and CORS
@@ -361,6 +373,18 @@ async fn main() -> Result<(), String> {
     let app = axum::Router::new()
         .merge(public_routes)
         .merge(protected_routes)
+        // Middleware order (from outer to inner):
+        // 1. Request ID middleware - generates request ID
+        // 2. Session middleware - creates/gets session, extracts IP
+        // 3. Request logging middleware - logs requests (runs before and after handler)
+        .layer(axum::middleware::from_fn_with_state(
+            app_state_arc.clone(),
+            crate::presentation::api::middleware::request_logging_middleware,
+        ))
+        .layer(axum::middleware::from_fn_with_state(
+            app_state_arc.clone(),
+            crate::presentation::api::middleware::session_middleware,
+        ))
         .layer(axum::middleware::from_fn(crate::presentation::api::middleware::request_id_middleware))
         .layer(tower_http::cors::CorsLayer::permissive());
 
