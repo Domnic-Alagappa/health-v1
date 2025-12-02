@@ -12,44 +12,51 @@ import {
 } from "@health-v1/ui-components";
 import { useNavigate } from "@tanstack/react-router";
 import { AlertCircle, Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useAuthStore } from "@/stores/authStore";
 
 export function LoginPage() {
   const navigate = useNavigate();
+  const { login, isLoading, error, isAuthenticated } = useAuthStore();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [localError, setLocalError] = useState<string | null>(null);
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      const redirectTo = new URLSearchParams(window.location.search).get("redirect") || "/";
+      navigate({ to: redirectTo as "/" });
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    setIsLoading(true);
+    setLocalError(null);
 
     // Basic validation
     if (!email || !password) {
-      setError("Email and password are required");
-      setIsLoading(false);
+      setLocalError("Email and password are required");
       return;
     }
 
     if (!email.includes("@")) {
-      setError("Please enter a valid email address");
-      setIsLoading(false);
+      setLocalError("Please enter a valid email address");
       return;
     }
 
     try {
-      // TODO: Implement admin login API call
-      // For now, just redirect to dashboard
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      navigate({ to: "/" });
+      await login(email, password);
+      // Navigation will happen via useEffect when isAuthenticated becomes true
+      const redirectTo = new URLSearchParams(window.location.search).get("redirect") || "/";
+      navigate({ to: redirectTo as "/" });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
-    } finally {
-      setIsLoading(false);
+      // Error is handled by auth store
+      setLocalError(err instanceof Error ? err.message : "Login failed");
     }
   };
+
+  const displayError = error || localError;
 
   return (
     <Flex
@@ -94,13 +101,13 @@ export function LoginPage() {
               </div>
             </Stack>
 
-            {error && (
+            {displayError && (
               <div
                 className="flex items-center gap-2 rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive"
                 role="alert"
               >
                 <AlertCircle className="h-4 w-4 flex-shrink-0" />
-                <span>{error}</span>
+                <span>{displayError}</span>
               </div>
             )}
 

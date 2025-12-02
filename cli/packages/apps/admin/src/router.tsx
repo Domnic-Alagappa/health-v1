@@ -1,5 +1,5 @@
-import { RouterProvider, createRootRoute, createRoute, createRouter } from "@tanstack/react-router";
-import { RootComponent } from "./routes/__root";
+import { RouterProvider, createRoute, createRouter } from "@tanstack/react-router";
+import { Route as rootRoute } from "./routes/__root";
 import { DashboardPage } from "./routes/dashboard";
 import { LoginPage } from "./routes/login";
 import { OrganizationsPage } from "./routes/organizations";
@@ -14,10 +14,7 @@ import { MasterKeyManagementPage } from "./routes/encryption/master-key";
 import { EncryptionIndexPage } from "./routes/encryption/index";
 import { ZanzibarRelationshipsPage } from "./routes/zanzibar-relationships";
 
-// Root route
-const rootRoute = createRootRoute({
-  component: RootComponent,
-});
+// Root route (imported from __root.tsx which includes beforeLoad hook)
 
 // Login route
 const loginRoute = createRoute({
