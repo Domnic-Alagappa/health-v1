@@ -67,6 +67,9 @@ services:
       SERVER_HOST: ${SERVER_HOST:-0.0.0.0}
       SERVER_PORT: ${SERVER_PORT:-8080}
       
+      # CORS Configuration (comma-separated list of allowed origins)
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5174,http://localhost:5173,http://localhost:5175}
+      
       # Database
       DATABASE_URL: postgresql://${POSTGRES_USER:-auth_user}:${POSTGRES_PASSWORD:-auth_password}@postgres:5432/${POSTGRES_DB:-auth_db}
       

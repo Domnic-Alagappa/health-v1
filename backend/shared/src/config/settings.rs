@@ -17,6 +17,7 @@ pub struct Settings {
 pub struct ServerConfig {
     pub host: String,
     pub port: u16,
+    pub cors_allowed_origins: Vec<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -61,6 +62,12 @@ impl Settings {
                 .unwrap_or_else(|_| "8080".to_string())
                 .parse()
                 .unwrap_or(8080),
+            cors_allowed_origins: env::var("CORS_ALLOWED_ORIGINS")
+                .unwrap_or_else(|_| "http://localhost:5174,http://localhost:5173,http://localhost:5175".to_string())
+                .split(',')
+                .map(|s| s.trim().to_string())
+                .filter(|s| !s.is_empty())
+                .collect(),
         };
 
         let database = DatabaseConfig {

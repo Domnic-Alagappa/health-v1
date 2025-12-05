@@ -379,10 +379,37 @@ async fn main() -> Result<(), String> {
             crate::presentation::api::middleware::session_middleware,
         ))
         .layer(axum::middleware::from_fn(crate::presentation::api::middleware::request_id_middleware))
-        .layer(
-            tower_http::cors::CorsLayer::permissive()
+        .layer({
+            // Build CORS layer with specific origins (required for credentials)
+            // Convert origins to HeaderValues and use list
+            let origins: Vec<axum::http::HeaderValue> = settings.server.cors_allowed_origins
+                .iter()
+                .filter_map(|origin| origin.parse().ok())
+                .collect();
+            
+            tower_http::cors::CorsLayer::new()
                 .allow_credentials(true)
-        );
+                .allow_origin(tower_http::cors::AllowOrigin::list(origins))
+                .allow_methods([
+                    axum::http::Method::GET,
+                    axum::http::Method::POST,
+                    axum::http::Method::PUT,
+                    axum::http::Method::DELETE,
+                    axum::http::Method::PATCH,
+                    axum::http::Method::OPTIONS,
+                ])
+                .allow_headers([
+                    axum::http::header::CONTENT_TYPE,
+                    axum::http::header::AUTHORIZATION,
+                    axum::http::header::ACCEPT,
+                    axum::http::HeaderName::from_static("x-request-id"),
+                    axum::http::HeaderName::from_static("x-request-timestamp"),
+                    axum::http::HeaderName::from_static("x-session-token"),
+                ])
+                .expose_headers([
+                    axum::http::HeaderName::from_static("x-request-id"),
+                ])
+        });
 
     // Start server
     let addr = SocketAddr::from(([0, 0, 0, 0], settings.server.port));
