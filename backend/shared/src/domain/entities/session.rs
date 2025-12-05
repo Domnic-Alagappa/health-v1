@@ -26,6 +26,8 @@ pub struct Session {
     pub updated_by: Option<Uuid>,
     pub system_id: Option<String>,
     pub version: i64,
+    pub app_type: String,
+    pub app_device: String,
 }
 
 impl Session {
@@ -34,6 +36,8 @@ impl Session {
         ip_address: IpAddr,
         user_agent: Option<String>,
         expires_at: DateTime<Utc>,
+        app_type: String,
+        app_device: String,
     ) -> Self {
         let now = Utc::now();
         Self {
@@ -57,6 +61,8 @@ impl Session {
             updated_by: None,
             system_id: None,
             version: 1,
+            app_type,
+            app_device,
         }
     }
 
@@ -88,6 +94,34 @@ impl Session {
 
     pub fn is_ghost_session(&self) -> bool {
         self.user_id.is_none()
+    }
+
+    pub fn is_admin_ui(&self) -> bool {
+        self.app_type == "admin-ui"
+    }
+
+    pub fn is_client_ui(&self) -> bool {
+        self.app_type == "client-ui"
+    }
+
+    pub fn is_api(&self) -> bool {
+        self.app_type == "api"
+    }
+
+    pub fn is_web(&self) -> bool {
+        self.app_device == "web"
+    }
+
+    pub fn is_mobile(&self) -> bool {
+        self.app_device == "mobile"
+    }
+
+    pub fn is_desktop(&self) -> bool {
+        self.app_device == "desktop"
+    }
+
+    pub fn is_tablet(&self) -> bool {
+        self.app_device == "tablet"
     }
 }
 

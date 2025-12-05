@@ -2,6 +2,7 @@ use crate::domain::entities::Session;
 use crate::domain::repositories::SessionRepository;
 use crate::infrastructure::session::SessionCache;
 use crate::shared::AppResult;
+use crate::config::settings::SessionConfig;
 use chrono::{Duration, Utc};
 use std::net::IpAddr;
 use std::sync::Arc;
@@ -11,19 +12,29 @@ use uuid::Uuid;
 pub struct SessionService {
     repository: Arc<dyn SessionRepository>,
     cache: Arc<SessionCache>,
-    session_ttl_hours: i64,
+    session_config: SessionConfig,
 }
 
 impl SessionService {
     pub fn new(
         repository: Arc<dyn SessionRepository>,
         cache: Arc<SessionCache>,
-        session_ttl_hours: i64,
+        session_config: SessionConfig,
     ) -> Self {
         Self {
             repository,
             cache,
-            session_ttl_hours,
+            session_config,
+        }
+    }
+
+    /// Get TTL hours for a specific app type
+    fn get_ttl_hours(&self, app_type: &str) -> i64 {
+        match app_type {
+            "admin-ui" => self.session_config.admin_ui_ttl_hours as i64,
+            "client-ui" => self.session_config.client_ui_ttl_hours as i64,
+            "api" => self.session_config.api_ttl_hours as i64,
+            _ => self.session_config.api_ttl_hours as i64, // Default to API TTL
         }
     }
 
@@ -34,10 +45,22 @@ impl SessionService {
         session_token: &str,
         ip: IpAddr,
         user_agent: Option<&str>,
+        app_type: &str,
+        app_device: &str,
     ) -> AppResult<Session> {
         // Try cache first
         if let Some(session) = self.cache.get(session_token) {
             if session.is_active && !session.is_expired() {
+                // If app_type or app_device changed, update the session
+                if session.app_type != app_type || session.app_device != app_device {
+                    let mut updated_session = session;
+                    updated_session.app_type = app_type.to_string();
+                    updated_session.app_device = app_device.to_string();
+                    let saved = self.repository.update(updated_session.clone()).await?;
+                    let token = saved.session_token.clone();
+                    self.cache.set(&token, saved.clone());
+                    return Ok(saved);
+                }
                 return Ok(session);
             }
         }
@@ -45,8 +68,12 @@ impl SessionService {
         // Try database
         if let Some(session) = self.repository.find_by_token(session_token).await? {
             if session.is_active && !session.is_expired() {
-                // Update activity and cache
+                // If app_type or app_device changed, update the session
                 let mut session = session;
+                if session.app_type != app_type || session.app_device != app_device {
+                    session.app_type = app_type.to_string();
+                    session.app_device = app_device.to_string();
+                }
                 session.update_activity();
                 let updated = self.repository.update(session.clone()).await?;
                 let token = updated.session_token.clone();
@@ -55,13 +82,16 @@ impl SessionService {
             }
         }
 
-        // Create new session
-        let expires_at = Utc::now() + Duration::hours(self.session_ttl_hours);
+        // Create new session with app-specific TTL
+        let ttl_hours = self.get_ttl_hours(app_type);
+        let expires_at = Utc::now() + Duration::hours(ttl_hours);
         let session = Session::new(
             session_token.to_string(),
             ip,
             user_agent.map(|s| s.to_string()),
             expires_at,
+            app_type.to_string(),
+            app_device.to_string(),
         );
 
         let created = self.repository.create(session.clone()).await?;
@@ -70,11 +100,14 @@ impl SessionService {
     }
 
     /// Authenticate a session (link user to ghost session)
+    /// Optionally update app_type and app_device if provided
     pub async fn authenticate_session(
         &self,
         session_id: Uuid,
         user_id: Uuid,
         organization_id: Option<Uuid>,
+        app_type: Option<&str>,
+        app_device: Option<&str>,
     ) -> AppResult<Session> {
         let mut session = self
             .repository
@@ -94,6 +127,14 @@ impl SessionService {
             return Err(crate::shared::AppError::Validation(
                 "Session has expired".to_string(),
             ));
+        }
+
+        // Update app_type and app_device if provided
+        if let Some(app_type_val) = app_type {
+            session.app_type = app_type_val.to_string();
+        }
+        if let Some(app_device_val) = app_device {
+            session.app_device = app_device_val.to_string();
         }
 
         session.authenticate(user_id, organization_id);

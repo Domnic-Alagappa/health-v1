@@ -12,6 +12,8 @@ use uuid::Uuid;
 
 const SESSION_TOKEN_HEADER: &str = "X-Session-Token";
 const SESSION_TOKEN_COOKIE_HEADER: &str = "Cookie";
+const APP_TYPE_HEADER: &str = "X-App-Type";
+const APP_DEVICE_HEADER: &str = "X-App-Device";
 
 /// Extract IP address from request, handling proxy headers
 fn extract_ip_address(headers: &HeaderMap) -> Option<IpAddr> {
@@ -71,6 +73,63 @@ fn extract_session_token_from_cookies(headers: &HeaderMap) -> Option<String> {
     None
 }
 
+/// Extract app type from headers or detect from Origin
+fn extract_app_type(headers: &HeaderMap) -> String {
+    // First, try explicit header
+    if let Some(app_type) = headers.get(APP_TYPE_HEADER) {
+        if let Ok(app_type_str) = app_type.to_str() {
+            let app_type_lower = app_type_str.to_lowercase();
+            if matches!(app_type_lower.as_str(), "admin-ui" | "client-ui" | "api") {
+                return app_type_lower;
+            }
+        }
+    }
+
+    // Fallback: detect from Origin header
+    if let Some(origin) = headers.get("Origin") {
+        if let Ok(origin_str) = origin.to_str() {
+            if origin_str.contains(":5174") || origin_str.contains("admin") {
+                return "admin-ui".to_string();
+            } else if origin_str.contains(":5175") || origin_str.contains("client") {
+                return "client-ui".to_string();
+            }
+        }
+    }
+
+    // Default to api
+    "api".to_string()
+}
+
+/// Extract app device from headers or detect from User-Agent
+fn extract_app_device(headers: &HeaderMap) -> String {
+    // First, try explicit header
+    if let Some(app_device) = headers.get(APP_DEVICE_HEADER) {
+        if let Ok(app_device_str) = app_device.to_str() {
+            let app_device_lower = app_device_str.to_lowercase();
+            if matches!(app_device_lower.as_str(), "web" | "mobile" | "desktop" | "tablet") {
+                return app_device_lower;
+            }
+        }
+    }
+
+    // Fallback: detect from User-Agent
+    if let Some(user_agent) = headers.get("User-Agent") {
+        if let Ok(ua_str) = user_agent.to_str() {
+            let ua_lower = ua_str.to_lowercase();
+            if ua_lower.contains("mobile") || ua_lower.contains("android") || ua_lower.contains("iphone") {
+                return "mobile".to_string();
+            } else if ua_lower.contains("tablet") || ua_lower.contains("ipad") {
+                return "tablet".to_string();
+            } else if ua_lower.contains("desktop") || ua_lower.contains("windows") || ua_lower.contains("mac") || ua_lower.contains("linux") {
+                return "desktop".to_string();
+            }
+        }
+    }
+
+    // Default to web
+    "web".to_string()
+}
+
 /// Session middleware that creates/retrieves sessions and extracts IP addresses
 /// This runs before authentication, so it handles ghost sessions
 pub async fn session_middleware(
@@ -108,10 +167,14 @@ pub async fn session_middleware(
         .and_then(|h| h.to_str().ok())
         .map(|s| s.to_string());
 
-    // Get or create session
+    // Extract app type and device
+    let app_type = extract_app_type(&headers);
+    let app_device = extract_app_device(&headers);
+
+    // Get or create session with app type and device
     let session = match state
         .session_service
-        .create_or_get_session(&session_token, ip_address, user_agent.as_deref())
+        .create_or_get_session(&session_token, ip_address, user_agent.as_deref(), &app_type, &app_device)
         .await
     {
         Ok(session) => session,
@@ -121,6 +184,10 @@ pub async fn session_middleware(
             return next.run(request).await;
         }
     };
+
+    // Store app_type and app_device in request extensions for use in other middleware
+    request.extensions_mut().insert(app_type.clone());
+    request.extensions_mut().insert(app_device.clone());
 
     // Update session activity (non-blocking, fire and forget)
     let session_id = session.id;
@@ -178,5 +245,15 @@ pub fn get_session(request: &Request) -> Option<Session> {
 #[allow(dead_code)]
 pub fn get_session_id(request: &Request) -> Option<Uuid> {
     request.extensions().get::<Uuid>().copied()
+}
+
+/// Extract app type from request extensions
+pub fn get_app_type(request: &Request) -> Option<String> {
+    request.extensions().get::<String>().cloned()
+}
+
+/// Extract app device from request extensions
+pub fn get_app_device(request: &Request) -> Option<String> {
+    request.extensions().get::<String>().cloned()
 }
 

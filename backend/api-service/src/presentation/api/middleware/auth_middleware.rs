@@ -10,7 +10,7 @@ use shared::RequestContext;
 use shared::domain::repositories::UserRepository;
 use shared::infrastructure::repositories::UserRepositoryImpl;
 use super::super::AppState;
-use super::session_middleware::get_session;
+use super::session_middleware::{get_session, get_app_type, get_app_device};
 
 /// Hybrid authentication middleware that supports both session-based and JWT token authentication.
 /// 
@@ -28,9 +28,39 @@ pub async fn auth_middleware(
         .cloned()
         .unwrap_or_else(|| Uuid::new_v4().to_string());
 
+    // Get app type and device from request (set by session_middleware)
+    let request_app_type = get_app_type(&request);
+    let request_app_device = get_app_device(&request);
+
     // Priority 1: Check for authenticated session (session-based auth for web UIs)
     if let Some(session) = get_session(&request) {
         if !session.is_ghost_session() {
+            // Validate session app_type matches request app_type (if both are set)
+            if let Some(req_app_type) = &request_app_type {
+                if session.app_type != *req_app_type {
+                    return Err((
+                        StatusCode::FORBIDDEN,
+                        axum::Json(serde_json::json!({
+                            "error": format!("Session app_type mismatch: expected {}, got {}", req_app_type, session.app_type)
+                        })),
+                    ));
+                }
+            }
+
+            // Apply app-specific security policies
+            if session.is_admin_ui() {
+                // Admin UI: Stricter validation - require recent activity (within last hour)
+                let inactivity_threshold = chrono::Utc::now() - chrono::Duration::hours(1);
+                if session.last_activity_at < inactivity_threshold {
+                    return Err((
+                        StatusCode::UNAUTHORIZED,
+                        axum::Json(serde_json::json!({
+                            "error": "Session inactive for too long. Please log in again."
+                        })),
+                    ));
+                }
+            }
+
             // Session is authenticated - use it to create RequestContext
             if let Some(user_id) = session.user_id {
                 // Fetch user info to get email, role, and permissions
@@ -48,6 +78,14 @@ pub async fn auth_middleware(
 
                         if let Some(org_id) = session.organization_id {
                             context = context.with_organization(org_id);
+                        }
+
+                        // Add app_type and app_device to context
+                        if let Some(app_type) = request_app_type {
+                            context = context.with_app_type(app_type);
+                        }
+                        if let Some(app_device) = request_app_device {
+                            context = context.with_app_device(app_device);
                         }
 
                         request.extensions_mut().insert(context);
@@ -132,6 +170,8 @@ pub async fn auth_middleware(
                 session.id,
                 user_id,
                 organization_id,
+                request_app_type.as_deref(),
+                request_app_device.as_deref(),
             ).await {
                 tracing::warn!("Failed to authenticate session: {}", e);
                 // Continue anyway - session will be authenticated on next request
@@ -153,6 +193,14 @@ pub async fn auth_middleware(
             context = context.with_organization(org_id);
         }
 
+        // Add app_type and app_device to context
+        if let Some(app_type) = request_app_type {
+            context = context.with_app_type(app_type);
+        }
+        if let Some(app_device) = request_app_device {
+            context = context.with_app_device(app_device);
+        }
+
         request.extensions_mut().insert(context);
     } else {
         // No session found - create context without session info
@@ -166,6 +214,14 @@ pub async fn auth_middleware(
 
         if let Some(org_id) = organization_id {
             context = context.with_organization(org_id);
+        }
+
+        // Add app_type and app_device to context
+        if let Some(app_type) = request_app_type {
+            context = context.with_app_type(app_type);
+        }
+        if let Some(app_device) = request_app_device {
+            context = context.with_app_device(app_device);
         }
 
         request.extensions_mut().insert(context);

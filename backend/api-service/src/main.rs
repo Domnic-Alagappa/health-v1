@@ -274,7 +274,7 @@ async fn main() -> Result<(), String> {
     let session_service = Arc::new(shared::infrastructure::session::SessionService::new(
         session_repository,
         session_cache,
-        24, // Session TTL: 24 hours
+        settings.session.clone(),
     ));
     info!("Session service initialized");
 
@@ -380,9 +380,17 @@ async fn main() -> Result<(), String> {
         ))
         .layer(axum::middleware::from_fn(crate::presentation::api::middleware::request_id_middleware))
         .layer({
-            // Build CORS layer with specific origins (required for credentials)
-            // Convert origins to HeaderValues and use list
-            let origins: Vec<axum::http::HeaderValue> = settings.server.cors_allowed_origins
+            // Build CORS layer with app-specific origins (required for credentials)
+            // Combine all allowed origins from both admin-ui and client-ui
+            let mut all_origins: Vec<String> = settings.session.admin_ui_cors_origins.clone();
+            all_origins.extend(settings.session.client_ui_cors_origins.clone());
+            // Also include legacy shared origins for backward compatibility
+            all_origins.extend(settings.server.cors_allowed_origins.clone());
+            // Remove duplicates
+            all_origins.sort();
+            all_origins.dedup();
+            
+            let origins: Vec<axum::http::HeaderValue> = all_origins
                 .iter()
                 .filter_map(|origin| origin.parse().ok())
                 .collect();
@@ -405,6 +413,8 @@ async fn main() -> Result<(), String> {
                     axum::http::HeaderName::from_static("x-request-id"),
                     axum::http::HeaderName::from_static("x-request-timestamp"),
                     axum::http::HeaderName::from_static("x-session-token"),
+                    axum::http::HeaderName::from_static("x-app-type"),
+                    axum::http::HeaderName::from_static("x-app-device"),
                 ])
                 .expose_headers([
                     axum::http::HeaderName::from_static("x-request-id"),

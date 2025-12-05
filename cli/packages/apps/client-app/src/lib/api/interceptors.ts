@@ -47,7 +47,24 @@ export function getRefreshToken(): string | null {
 }
 
 /**
- * Request interceptor - adds request ID and timestamp
+ * Detect device type from user agent
+ */
+function detectDeviceType(): string {
+  if (typeof window === "undefined") return "web";
+  
+  const ua = navigator.userAgent.toLowerCase();
+  if (ua.includes("mobile") || ua.includes("android") || ua.includes("iphone")) {
+    return "mobile";
+  } else if (ua.includes("tablet") || ua.includes("ipad")) {
+    return "tablet";
+  } else if (ua.includes("desktop") || ua.includes("windows") || ua.includes("mac") || ua.includes("linux")) {
+    return "desktop";
+  }
+  return "web";
+}
+
+/**
+ * Request interceptor - adds request ID, timestamp, and app headers
  * Session-based auth: No token injection needed, session is in cookie
  */
 export async function requestInterceptor(
@@ -65,6 +82,10 @@ export async function requestInterceptor(
 
   // Add timestamp
   headers["X-Request-Timestamp"] = new Date().toISOString();
+
+  // Add app type and device headers
+  headers["X-App-Type"] = "client-ui";
+  headers["X-App-Device"] = detectDeviceType();
 
   return {
     ...config,

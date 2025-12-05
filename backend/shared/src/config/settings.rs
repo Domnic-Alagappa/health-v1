@@ -11,6 +11,7 @@ pub struct Settings {
     pub storage: StorageConfig,
     pub logging: LoggingConfig,
     pub deployment: DeploymentConfig,
+    pub session: SessionConfig,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -52,6 +53,15 @@ pub struct StorageConfig {
 pub struct LoggingConfig {
     pub level: String,
     pub rust_log: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SessionConfig {
+    pub admin_ui_ttl_hours: u64,
+    pub client_ui_ttl_hours: u64,
+    pub api_ttl_hours: u64,
+    pub admin_ui_cors_origins: Vec<String>,
+    pub client_ui_cors_origins: Vec<String>,
 }
 
 impl Settings {
@@ -107,6 +117,33 @@ impl Settings {
 
         let deployment = DeploymentConfig::from_env()?;
 
+        let session = SessionConfig {
+            admin_ui_ttl_hours: env::var("SESSION_ADMIN_UI_TTL_HOURS")
+                .unwrap_or_else(|_| "8".to_string())
+                .parse()
+                .unwrap_or(8),
+            client_ui_ttl_hours: env::var("SESSION_CLIENT_UI_TTL_HOURS")
+                .unwrap_or_else(|_| "24".to_string())
+                .parse()
+                .unwrap_or(24),
+            api_ttl_hours: env::var("SESSION_API_TTL_HOURS")
+                .unwrap_or_else(|_| "1".to_string())
+                .parse()
+                .unwrap_or(1),
+            admin_ui_cors_origins: env::var("CORS_ADMIN_UI_ORIGINS")
+                .unwrap_or_else(|_| "http://localhost:5174".to_string())
+                .split(',')
+                .map(|s| s.trim().to_string())
+                .filter(|s| !s.is_empty())
+                .collect(),
+            client_ui_cors_origins: env::var("CORS_CLIENT_UI_ORIGINS")
+                .unwrap_or_else(|_| "http://localhost:5175".to_string())
+                .split(',')
+                .map(|s| s.trim().to_string())
+                .filter(|s| !s.is_empty())
+                .collect(),
+        };
+
         Ok(Settings {
             server,
             database,
@@ -115,6 +152,7 @@ impl Settings {
             storage,
             logging,
             deployment,
+            session,
         })
     }
 }

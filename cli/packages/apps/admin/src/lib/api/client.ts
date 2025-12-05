@@ -27,6 +27,8 @@ export async function apiRequest<T>(path: string, options: RequestInit = {}): Pr
   // Build headers
   const headers: HeadersInit = {
     "Content-Type": "application/json",
+    "X-App-Type": "admin-ui",
+    "X-App-Device": "web",
     ...options.headers,
   };
 

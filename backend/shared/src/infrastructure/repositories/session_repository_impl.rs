@@ -30,6 +30,8 @@ struct SessionRow {
     updated_by: Option<Uuid>,
     system_id: Option<String>,
     version: i64,
+    app_type: Option<String>,
+    app_device: Option<String>,
 }
 
 impl From<SessionRow> for Session {
@@ -63,6 +65,8 @@ impl From<SessionRow> for Session {
             updated_by: row.updated_by,
             system_id: row.system_id,
             version: row.version,
+            app_type: row.app_type.expect("app_type is NOT NULL"),
+            app_device: row.app_device.expect("app_device is NOT NULL"),
         }
     }
 }
@@ -89,14 +93,14 @@ impl SessionRepository for SessionRepositoryImpl {
                 id, session_token, user_id, organization_id, ip_address, user_agent,
                 started_at, authenticated_at, last_activity_at, expires_at, ended_at,
                 is_active, metadata, request_id, created_at, updated_at,
-                created_by, updated_by, system_id, version
+                created_by, updated_by, system_id, version, app_type, app_device
             )
-            VALUES ($1, $2, $3, $4, $5::text::inet, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20)
+            VALUES ($1, $2, $3, $4, $5::text::inet, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22)
             RETURNING
                 id, session_token, user_id, organization_id, ip_address::text as ip_address_str, user_agent,
                 started_at, authenticated_at, last_activity_at, expires_at, ended_at,
                 is_active, metadata, request_id, created_at, updated_at,
-                created_by, updated_by, system_id, version
+                created_by, updated_by, system_id, version, app_type, app_device
             "#,
             session.id,
             session.session_token,
@@ -117,7 +121,9 @@ impl SessionRepository for SessionRepositoryImpl {
             session.created_by,
             session.updated_by,
             session.system_id,
-            session.version
+            session.version,
+            session.app_type,
+            session.app_device
         )
         .fetch_one(self.database_service.pool())
         .await
@@ -137,7 +143,7 @@ impl SessionRepository for SessionRepositoryImpl {
             SELECT id, session_token, user_id, organization_id, ip_address::text as ip_address_str, user_agent,
                    started_at, authenticated_at, last_activity_at, expires_at, ended_at,
                    is_active, metadata, request_id, created_at, updated_at,
-                   created_by, updated_by, system_id, version
+                   created_by, updated_by, system_id, version, app_type, app_device
             FROM sessions
             WHERE session_token = $1 AND is_active = true
             "#,
@@ -161,7 +167,7 @@ impl SessionRepository for SessionRepositoryImpl {
             SELECT id, session_token, user_id, organization_id, ip_address::text as ip_address_str, user_agent,
                    started_at, authenticated_at, last_activity_at, expires_at, ended_at,
                    is_active, metadata, request_id, created_at, updated_at,
-                   created_by, updated_by, system_id, version
+                   created_by, updated_by, system_id, version, app_type, app_device
             FROM sessions
             WHERE id = $1
             "#,
@@ -185,7 +191,7 @@ impl SessionRepository for SessionRepositoryImpl {
             SELECT id, session_token, user_id, organization_id, ip_address::text as ip_address_str, user_agent,
                    started_at, authenticated_at, last_activity_at, expires_at, ended_at,
                    is_active, metadata, request_id, created_at, updated_at,
-                   created_by, updated_by, system_id, version
+                   created_by, updated_by, system_id, version, app_type, app_device
             FROM sessions
             WHERE user_id = $1 AND is_active = true
             ORDER BY last_activity_at DESC
@@ -197,6 +203,32 @@ impl SessionRepository for SessionRepositoryImpl {
         .map_err(|e| {
             let err = crate::shared::AppError::Database(e);
             err.log_with_operation(location, "session_repository.find_active_by_user");
+            err
+        })?;
+        Ok(rows.into_iter().map(|r| r.into()).collect())
+    }
+
+    async fn find_active_by_user_and_app(&self, user_id: Uuid, app_type: &str) -> AppResult<Vec<Session>> {
+        let location = concat!(file!(), ":", line!());
+        let rows = sqlx::query_as!(
+            SessionRow,
+            r#"
+            SELECT id, session_token, user_id, organization_id, ip_address::text as ip_address_str, user_agent,
+                   started_at, authenticated_at, last_activity_at, expires_at, ended_at,
+                   is_active, metadata, request_id, created_at, updated_at,
+                   created_by, updated_by, system_id, version, app_type, app_device
+            FROM sessions
+            WHERE user_id = $1 AND app_type = $2 AND is_active = true
+            ORDER BY last_activity_at DESC
+            "#,
+            user_id,
+            app_type
+        )
+        .fetch_all(self.database_service.pool())
+        .await
+        .map_err(|e| {
+            let err = crate::shared::AppError::Database(e);
+            err.log_with_operation(location, "session_repository.find_active_by_user_and_app");
             err
         })?;
         Ok(rows.into_iter().map(|r| r.into()).collect())
@@ -216,13 +248,14 @@ impl SessionRepository for SessionRepositoryImpl {
             SET session_token = $2, user_id = $3, organization_id = $4, ip_address = $5::text::inet,
                 user_agent = $6, started_at = $7, authenticated_at = $8, last_activity_at = $9,
                 expires_at = $10, ended_at = $11, is_active = $12, metadata = $13,
-                request_id = $14, updated_at = $15, updated_by = $16, version = $17
-            WHERE id = $1 AND version = $18
+                request_id = $14, updated_at = $15, updated_by = $16, version = $17,
+                app_type = $18, app_device = $19
+            WHERE id = $1 AND version = $20
             RETURNING
                 id, session_token, user_id, organization_id, ip_address::text as ip_address_str, user_agent,
                 started_at, authenticated_at, last_activity_at, expires_at, ended_at,
                 is_active, metadata, request_id, created_at, updated_at,
-                created_by, updated_by, system_id, version
+                created_by, updated_by, system_id, version, app_type, app_device
             "#,
             session.id,
             session.session_token,
@@ -241,6 +274,8 @@ impl SessionRepository for SessionRepositoryImpl {
             session.updated_at,
             session.updated_by,
             session.version,
+            session.app_type,
+            session.app_device,
             current_version
         )
         .fetch_one(self.database_service.pool())

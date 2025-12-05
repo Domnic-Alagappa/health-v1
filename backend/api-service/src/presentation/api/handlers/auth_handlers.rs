@@ -2,7 +2,8 @@ use axum::{Json, extract::{State, Request}, http::{StatusCode, HeaderValue}, res
 use authz_core::dto::{LoginRequest, RefreshTokenRequest};
 use shared::RequestContext;
 use super::super::AppState;
-use super::super::middleware::session_middleware::get_session;
+use super::super::middleware::session_middleware::{get_session, get_app_type, get_app_device};
+use axum::extract::Request;
 use std::sync::Arc;
 
 pub async fn login(
@@ -10,6 +11,11 @@ pub async fn login(
     request: Request,
 ) -> impl IntoResponse {
     let location = concat!(file!(), ":", line!());
+    
+    // Get app_type and app_device from request extensions (set by session_middleware)
+    // Access before splitting request
+    let app_type = get_app_type(&request);
+    let app_device = get_app_device(&request);
     
     // Split request into parts to access extensions and body separately
     let (parts, body) = request.into_parts();
@@ -43,11 +49,13 @@ pub async fn login(
                     use shared::infrastructure::repositories::UserRepositoryImpl;
                     let user_repository = UserRepositoryImpl::new(state.database_service.clone());
                     if let Ok(Some(user)) = user_repository.find_by_id(user_id).await {
-                        // Authenticate the session
+                        // Authenticate the session with app_type and app_device
                         if let Err(e) = state.session_service.authenticate_session(
                             sess.id,
                             user_id,
                             user.organization_id,
+                            app_type.as_deref(),
+                            app_device.as_deref(),
                         ).await {
                             tracing::warn!("Failed to authenticate session on login: {}", e);
                         } else {

@@ -15,6 +15,8 @@ pub struct RequestContext {
     pub session_id: Option<Uuid>,
     pub ip_address: Option<IpAddr>,
     pub organization_id: Option<Uuid>,
+    pub app_type: Option<String>,
+    pub app_device: Option<String>,
 }
 
 impl RequestContext {
@@ -34,6 +36,8 @@ impl RequestContext {
             session_id: None,
             ip_address: None,
             organization_id: None,
+            app_type: None,
+            app_device: None,
         }
     }
 
@@ -49,6 +53,16 @@ impl RequestContext {
 
     pub fn with_organization(mut self, organization_id: Uuid) -> Self {
         self.organization_id = Some(organization_id);
+        self
+    }
+
+    pub fn with_app_type(mut self, app_type: String) -> Self {
+        self.app_type = Some(app_type);
+        self
+    }
+
+    pub fn with_app_device(mut self, app_device: String) -> Self {
+        self.app_device = Some(app_device);
         self
     }
     
