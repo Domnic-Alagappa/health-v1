@@ -5,6 +5,7 @@ use crate::infrastructure::database::DatabaseService;
 use crate::infrastructure::oidc::TokenManager;
 use crate::infrastructure::zanzibar::{PermissionChecker, RelationshipStore, GraphCache};
 use crate::infrastructure::encryption::DekManager;
+use crate::infrastructure::session::SessionService;
 
 /// Application state that holds shared services and use cases.
 /// Note: Use case types are provided by the consuming crate (e.g., api-service)
@@ -25,5 +26,6 @@ pub struct AppState<LoginUseCase, RefreshTokenUseCase, LogoutUseCase, UserInfoUs
     pub dek_manager: Arc<DekManager>,
     pub role_repository: Arc<dyn RoleRepository>,
     pub graph_cache: Option<Arc<GraphCache>>,
+    pub session_service: Arc<SessionService>,
 }
 

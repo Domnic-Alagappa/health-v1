@@ -46,5 +46,18 @@ impl MasterKey {
             .map_err(|e| crate::shared::AppError::Encryption(format!("Failed to write master key: {}", e)))?;
         Ok(())
     }
+
+    /// Load master key from vault (async)
+    pub async fn from_vault(vault: &dyn crate::infrastructure::encryption::vault::Vault) -> AppResult<Option<Self>> {
+        match vault.get_master_key().await? {
+            Some(key_bytes) => Ok(Some(Self { key: key_bytes })),
+            None => Ok(None),
+        }
+    }
+
+    /// Save master key to vault (async)
+    pub async fn save_to_vault(&self, vault: &dyn crate::infrastructure::encryption::vault::Vault) -> AppResult<()> {
+        vault.store_master_key(&self.key).await
+    }
 }
 

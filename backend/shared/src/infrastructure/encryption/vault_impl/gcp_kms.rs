@@ -37,5 +37,17 @@ impl Vault for GcpKmsVault {
             "GCP KMS master key rotation not yet implemented".to_string(),
         ))
     }
+
+    async fn store_master_key(&self, _master_key: &[u8]) -> AppResult<()> {
+        Err(crate::shared::AppError::Encryption(
+            "GCP KMS master key storage not yet implemented".to_string(),
+        ))
+    }
+
+    async fn get_master_key(&self) -> AppResult<Option<Vec<u8>>> {
+        Err(crate::shared::AppError::Encryption(
+            "GCP KMS master key retrieval not yet implemented".to_string(),
+        ))
+    }
 }
 

@@ -8,12 +8,12 @@ use std::sync::Arc;
 /// Rotates user's DEK and re-encrypts ALL user data
 pub struct DekRotation {
     dek_manager: Arc<DekManager>,
-    pool: PgPool,
+    _pool: PgPool,
 }
 
 impl DekRotation {
     pub fn new(dek_manager: Arc<DekManager>, pool: PgPool) -> Self {
-        Self { dek_manager, pool }
+        Self { dek_manager, _pool: pool }
     }
     
     /// Rotate user's DEK
@@ -34,10 +34,10 @@ impl DekRotation {
         reason: &str,
     ) -> AppResult<DekRotationResult> {
         // 1. Generate new DEK
-        let new_dek = self.dek_manager.generate_dek(user_id, "user").await?;
+        let _new_dek = self.dek_manager.generate_dek(user_id, "user").await?;
         
         // 2. Get old DEK from vault
-        let old_dek = self.dek_manager.get_dek(user_id, "user").await?
+        let _old_dek = self.dek_manager.get_dek(user_id, "user").await?
             .ok_or_else(|| crate::shared::AppError::Encryption(
                 format!("Old DEK not found for user {}", user_id)
             ))?;

@@ -19,6 +19,7 @@ import {
 } from "lucide-react"
 import { getServiceStatus } from "../lib/api/services"
 import { getSetupStatus } from "../lib/api/setup"
+import { getDashboardStats } from "../lib/api/dashboard"
 
 function getStatusColor(status: string) {
   switch (status.toLowerCase()) {
@@ -58,6 +59,12 @@ export function DashboardPage() {
     queryFn: getSetupStatus,
   })
 
+  const { data: dashboardStats, isLoading: isLoadingStats } = useQuery({
+    queryKey: ["dashboardStats"],
+    queryFn: getDashboardStats,
+    refetchInterval: 60000, // Refetch every minute
+  })
+
   const enabledServices = serviceStatus?.services.filter((s) => s.enabled) || []
   const operationalServices = enabledServices.filter((s) => s.operational)
   const overallStatus = serviceStatus?.overallStatus || "unknown"
@@ -92,7 +99,13 @@ export function DashboardPage() {
               <Building2 className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">-</div>
+              <div className="text-2xl font-bold">
+                {isLoadingStats ? (
+                  <span className="text-muted-foreground">-</span>
+                ) : (
+                  dashboardStats?.organizations_count ?? 0
+                )}
+              </div>
               <p className="text-xs text-muted-foreground">Total organizations</p>
             </CardContent>
           </Card>
@@ -103,7 +116,13 @@ export function DashboardPage() {
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">-</div>
+              <div className="text-2xl font-bold">
+                {isLoadingStats ? (
+                  <span className="text-muted-foreground">-</span>
+                ) : (
+                  dashboardStats?.users_count ?? 0
+                )}
+              </div>
               <p className="text-xs text-muted-foreground">Total users</p>
             </CardContent>
           </Card>
@@ -114,7 +133,13 @@ export function DashboardPage() {
               <Shield className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">-</div>
+              <div className="text-2xl font-bold">
+                {isLoadingStats ? (
+                  <span className="text-muted-foreground">-</span>
+                ) : (
+                  dashboardStats?.permissions_count ?? 0
+                )}
+              </div>
               <p className="text-xs text-muted-foreground">Active permissions</p>
             </CardContent>
           </Card>

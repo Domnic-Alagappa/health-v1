@@ -12,6 +12,10 @@ path = "src/main.rs"
 name = "setup"
 path = "src/bin/setup.rs"
 
+[[bin]]
+name = "setup-admin"
+path = "src/bin/setup-admin.rs"
+
 [dependencies]
 shared = { path = "../shared" }
 authz-core = { path = "../authz-core" }

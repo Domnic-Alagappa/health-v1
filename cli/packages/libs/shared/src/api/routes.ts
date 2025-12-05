@@ -55,7 +55,7 @@ export const API_ROUTES = {
     CREATE: "/services",
     UPDATE: (id: string) => `/services/${id}`,
     DELETE: (id: string) => `/services/${id}`,
-    STATUS: "/api/services/status",
+    STATUS: "/services/status",
   },
 
   // Patients

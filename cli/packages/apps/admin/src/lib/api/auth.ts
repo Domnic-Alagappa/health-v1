@@ -17,18 +17,17 @@ export async function login(credentials: LoginRequest): Promise<LoginResponse> {
 
 /**
  * Logout
+ * Session-based: No token needed, session is in cookie
  */
-export async function logout(refreshToken: string): Promise<void> {
+export async function logout(): Promise<void> {
   await apiRequest(API_ROUTES.AUTH.LOGOUT, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${refreshToken}`,
-    },
   });
 }
 
 /**
- * Refresh token
+ * Refresh token (for mobile/API clients only)
+ * Not used in session-based web UI
  */
 export async function refreshToken(refreshToken: string): Promise<LoginResponse> {
   return apiRequest<LoginResponse>(API_ROUTES.AUTH.REFRESH, {
@@ -41,12 +40,10 @@ export async function refreshToken(refreshToken: string): Promise<LoginResponse>
 
 /**
  * Get user info
+ * Session-based: No token needed, session is in cookie
  */
-export async function getUserInfo(accessToken: string): Promise<UserInfo> {
+export async function getUserInfo(): Promise<UserInfo> {
   return apiRequest<UserInfo>(API_ROUTES.AUTH.USERINFO, {
     method: "GET",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
   });
 }

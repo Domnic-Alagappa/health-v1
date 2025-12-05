@@ -12,6 +12,15 @@ pub enum EntityType {
     Resource(String),
     App(String),
     Organization(Uuid),
+    Module(String), // Module within an app
+    /// Hierarchical resource path: organization:{org_id}/app:{app}/module:{module}/resource:{type}:{id}
+    HierarchicalResource {
+        organization_id: Option<Uuid>,
+        app_name: Option<String>,
+        module_name: Option<String>,
+        resource_type: String,
+        resource_id: String,
+    },
 }
 
 impl Hash for EntityType {
@@ -41,13 +50,33 @@ impl Hash for EntityType {
                 5u8.hash(state);
                 id.hash(state);
             }
+            EntityType::Module(name) => {
+                6u8.hash(state);
+                name.hash(state);
+            }
+            EntityType::HierarchicalResource { organization_id, app_name, module_name, resource_type, resource_id } => {
+                7u8.hash(state);
+                organization_id.hash(state);
+                app_name.hash(state);
+                module_name.hash(state);
+                resource_type.hash(state);
+                resource_id.hash(state);
+            }
         }
     }
 }
 
 impl EntityType {
-    /// Create EntityType from Zanzibar string format (e.g., "user:123", "role:admin")
+    /// Create EntityType from Zanzibar string format
+    /// Supports both simple format (e.g., "user:123", "role:admin") 
+    /// and hierarchical format (e.g., "organization:123/app:admin-ui/module:users/page:list")
     pub fn from_str(s: &str) -> Option<Self> {
+        // Check for hierarchical format first
+        if s.contains('/') {
+            return Self::from_hierarchical_str(s);
+        }
+        
+        // Simple format: "type:id"
         let parts: Vec<&str> = s.split(':').collect();
         if parts.len() != 2 {
             return None;
@@ -60,7 +89,63 @@ impl EntityType {
             "resource" => Some(EntityType::Resource(parts[1].to_string())),
             "app" => Some(EntityType::App(parts[1].to_string())),
             "organization" => Uuid::parse_str(parts[1]).ok().map(EntityType::Organization),
+            "module" => Some(EntityType::Module(parts[1].to_string())),
             _ => None,
+        }
+    }
+    
+    /// Parse hierarchical format: organization:{org_id}/app:{app}/module:{module}/{type}:{id}
+    /// Examples:
+    /// - "organization:123/app:admin-ui"
+    /// - "organization:123/app:admin-ui/module:users"
+    /// - "organization:123/app:admin-ui/module:users/page:list"
+    fn from_hierarchical_str(s: &str) -> Option<Self> {
+        let parts: Vec<&str> = s.split('/').collect();
+        if parts.is_empty() {
+            return None;
+        }
+        
+        let mut organization_id = None;
+        let mut app_name = None;
+        let mut module_name = None;
+        let mut resource_type = None;
+        let mut resource_id = None;
+        
+        for part in parts {
+            if part.starts_with("organization:") {
+                let org_part = part.strip_prefix("organization:")?;
+                organization_id = Uuid::parse_str(org_part).ok();
+            } else if part.starts_with("app:") {
+                app_name = Some(part.strip_prefix("app:")?.to_string());
+            } else if part.starts_with("module:") {
+                module_name = Some(part.strip_prefix("module:")?.to_string());
+            } else if part.contains(':') {
+                // Resource: "type:id"
+                let resource_parts: Vec<&str> = part.split(':').collect();
+                if resource_parts.len() == 2 {
+                    resource_type = Some(resource_parts[0].to_string());
+                    resource_id = Some(resource_parts[1].to_string());
+                }
+            }
+        }
+        
+        // If we have a resource type and id, create hierarchical resource
+        if let (Some(rt), Some(rid)) = (resource_type, resource_id) {
+            Some(EntityType::HierarchicalResource {
+                organization_id,
+                app_name,
+                module_name,
+                resource_type: rt,
+                resource_id: rid,
+            })
+        } else if module_name.is_some() {
+            // Just a module reference
+            Some(EntityType::Module(module_name.unwrap()))
+        } else if app_name.is_some() {
+            // Just an app reference
+            Some(EntityType::App(app_name.unwrap()))
+        } else {
+            None
         }
     }
     
@@ -73,6 +158,27 @@ impl EntityType {
             EntityType::Resource(name) => format!("resource:{}", name),
             EntityType::App(name) => format!("app:{}", name),
             EntityType::Organization(id) => format!("organization:{}", id),
+            EntityType::Module(name) => format!("module:{}", name),
+            EntityType::HierarchicalResource {
+                organization_id,
+                app_name,
+                module_name,
+                resource_type,
+                resource_id,
+            } => {
+                let mut parts = Vec::new();
+                if let Some(org_id) = organization_id {
+                    parts.push(format!("organization:{}", org_id));
+                }
+                if let Some(app) = app_name {
+                    parts.push(format!("app:{}", app));
+                }
+                if let Some(module) = module_name {
+                    parts.push(format!("module:{}", module));
+                }
+                parts.push(format!("{}:{}", resource_type, resource_id));
+                parts.join("/")
+            }
         }
     }
 }

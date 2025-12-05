@@ -3,41 +3,122 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts",
-    "./api": "./src/api/index.ts",
-    "./api/routes": "./src/api/routes.ts",
-    "./api/config": "./src/api/config.ts",
-    "./api/types": "./src/api/types.ts",
-    "./constants": "./src/constants/index.ts",
-    "./constants/permissions": "./src/constants/permissions.ts",
-    "./constants/security": "./src/constants/security.ts",
-    "./constants/fields": "./src/constants/fields.ts",
-    "./constants/oidc": "./src/constants/oidc.ts",
-    "./types": "./src/types/index.ts",
-    "./types/user": "./src/types/user.ts",
-    "./types/patient": "./src/types/patient.ts",
-    "./types/audit": "./src/types/audit.ts",
-    "./types/common": "./src/types/common.ts",
-    "./types/stores": "./src/types/stores/index.ts",
-    "./types/stores/voice": "./src/types/stores/voice.ts",
-    "./types/stores/ui": "./src/types/stores/ui.ts",
-    "./types/stores/tab": "./src/types/stores/tab.ts",
-    "./types/stores/accessibility": "./src/types/stores/accessibility.ts",
-    "./types/stores/audit": "./src/types/stores/audit.ts",
-    "./types/stores/auth": "./src/types/stores/auth.ts",
-    "./types/components/registry": "./src/types/components/registry.ts",
-    "./i18n": "./src/i18n/index.ts",
-    "./i18n/types": "./src/i18n/types.ts",
-    "./i18n/locales": "./src/i18n/locales.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./api": {
+      "types": "./dist/api/index.d.ts",
+      "default": "./dist/api/index.js"
+    },
+    "./api/routes": {
+      "types": "./dist/api/routes.d.ts",
+      "default": "./dist/api/routes.js"
+    },
+    "./api/config": {
+      "types": "./dist/api/config.d.ts",
+      "default": "./dist/api/config.js"
+    },
+    "./api/types": {
+      "types": "./dist/api/types.d.ts",
+      "default": "./dist/api/types.js"
+    },
+    "./constants": {
+      "types": "./dist/constants/index.d.ts",
+      "default": "./dist/constants/index.js"
+    },
+    "./constants/permissions": {
+      "types": "./dist/constants/permissions.d.ts",
+      "default": "./dist/constants/permissions.js"
+    },
+    "./constants/security": {
+      "types": "./dist/constants/security.d.ts",
+      "default": "./dist/constants/security.js"
+    },
+    "./constants/fields": {
+      "types": "./dist/constants/fields.d.ts",
+      "default": "./dist/constants/fields.js"
+    },
+    "./constants/oidc": {
+      "types": "./dist/constants/oidc.d.ts",
+      "default": "./dist/constants/oidc.js"
+    },
+    "./types": {
+      "types": "./dist/types/index.d.ts",
+      "default": "./dist/types/index.js"
+    },
+    "./types/user": {
+      "types": "./dist/types/user.d.ts",
+      "default": "./dist/types/user.js"
+    },
+    "./types/patient": {
+      "types": "./dist/types/patient.d.ts",
+      "default": "./dist/types/patient.js"
+    },
+    "./types/audit": {
+      "types": "./dist/types/audit.d.ts",
+      "default": "./dist/types/audit.js"
+    },
+    "./types/common": {
+      "types": "./dist/types/common.d.ts",
+      "default": "./dist/types/common.js"
+    },
+    "./types/stores": {
+      "types": "./dist/types/stores/index.d.ts",
+      "default": "./dist/types/stores/index.js"
+    },
+    "./types/stores/voice": {
+      "types": "./dist/types/stores/voice.d.ts",
+      "default": "./dist/types/stores/voice.js"
+    },
+    "./types/stores/ui": {
+      "types": "./dist/types/stores/ui.d.ts",
+      "default": "./dist/types/stores/ui.js"
+    },
+    "./types/stores/tab": {
+      "types": "./dist/types/stores/tab.d.ts",
+      "default": "./dist/types/stores/tab.js"
+    },
+    "./types/stores/accessibility": {
+      "types": "./dist/types/stores/accessibility.d.ts",
+      "default": "./dist/types/stores/accessibility.js"
+    },
+    "./types/stores/audit": {
+      "types": "./dist/types/stores/audit.d.ts",
+      "default": "./dist/types/stores/audit.js"
+    },
+    "./types/stores/auth": {
+      "types": "./dist/types/stores/auth.d.ts",
+      "default": "./dist/types/stores/auth.js"
+    },
+    "./types/components/registry": {
+      "types": "./dist/types/components/registry.d.ts",
+      "default": "./dist/types/components/registry.js"
+    },
+    "./i18n": {
+      "types": "./dist/i18n/index.d.ts",
+      "default": "./dist/i18n/index.js"
+    },
+    "./i18n/types": {
+      "types": "./dist/i18n/types.d.ts",
+      "default": "./dist/i18n/types.js"
+    },
+    "./i18n/locales": {
+      "types": "./dist/i18n/locales.d.ts",
+      "default": "./dist/i18n/locales.js"
+    }
   },
   "scripts": {
+    "build": "tsup",
+    "clean": "rm -rf dist",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
+    "tsup": "^8.0.0",
     "typescript": "^5.0.0"
   }
 }

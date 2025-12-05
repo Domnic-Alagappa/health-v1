@@ -4,6 +4,26 @@ use async_trait::async_trait;
 use sqlx::PgPool;
 use uuid::Uuid;
 
+/// Temporary struct for database deserialization
+#[derive(Debug)]
+struct OrganizationInfoRow {
+    id: Uuid,
+    name: String,
+    slug: String,
+    domain: Option<String>,
+}
+
+impl From<OrganizationInfoRow> for OrganizationInfo {
+    fn from(row: OrganizationInfoRow) -> Self {
+        OrganizationInfo {
+            id: row.id,
+            name: row.name,
+            slug: row.slug,
+            domain: row.domain,
+        }
+    }
+}
+
 pub struct SetupRepositoryImpl {
     pool: PgPool,
 }
@@ -17,8 +37,10 @@ impl SetupRepositoryImpl {
 #[async_trait]
 impl SetupRepository for SetupRepositoryImpl {
     async fn is_setup_completed(&self) -> AppResult<bool> {
-        let result: Option<bool> = sqlx::query_scalar(
-            "SELECT setup_completed FROM setup_status ORDER BY created_at DESC LIMIT 1"
+        let result: Option<bool> = sqlx::query_scalar!(
+            r#"
+            SELECT setup_completed FROM setup_status ORDER BY created_at DESC LIMIT 1
+            "#,
         )
         .fetch_optional(&self.pool)
         .await
@@ -28,7 +50,7 @@ impl SetupRepository for SetupRepositoryImpl {
     }
 
     async fn mark_setup_completed(&self, completed_by: Option<Uuid>) -> AppResult<()> {
-        sqlx::query(
+        sqlx::query!(
             r#"
             UPDATE setup_status
             SET setup_completed = true,
@@ -36,9 +58,9 @@ impl SetupRepository for SetupRepositoryImpl {
                 setup_completed_by = $1,
                 updated_at = NOW()
             WHERE id = (SELECT id FROM setup_status ORDER BY created_at DESC LIMIT 1)
-            "#
+            "#,
+            completed_by
         )
-        .bind(completed_by)
         .execute(&self.pool)
         .await
         .map_err(|e| crate::shared::AppError::Database(e))?;
@@ -54,16 +76,16 @@ impl SetupRepository for SetupRepositoryImpl {
     ) -> AppResult<Uuid> {
         let org_id = Uuid::new_v4();
         
-        sqlx::query(
+        sqlx::query!(
             r#"
             INSERT INTO organizations (id, name, slug, domain, created_at, updated_at)
             VALUES ($1, $2, $3, $4, NOW(), NOW())
-            "#
+            "#,
+            org_id,
+            name,
+            slug,
+            domain
         )
-        .bind(org_id)
-        .bind(name)
-        .bind(slug)
-        .bind(domain)
         .execute(&self.pool)
         .await
         .map_err(|e| crate::shared::AppError::Database(e))?;
@@ -72,24 +94,37 @@ impl SetupRepository for SetupRepositoryImpl {
     }
 
     async fn get_organization(&self, id: &Uuid) -> AppResult<Option<OrganizationInfo>> {
-        let result = sqlx::query_as::<_, (Uuid, String, String, Option<String>)>(
+        let result = sqlx::query_as!(
+            OrganizationInfoRow,
             r#"
             SELECT id, name, slug, domain
             FROM organizations
             WHERE id = $1
-            "#
+            "#,
+            id
         )
-        .bind(id)
         .fetch_optional(&self.pool)
         .await
         .map_err(|e| crate::shared::AppError::Database(e))?;
 
-        Ok(result.map(|(id, name, slug, domain)| OrganizationInfo {
-            id,
-            name,
-            slug,
-            domain,
-        }))
+        Ok(result.map(|r| r.into()))
+    }
+
+    async fn get_organization_by_slug(&self, slug: &str) -> AppResult<Option<OrganizationInfo>> {
+        let result = sqlx::query_as!(
+            OrganizationInfoRow,
+            r#"
+            SELECT id, name, slug, domain
+            FROM organizations
+            WHERE slug = $1
+            "#,
+            slug
+        )
+        .fetch_optional(&self.pool)
+        .await
+        .map_err(|e| crate::shared::AppError::Database(e))?;
+
+        Ok(result.map(|r| r.into()))
     }
 }
 

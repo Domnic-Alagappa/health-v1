@@ -24,7 +24,7 @@ pub enum CloudProvider {
 
 impl DeploymentConfig {
     pub fn from_env() -> Result<Self, config::ConfigError> {
-        let env_str = env::var("DEPLOYMENT_ENV").unwrap_or_else(|_| "development".to_string());
+        let env_str = env::var("RUST_ENV").unwrap_or_else(|_| "development".to_string());
         let environment = match env_str.as_str() {
             "staging" => DeploymentEnvironment::Staging,
             "production" => DeploymentEnvironment::Production,

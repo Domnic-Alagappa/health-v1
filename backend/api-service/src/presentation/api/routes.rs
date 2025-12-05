@@ -5,8 +5,8 @@ use axum::{
 use crate::presentation::api::handlers::*;
 use admin_service::handlers::*;
 use std::sync::Arc;
-use super::AppState;
 
+#[allow(dead_code)]
 pub fn create_router() -> Router<Arc<super::AppState>> {
     // Public routes (no authentication required)
     let public_routes = Router::new()
@@ -34,6 +34,7 @@ pub fn create_router() -> Router<Arc<super::AppState>> {
         .merge(protected_routes)
 }
 
+#[allow(dead_code)]
 async fn health_check() -> &'static str {
     "OK"
 }

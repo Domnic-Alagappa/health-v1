@@ -5,4 +5,6 @@ pub mod providers;
 pub mod oidc;
 pub mod zanzibar;
 pub mod repositories;
+pub mod logging;
+pub mod session;
 

@@ -16,5 +16,16 @@ pub trait RelationshipRepository: Send + Sync {
     async fn delete_by_tuple(&self, user: &str, relation: &str, object: &str) -> AppResult<()>;
     async fn soft_delete(&self, id: Uuid, deleted_by: Option<Uuid>) -> AppResult<()>;
     async fn list_all(&self) -> AppResult<Vec<Relationship>>;
+    
+    // Organization-scoped methods
+    async fn find_by_user_and_org(&self, user: &str, organization_id: Uuid) -> AppResult<Vec<Relationship>>;
+    async fn find_by_organization(&self, organization_id: Uuid) -> AppResult<Vec<Relationship>>;
+    async fn find_by_user_object_relation_org(
+        &self,
+        user: &str,
+        object: &str,
+        relation: &str,
+        organization_id: Option<Uuid>,
+    ) -> AppResult<Option<Relationship>>;
 }
 

@@ -59,7 +59,7 @@ Each service uses a Docker Compose profile that corresponds to its enable flag:
 | `ENABLE_LOCALSTACK` | `localstack` | LocalStack |
 | `ENABLE_OPENBAO_SERVICE` | `openbao` | OpenBao |
 | `ENABLE_NATS` | `nats` | NATS |
-| `ENABLE_KAFKA` | `kafka` | Kafka, Zookeeper, Kafka UI |
+| `ENABLE_KAFKA` | `kafka` | Kafka (KRaft mode), Kafka UI |
 
 ### Examples
 
@@ -120,7 +120,7 @@ To set up S3 buckets:
 NATS starts automatically with JetStream enabled. Check status:
 
 ```bash
-curl http://localhost:8222/jsz | jq
+curl http://localhost:8225/jsz | jq
 ```
 
 ### Kafka
@@ -140,11 +140,10 @@ Or use Kafka UI at http://localhost:8081
 | PostgreSQL | `localhost:5432` | Database connection |
 | OpenBao | `http://localhost:8200` | Key management API |
 | LocalStack | `http://localhost:4566` | AWS services gateway |
-| NATS | `nats://localhost:4222` | Message broker |
-| NATS Monitoring | `http://localhost:8222` | HTTP monitoring |
-| Kafka | `localhost:9092` | Kafka broker |
+| NATS | `nats://localhost:4225` | Message broker |
+| NATS Monitoring | `http://localhost:8225` | HTTP monitoring |
+| Kafka | `localhost:9092` | Kafka broker (KRaft mode) |
 | Kafka UI | `http://localhost:8081` | Web UI |
-| Zookeeper | `localhost:2181` | Kafka coordination |
 
 ## Configuration
 

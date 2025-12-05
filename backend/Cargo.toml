@@ -19,7 +19,7 @@ tower = "0.5"
 tower-http = { version = "0.6", features = ["cors", "trace"] }
 
 # Database
-sqlx = { version = "0.8", features = ["runtime-tokio-native-tls", "postgres", "sqlite", "uuid", "chrono", "migrate"] }
+sqlx = { version = "0.8", features = ["runtime-tokio-native-tls", "postgres", "sqlite", "uuid", "chrono", "migrate", "macros"] }
 
 # Encryption
 aes-gcm = "0.10"
@@ -29,7 +29,7 @@ base64 = "0.22"
 hex = "0.4"
 
 # OIDC/JWT
-jsonwebtoken = "9.3"
+jsonwebtoken = { version = "10.0", features = ["rust_crypto"] }
 oauth2 = "5.0"
 josekit = "0.10"
 
@@ -54,7 +54,7 @@ anyhow = "1.0"
 thiserror = "2.0"
 
 # UUID
-uuid = { version = "1.18", features = ["v4", "serde"] }
+uuid = { version = "1.19", features = ["v4", "serde"] }
 
 # Time
 chrono = { version = "0.4", features = ["serde"] }
@@ -67,10 +67,13 @@ sha2 = "0.10"
 reqwest = { version = "0.12", features = ["json"] }
 
 # AWS SDK (for AWS providers)
-aws-sdk-s3 = "1.46"
-aws-sdk-kms = "1.40"
+aws-sdk-s3 = "1.115"
+aws-sdk-kms = "1.96"
 aws-config = "1.8"
 
 # CLI tools
 dialoguer = "0.11"
+
+# Graph algorithms
+petgraph = "0.8"
 

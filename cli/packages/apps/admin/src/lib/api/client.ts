@@ -17,20 +17,28 @@ export { API_ROUTES, getApiUrl };
 
 /**
  * API Client with fetch wrapper
+ * Uses cookie-based authentication (sessions) for web UI
  */
 export async function apiRequest<T>(path: string, options: RequestInit = {}): Promise<T> {
   const url = getApiUrl(path);
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.TIMEOUT);
 
+  // Build headers
+  const headers: HeadersInit = {
+    "Content-Type": "application/json",
+    "X-App-Type": "admin-ui",
+    "X-App-Device": "web",
+    ...options.headers,
+  };
+
   try {
     const response = await fetch(url, {
       ...options,
       signal: controller.signal,
-      headers: {
-        "Content-Type": "application/json",
-        ...options.headers,
-      },
+      headers,
+      // Include cookies in requests for session-based authentication
+      credentials: "include",
     });
 
     clearTimeout(timeoutId);

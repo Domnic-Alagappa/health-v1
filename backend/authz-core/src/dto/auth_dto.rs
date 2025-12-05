@@ -14,6 +14,8 @@ pub struct LoginResponse {
     pub refresh_token: String,
     pub expires_in: u64,
     pub user: LoginUserResponse,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub session_token: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

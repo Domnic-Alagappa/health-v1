@@ -25,13 +25,22 @@ impl AddUserToGroupUseCase {
         user_id: Uuid,
         group_id: Uuid,
     ) -> AppResult<()> {
+        let location = concat!(file!(), ":", line!());
         // Verify user exists
-        let user = self.user_repository
+        let _user = self.user_repository
             .find_by_id(user_id)
-            .await?
-            .ok_or_else(|| shared::AppError::NotFound(
+            .await
+            .map_err(|e| {
+                e.log_with_operation(location, "add_user_to_group");
+                e
+            })?
+            .ok_or_else(|| {
+                let err = shared::AppError::NotFound(
                 format!("User {} not found", user_id)
-            ))?;
+                );
+                err.log_with_operation(location, "add_user_to_group");
+                err
+            })?;
 
         // Check if user is deleted
         // Note: User entity needs deleted_at field - this will be added in soft delete migration
@@ -42,7 +51,11 @@ impl AddUserToGroupUseCase {
         
         self.relationship_store
             .add(&user_str, "member", &group_str)
-            .await?;
+            .await
+            .map_err(|e| {
+                e.log_with_operation(location, "add_user_to_group");
+                e
+            })?;
 
         Ok(())
     }

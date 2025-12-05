@@ -11,6 +11,7 @@ use std::sync::Arc;
 pub struct CreateUserUseCase {
     user_repository: Box<dyn UserRepository>,
     dek_manager: Arc<DekManager>,
+    #[allow(dead_code)]
     relationship_store: Arc<RelationshipStore>,
 }
 

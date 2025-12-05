@@ -1,5 +1,4 @@
 import {
-  Button,
   Card,
   CardContent,
   CardDescription,
@@ -9,21 +8,23 @@ import {
   Stack,
 } from "@health-v1/ui-components";
 import { Plus, Search, Users } from "lucide-react";
+import { ProtectedPage, ProtectedButton } from "../lib/permissions";
 
 export function UsersPage() {
   return (
-    <div className="p-6">
-      <Stack spacing="lg">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Users</h1>
-            <p className="text-muted-foreground">Manage users and their permissions</p>
+    <ProtectedPage pageName="users" fallback={<div className="p-6">You don't have access to this page.</div>}>
+      <div className="p-6">
+        <Stack spacing="lg">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">Users</h1>
+              <p className="text-muted-foreground">Manage users and their permissions</p>
+            </div>
+            <ProtectedButton buttonId="create-user">
+              <Plus className="mr-2 h-4 w-4" />
+              Create User
+            </ProtectedButton>
           </div>
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            Create User
-          </Button>
-        </div>
 
         <Card>
           <CardHeader>
@@ -56,5 +57,6 @@ export function UsersPage() {
         </Card>
       </Stack>
     </div>
+    </ProtectedPage>
   );
 }

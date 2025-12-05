@@ -39,11 +39,11 @@ ON relationships(deleted_at)
 WHERE deleted_at IS NULL;
 
 -- Partial index for valid, non-deleted relationships (most common query)
+-- Note: We can't use NOW() in index predicate (not IMMUTABLE), so we only index on static conditions
+-- Expiration filtering (expires_at > NOW() and valid_from <= NOW()) is handled in application code
 CREATE INDEX IF NOT EXISTS idx_relationships_valid 
 ON relationships("user", relation, object) 
 WHERE is_active = true 
-AND (expires_at IS NULL OR expires_at > NOW())
-AND (valid_from IS NULL OR valid_from <= NOW())
 AND deleted_at IS NULL;
 
 -- Create index for metadata queries (if needed for searching)

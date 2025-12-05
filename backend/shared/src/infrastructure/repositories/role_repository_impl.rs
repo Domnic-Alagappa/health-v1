@@ -1,11 +1,9 @@
 use crate::domain::entities::Role;
 use crate::domain::repositories::{RoleRepository, PermissionRepository};
 use crate::infrastructure::database::DatabaseService;
-use crate::infrastructure::database::queries::roles::*;
 use crate::infrastructure::zanzibar::RelationshipStore;
 use crate::shared::AppResult;
 use async_trait::async_trait;
-use sqlx::Row;
 use std::sync::Arc;
 use uuid::Uuid;
 
@@ -35,17 +33,25 @@ impl RoleRepository for RoleRepositoryImpl {
         let role_id = role.id;
         
         // Insert role with audit fields
-        sqlx::query(ROLE_INSERT)
-        .bind(role.id)
-        .bind(&role.name)
-        .bind(&role.description)
-        .bind(role.created_at)
-        .bind(role.updated_at)
-        .bind(&role.request_id)
-        .bind(role.created_by)
-        .bind(role.updated_by)
-        .bind(&role.system_id)
-        .bind(role.version)
+        sqlx::query!(
+            r#"
+            INSERT INTO roles (
+                id, name, description, created_at, updated_at,
+                request_id, created_by, updated_by, system_id, version
+            )
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+            "#,
+            role.id,
+            role.name,
+            role.description,
+            role.created_at,
+            role.updated_at,
+            role.request_id,
+            role.created_by,
+            role.updated_by,
+            role.system_id,
+            role.version
+        )
         .execute(self.database_service.pool())
         .await
         .map_err(|e| crate::shared::AppError::Database(e))?;
@@ -70,27 +76,33 @@ impl RoleRepository for RoleRepositoryImpl {
     async fn find_by_id(&self, id: Uuid) -> AppResult<Option<Role>> {
         // Use query_as with FromRow - but we need to handle permissions separately
         // Since permissions are stored in a separate table, we'll fetch role first then permissions
-        let row = sqlx::query(ROLE_FIND_BY_ID)
-        .bind(id)
+        let row = sqlx::query!(
+            r#"
+            SELECT id, name, description, request_id, created_at, updated_at,
+                   created_by, updated_by, system_id, version
+            FROM roles
+            WHERE id = $1
+            "#,
+            id
+        )
         .fetch_optional(self.database_service.pool())
         .await
         .map_err(|e| crate::shared::AppError::Database(e))?;
 
         if let Some(row) = row {
-            let role_id: Uuid = row.get("id");
-            let permissions = self.get_role_permissions(role_id).await?;
+            let permissions = self.get_role_permissions(row.id).await?;
             Ok(Some(Role {
-                id: role_id,
-                name: row.get("name"),
-                description: row.get("description"),
+                id: row.id,
+                name: row.name,
+                description: row.description,
                 permissions,
-                request_id: row.get("request_id"),
-                created_at: row.get("created_at"),
-                updated_at: row.get("updated_at"),
-                created_by: row.get("created_by"),
-                updated_by: row.get("updated_by"),
-                system_id: row.get("system_id"),
-                version: row.get("version"),
+                request_id: row.request_id,
+                created_at: row.created_at,
+                updated_at: row.updated_at,
+                created_by: row.created_by,
+                updated_by: row.updated_by,
+                system_id: row.system_id,
+                version: row.version,
             }))
         } else {
             Ok(None)
@@ -98,27 +110,33 @@ impl RoleRepository for RoleRepositoryImpl {
     }
 
     async fn find_by_name(&self, name: &str) -> AppResult<Option<Role>> {
-        let row = sqlx::query(ROLE_FIND_BY_NAME)
-        .bind(name)
+        let row = sqlx::query!(
+            r#"
+            SELECT id, name, description, request_id, created_at, updated_at,
+                   created_by, updated_by, system_id, version
+            FROM roles
+            WHERE name = $1
+            "#,
+            name
+        )
         .fetch_optional(self.database_service.pool())
         .await
         .map_err(|e| crate::shared::AppError::Database(e))?;
 
         if let Some(row) = row {
-            let role_id: Uuid = row.get("id");
-            let permissions = self.get_role_permissions(role_id).await?;
+            let permissions = self.get_role_permissions(row.id).await?;
             Ok(Some(Role {
-                id: role_id,
-                name: row.get("name"),
-                description: row.get("description"),
+                id: row.id,
+                name: row.name,
+                description: row.description,
                 permissions,
-                request_id: row.get("request_id"),
-                created_at: row.get("created_at"),
-                updated_at: row.get("updated_at"),
-                created_by: row.get("created_by"),
-                updated_by: row.get("updated_by"),
-                system_id: row.get("system_id"),
-                version: row.get("version"),
+                request_id: row.request_id,
+                created_at: row.created_at,
+                updated_at: row.updated_at,
+                created_by: row.created_by,
+                updated_by: row.updated_by,
+                system_id: row.system_id,
+                version: row.version,
             }))
         } else {
             Ok(None)
@@ -126,27 +144,33 @@ impl RoleRepository for RoleRepositoryImpl {
     }
 
     async fn list(&self) -> AppResult<Vec<Role>> {
-        let rows = sqlx::query(ROLE_LIST)
+        let rows = sqlx::query!(
+            r#"
+            SELECT id, name, description, request_id, created_at, updated_at,
+                   created_by, updated_by, system_id, version
+            FROM roles
+            ORDER BY name
+            "#,
+        )
         .fetch_all(self.database_service.pool())
         .await
         .map_err(|e| crate::shared::AppError::Database(e))?;
 
         let mut roles = Vec::new();
         for row in rows {
-            let role_id: Uuid = row.get("id");
-            let permissions = self.get_role_permissions(role_id).await?;
+            let permissions = self.get_role_permissions(row.id).await?;
             roles.push(Role {
-                id: role_id,
-                name: row.get("name"),
-                description: row.get("description"),
+                id: row.id,
+                name: row.name,
+                description: row.description,
                 permissions,
-                request_id: row.get("request_id"),
-                created_at: row.get("created_at"),
-                updated_at: row.get("updated_at"),
-                created_by: row.get("created_by"),
-                updated_by: row.get("updated_by"),
-                system_id: row.get("system_id"),
-                version: row.get("version"),
+                request_id: row.request_id,
+                created_at: row.created_at,
+                updated_at: row.updated_at,
+                created_by: row.created_by,
+                updated_by: row.updated_by,
+                system_id: row.system_id,
+                version: row.version,
             });
         }
 
@@ -201,14 +225,21 @@ impl RoleRepository for RoleRepositoryImpl {
 
     async fn get_role_permissions(&self, role_id: Uuid) -> AppResult<Vec<Uuid>> {
         // Get role name directly from database to avoid recursion
-        let row = sqlx::query(ROLE_FIND_BY_ID)
-        .bind(role_id)
+        let row = sqlx::query!(
+            r#"
+            SELECT id, name, description, request_id, created_at, updated_at,
+                   created_by, updated_by, system_id, version
+            FROM roles
+            WHERE id = $1
+            "#,
+            role_id
+        )
         .fetch_optional(self.database_service.pool())
         .await
         .map_err(|e| crate::shared::AppError::Database(e))?;
         
         let role_name = if let Some(row) = row {
-            row.get::<String, _>("name")
+            row.name
         } else {
             return Ok(Vec::new());
         };

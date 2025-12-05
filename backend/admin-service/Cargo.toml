@@ -8,6 +8,9 @@ rust-version.workspace = true
 shared = { path = "../shared" }
 authz-core = { path = "../authz-core" }
 
+# Database
+sqlx.workspace = true
+
 # Web framework
 axum.workspace = true
 
@@ -31,4 +34,7 @@ chrono.workspace = true
 
 # Password hashing
 bcrypt.workspace = true
+
+# Logging
+tracing.workspace = true
 

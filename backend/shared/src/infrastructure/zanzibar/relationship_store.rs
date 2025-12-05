@@ -4,6 +4,7 @@ use crate::shared::AppResult;
 use chrono::{DateTime, Utc};
 use uuid::Uuid;
 use serde_json::Value;
+use tracing;
 
 pub struct RelationshipStore {
     repository: Box<dyn RelationshipRepository>,
@@ -15,13 +16,48 @@ impl RelationshipStore {
     }
 
     pub async fn add(&self, user: &str, relation: &str, object: &str) -> AppResult<()> {
-        let relationship = Relationship::new(
+        self.add_with_organization(user, relation, object, None).await
+    }
+    
+    /// Add relationship with organization scoping
+    pub async fn add_with_organization(
+        &self,
+        user: &str,
+        relation: &str,
+        object: &str,
+        organization_id: Option<Uuid>,
+    ) -> AppResult<()> {
+        tracing::debug!("Creating relationship: {} → {} → {} [org: {:?}]", user, relation, object, organization_id);
+        let relationship = Relationship::new_with_organization(
             user.to_string(),
             relation.to_string(),
             object.to_string(),
+            organization_id,
         );
-        self.repository.create(relationship).await?;
-        Ok(())
+        match self.repository.create(relationship).await {
+            Ok(created) => {
+                tracing::debug!(
+                    "Successfully created relationship: {} → {} → {} [org: {:?}] (id: {})",
+                    created.user,
+                    created.relation,
+                    created.object,
+                    created.organization_id,
+                    created.id
+                );
+                Ok(())
+            }
+            Err(e) => {
+                tracing::error!(
+                    "Failed to create relationship: {} → {} → {} [org: {:?}]: {}",
+                    user,
+                    relation,
+                    object,
+                    organization_id,
+                    e
+                );
+                Err(e)
+            }
+        }
     }
     
     /// Add relationship with optional expiration
@@ -165,8 +201,19 @@ impl RelationshipStore {
 
     /// Check relationship (only returns true if valid and not expired/deleted)
     pub async fn check(&self, user: &str, relation: &str, object: &str) -> AppResult<bool> {
+        self.check_with_organization(user, relation, object, None).await
+    }
+    
+    /// Check relationship with organization scoping
+    pub async fn check_with_organization(
+        &self,
+        user: &str,
+        relation: &str,
+        object: &str,
+        organization_id: Option<Uuid>,
+    ) -> AppResult<bool> {
         if let Some(relationship) = self.repository
-            .find_by_user_object_relation(user, object, relation)
+            .find_by_user_object_relation_org(user, object, relation, organization_id)
             .await?
         {
             return Ok(relationship.is_valid());
@@ -178,9 +225,28 @@ impl RelationshipStore {
         self.repository.find_by_user(user).await
     }
     
+    /// Get relationships for user within organization
+    pub async fn get_relationships_by_org(
+        &self,
+        user: &str,
+        organization_id: Uuid,
+    ) -> AppResult<Vec<Relationship>> {
+        self.repository.find_by_user_and_org(user, organization_id).await
+    }
+    
     /// Get only valid relationships (filters expired and deleted)
     pub async fn get_valid_relationships(&self, user: &str) -> AppResult<Vec<Relationship>> {
         let all = self.repository.find_by_user(user).await?;
+        Ok(all.into_iter().filter(|r| r.is_valid()).collect())
+    }
+    
+    /// Get only valid relationships for user within organization
+    pub async fn get_valid_relationships_by_org(
+        &self,
+        user: &str,
+        organization_id: Uuid,
+    ) -> AppResult<Vec<Relationship>> {
+        let all = self.repository.find_by_user_and_org(user, organization_id).await?;
         Ok(all.into_iter().filter(|r| r.is_valid()).collect())
     }
     

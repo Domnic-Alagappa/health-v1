@@ -7,6 +7,7 @@ pub trait ZanzibarRlsBridge {
     fn relationship_to_policy(&self, relationship: &Relationship) -> AppResult<String>;
     
     /// Check if user has access based on relationships
+    #[allow(async_fn_in_trait)]
     async fn check_access(&self, user_id: &str, resource: &str, action: &str) -> AppResult<bool>;
     
     /// Generate RLS USING expression from relationships

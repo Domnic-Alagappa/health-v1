@@ -148,7 +148,7 @@ if is_enabled "ENABLE_LOCALSTACK"; then
     echo "  - LocalStack:    ${AWS_S3_ENDPOINT:-http://localhost:4566}"
 fi
 if is_enabled "ENABLE_NATS"; then
-    echo "  - NATS:          ${NATS_URL:-nats://localhost:4222}"
+    echo "  - NATS:          ${NATS_URL:-nats://localhost:4225}"
 fi
 if is_enabled "ENABLE_KAFKA"; then
     echo "  - Kafka:         ${KAFKA_BOOTSTRAP_SERVERS:-localhost:9092}"

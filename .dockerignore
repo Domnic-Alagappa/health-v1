@@ -1,22 +1,21 @@
+# Ignore build artifacts and local files
+target/
+**/target/
+*.log
+.env.local
+.env.*.local
+node_modules/
+**/node_modules/
 .git/
-.gitignore
-*.md
 .vscode/
 .idea/
-*.log
 *.swp
 *.swo
 *~
-.env
-.env.local
-*.bak
-node_modules/
-target/
-dist/
-*.lock
-.DS_Store
-coverage/
-.vercel
-.next
-.cache
 
+# Keep source files for Docker builds
+!backend/**/*.rs
+!backend/**/Cargo.toml
+!cli/**/*.ts
+!cli/**/*.tsx
+!cli/**/package.json

@@ -3,6 +3,7 @@
  * Initial setup-related API calls
  */
 
+import { API_ROUTES } from "@health-v1/shared/api/routes";
 import { apiClient } from "./client";
 import type { ApiResponse } from "./types";
 
@@ -30,7 +31,7 @@ export interface SetupResponse {
  * Check if setup has been completed
  */
 export async function checkSetupStatus(): Promise<SetupStatusResponse> {
-  const response = await apiClient.get<SetupStatusResponse>("/api/setup/status");
+  const response = await apiClient.get<SetupStatusResponse>(API_ROUTES.SETUP.STATUS);
 
   if (response.error) {
     throw new Error(response.error.message);
@@ -47,7 +48,7 @@ export async function checkSetupStatus(): Promise<SetupStatusResponse> {
  * Initialize the system (one-time setup)
  */
 export async function initializeSetup(request: SetupRequest): Promise<SetupResponse> {
-  const response = await apiClient.post<SetupResponse>("/api/setup/initialize", request);
+  const response = await apiClient.post<SetupResponse>(API_ROUTES.SETUP.INITIALIZE, request);
 
   if (response.error) {
     throw new Error(response.error.message);

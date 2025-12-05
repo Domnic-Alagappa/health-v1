@@ -146,8 +146,8 @@ pub async fn extend_permission(
     }
 }
 
-/// Revoke permission (soft delete)
-pub async fn revoke_permission(
+/// Revoke permission by relationship ID (soft delete)
+pub async fn revoke_permission_by_id(
     State(state): State<Arc<ConcreteAppState>>,
     Path(id): Path<Uuid>,
 ) -> impl IntoResponse {
@@ -250,3 +250,130 @@ pub async fn list_user_permissions(
     }
 }
 
+
+#[derive(Debug, Deserialize)]
+pub struct AssignPermissionRequest {
+    pub subject: String,
+    pub relation: String,
+    pub object: String,
+    pub expires_at: Option<DateTime<Utc>>,
+    pub valid_from: Option<DateTime<Utc>>,
+    pub metadata: Option<Value>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct BatchAssignPermissionRequest {
+    pub assignments: Vec<AssignPermissionRequest>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct RevokePermissionRequest {
+    pub subject: String,
+    pub relation: String,
+    pub object: String,
+}
+
+pub async fn assign_permission(
+    State(state): State<Arc<ConcreteAppState>>,
+    Json(request): Json<AssignPermissionRequest>,
+) -> impl IntoResponse {
+    match state.relationship_store.add_with_metadata(
+        &request.subject,
+        &request.relation,
+        &request.object,
+        request.metadata,
+        request.expires_at,
+    ).await {
+        Ok(_) => (
+            StatusCode::OK,
+            Json(serde_json::json!({
+                "success": true,
+                "message": "Permission assigned"
+            })),
+        )
+            .into_response(),
+        Err(e) => (
+            StatusCode::BAD_REQUEST,
+            Json(serde_json::json!({
+                "error": format!("Failed to assign permission: {}", e)
+            })),
+        )
+            .into_response(),
+    }
+}
+
+pub async fn assign_permissions_batch(
+    State(state): State<Arc<ConcreteAppState>>,
+    Json(request): Json<BatchAssignPermissionRequest>,
+) -> impl IntoResponse {
+    let mut results = Vec::new();
+    let mut errors = Vec::new();
+    
+    for assignment in request.assignments {
+        match state.relationship_store.add_with_metadata(
+            &assignment.subject,
+            &assignment.relation,
+            &assignment.object,
+            assignment.metadata,
+            assignment.expires_at,
+        ).await {
+            Ok(_) => results.push(true),
+            Err(e) => {
+                errors.push(format!("Failed to assign {}#{}@{}: {}", 
+                    assignment.subject, assignment.relation, assignment.object, e));
+                results.push(false);
+            }
+        }
+    }
+    
+    if errors.is_empty() {
+        (
+            StatusCode::OK,
+            Json(serde_json::json!({
+                "success": true,
+                "message": "All permissions assigned",
+                "count": results.len()
+            })),
+        )
+            .into_response()
+    } else {
+        (
+            StatusCode::PARTIAL_CONTENT,
+            Json(serde_json::json!({
+                "success": false,
+                "message": "Some permissions failed to assign",
+                "errors": errors,
+                "count": results.len()
+            })),
+        )
+            .into_response()
+    }
+}
+
+pub async fn revoke_permission(
+    State(state): State<Arc<ConcreteAppState>>,
+    Json(request): Json<RevokePermissionRequest>,
+) -> impl IntoResponse {
+    match state.relationship_store.revoke(
+        &request.subject,
+        &request.relation,
+        &request.object,
+        None,
+    ).await {
+        Ok(_) => (
+            StatusCode::OK,
+            Json(serde_json::json!({
+                "success": true,
+                "message": "Permission revoked"
+            })),
+        )
+            .into_response(),
+        Err(e) => (
+            StatusCode::BAD_REQUEST,
+            Json(serde_json::json!({
+                "error": format!("Failed to revoke permission: {}", e)
+            })),
+        )
+            .into_response(),
+    }
+}

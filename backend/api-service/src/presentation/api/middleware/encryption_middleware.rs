@@ -4,6 +4,7 @@ use axum::{
     response::Response,
 };
 
+#[allow(dead_code)]
 pub async fn encryption_middleware(
     request: Request,
     next: Next,

@@ -1,25 +1,25 @@
 /// Insert a new relationship
 pub const RELATIONSHIP_INSERT: &str = r#"
     INSERT INTO relationships (
-        id, "user", relation, object, created_at, valid_from, expires_at, 
+        id, "user", relation, object, organization_id, created_at, valid_from, expires_at, 
         is_active, metadata, deleted_at, deleted_by, request_id, updated_at, 
         created_by, updated_by, system_id, version
     )
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
-    ON CONFLICT ("user", relation, object) 
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
+    ON CONFLICT ("user", relation, object, organization_id) 
     WHERE deleted_at IS NULL
     DO UPDATE SET 
         id = EXCLUDED.id,
         updated_at = EXCLUDED.updated_at,
         version = relationships.version + 1
-    RETURNING id, "user", relation, object, created_at, valid_from, expires_at, 
+    RETURNING id, "user", relation, object, organization_id, created_at, valid_from, expires_at, 
                is_active, metadata, deleted_at, deleted_by, request_id, updated_at, 
                created_by, updated_by, system_id, version
 "#;
 
 /// Find relationship by ID (only non-deleted)
 pub const RELATIONSHIP_FIND_BY_ID: &str = r#"
-    SELECT id, "user", relation, object, created_at, valid_from, expires_at, 
+    SELECT id, "user", relation, object, organization_id, created_at, valid_from, expires_at, 
            is_active, metadata, deleted_at, deleted_by, request_id, updated_at, 
            created_by, updated_by, system_id, version
     FROM relationships
@@ -28,7 +28,7 @@ pub const RELATIONSHIP_FIND_BY_ID: &str = r#"
 
 /// Find valid relationships by user (non-deleted, non-expired, active)
 pub const RELATIONSHIP_FIND_VALID_BY_USER: &str = r#"
-    SELECT id, "user", relation, object, created_at, valid_from, expires_at, 
+    SELECT id, "user", relation, object, organization_id, created_at, valid_from, expires_at, 
            is_active, metadata, deleted_at, deleted_by, request_id, updated_at, 
            created_by, updated_by, system_id, version
     FROM relationships
@@ -42,7 +42,7 @@ pub const RELATIONSHIP_FIND_VALID_BY_USER: &str = r#"
 
 /// Find relationships by user (all, including deleted/expired)
 pub const RELATIONSHIP_FIND_BY_USER: &str = r#"
-    SELECT id, "user", relation, object, created_at, valid_from, expires_at, 
+    SELECT id, "user", relation, object, organization_id, created_at, valid_from, expires_at, 
            is_active, metadata, deleted_at, deleted_by, request_id, updated_at, 
            created_by, updated_by, system_id, version
     FROM relationships
@@ -50,9 +50,33 @@ pub const RELATIONSHIP_FIND_BY_USER: &str = r#"
     ORDER BY created_at DESC
 "#;
 
+/// Find relationships by user and organization (all)
+pub const RELATIONSHIP_FIND_BY_USER_AND_ORG: &str = r#"
+    SELECT id, "user", relation, object, organization_id, created_at, valid_from, expires_at, 
+           is_active, metadata, deleted_at, deleted_by, request_id, updated_at, 
+           created_by, updated_by, system_id, version
+    FROM relationships
+    WHERE "user" = $1 AND organization_id = $2
+    ORDER BY created_at DESC
+"#;
+
+/// Find valid relationships by user and organization
+pub const RELATIONSHIP_FIND_VALID_BY_USER_AND_ORG: &str = r#"
+    SELECT id, "user", relation, object, organization_id, created_at, valid_from, expires_at, 
+           is_active, metadata, deleted_at, deleted_by, request_id, updated_at, 
+           created_by, updated_by, system_id, version
+    FROM relationships
+    WHERE "user" = $1 AND organization_id = $2
+    AND deleted_at IS NULL
+    AND is_active = true
+    AND (valid_from IS NULL OR valid_from <= NOW())
+    AND (expires_at IS NULL OR expires_at > NOW())
+    ORDER BY created_at DESC
+"#;
+
 /// Find relationships by object (only valid)
 pub const RELATIONSHIP_FIND_VALID_BY_OBJECT: &str = r#"
-    SELECT id, "user", relation, object, created_at, valid_from, expires_at, 
+    SELECT id, "user", relation, object, organization_id, created_at, valid_from, expires_at, 
            is_active, metadata, deleted_at, deleted_by, request_id, updated_at, 
            created_by, updated_by, system_id, version
     FROM relationships
@@ -66,7 +90,7 @@ pub const RELATIONSHIP_FIND_VALID_BY_OBJECT: &str = r#"
 
 /// Find relationships by object (all)
 pub const RELATIONSHIP_FIND_BY_OBJECT: &str = r#"
-    SELECT id, "user", relation, object, created_at, valid_from, expires_at, 
+    SELECT id, "user", relation, object, organization_id, created_at, valid_from, expires_at, 
            is_active, metadata, deleted_at, deleted_by, request_id, updated_at, 
            created_by, updated_by, system_id, version
     FROM relationships
@@ -76,7 +100,7 @@ pub const RELATIONSHIP_FIND_BY_OBJECT: &str = r#"
 
 /// Find relationships by user and relation (only valid)
 pub const RELATIONSHIP_FIND_VALID_BY_USER_RELATION: &str = r#"
-    SELECT id, "user", relation, object, created_at, valid_from, expires_at, 
+    SELECT id, "user", relation, object, organization_id, created_at, valid_from, expires_at, 
            is_active, metadata, deleted_at, deleted_by, request_id, updated_at, 
            created_by, updated_by, system_id, version
     FROM relationships
@@ -90,7 +114,7 @@ pub const RELATIONSHIP_FIND_VALID_BY_USER_RELATION: &str = r#"
 
 /// Find relationships by user and relation (all)
 pub const RELATIONSHIP_FIND_BY_USER_RELATION: &str = r#"
-    SELECT id, "user", relation, object, created_at, valid_from, expires_at, 
+    SELECT id, "user", relation, object, organization_id, created_at, valid_from, expires_at, 
            is_active, metadata, deleted_at, deleted_by, request_id, updated_at, 
            created_by, updated_by, system_id, version
     FROM relationships
@@ -100,7 +124,7 @@ pub const RELATIONSHIP_FIND_BY_USER_RELATION: &str = r#"
 
 /// Find relationship by user, object, and relation (only valid)
 pub const RELATIONSHIP_FIND_VALID_BY_USER_OBJECT_RELATION: &str = r#"
-    SELECT id, "user", relation, object, created_at, valid_from, expires_at, 
+    SELECT id, "user", relation, object, organization_id, created_at, valid_from, expires_at, 
            is_active, metadata, deleted_at, deleted_by, request_id, updated_at, 
            created_by, updated_by, system_id, version
     FROM relationships
@@ -113,11 +137,21 @@ pub const RELATIONSHIP_FIND_VALID_BY_USER_OBJECT_RELATION: &str = r#"
 
 /// Find relationship by user, object, and relation (all)
 pub const RELATIONSHIP_FIND_BY_USER_OBJECT_RELATION: &str = r#"
-    SELECT id, "user", relation, object, created_at, valid_from, expires_at, 
+    SELECT id, "user", relation, object, organization_id, created_at, valid_from, expires_at, 
            is_active, metadata, deleted_at, deleted_by, request_id, updated_at, 
            created_by, updated_by, system_id, version
     FROM relationships
     WHERE "user" = $1 AND object = $2 AND relation = $3
+    AND deleted_at IS NULL
+"#;
+
+/// Find relationship by user, object, relation, and organization (all)
+pub const RELATIONSHIP_FIND_BY_USER_OBJECT_RELATION_ORG: &str = r#"
+    SELECT id, "user", relation, object, organization_id, created_at, valid_from, expires_at, 
+           is_active, metadata, deleted_at, deleted_by, request_id, updated_at, 
+           created_by, updated_by, system_id, version
+    FROM relationships
+    WHERE "user" = $1 AND object = $2 AND relation = $3 AND organization_id = $4
     AND deleted_at IS NULL
 "#;
 
@@ -136,7 +170,7 @@ pub const RELATIONSHIP_UPDATE: &str = r#"
         system_id = $11,
         version = $12
     WHERE id = $1
-    RETURNING id, "user", relation, object, created_at, valid_from, expires_at, 
+    RETURNING id, "user", relation, object, organization_id, created_at, valid_from, expires_at, 
                is_active, metadata, deleted_at, deleted_by, request_id, updated_at, 
                created_by, updated_by, system_id, version
 "#;
@@ -172,11 +206,22 @@ pub const RELATIONSHIP_DELETE_BY_TUPLE: &str = r#"
 /// List all relationships (for graph building)
 /// Only returns non-deleted relationships
 pub const RELATIONSHIP_LIST_ALL: &str = r#"
-    SELECT id, "user", relation, object, created_at, valid_from, expires_at, 
+    SELECT id, "user", relation, object, organization_id, created_at, valid_from, expires_at, 
            is_active, metadata, deleted_at, deleted_by, request_id, updated_at, 
            created_by, updated_by, system_id, version
     FROM relationships
     WHERE deleted_at IS NULL
+    ORDER BY created_at DESC
+"#;
+
+/// Find relationships by organization
+pub const RELATIONSHIP_FIND_BY_ORGANIZATION: &str = r#"
+    SELECT id, "user", relation, object, organization_id, created_at, valid_from, expires_at, 
+           is_active, metadata, deleted_at, deleted_by, request_id, updated_at, 
+           created_by, updated_by, system_id, version
+    FROM relationships
+    WHERE organization_id = $1
+    AND deleted_at IS NULL
     ORDER BY created_at DESC
 "#;
 

@@ -49,9 +49,8 @@ This guide explains how to run the Health V1 application stack using Docker.
 ### Optional Services (Use Profiles)
 - **Client App** (port 5175) - React frontend client application
 - **LocalStack** (port 4566) - Local AWS services (S3, KMS)
-- **NATS** (port 4222) - Message broker
-- **Kafka** (port 9092) - Event streaming platform
-- **Zookeeper** (port 2181) - Kafka coordination
+- **NATS** (port 4225) - Message broker
+- **Kafka** (port 9092) - Event streaming platform (KRaft mode)
 - **Kafka UI** (port 8081) - Kafka management interface
 
 ### Starting Services with Profiles
@@ -155,7 +154,7 @@ For development with hot reload, mount source directories:
 - **API Health**: http://localhost:8080/health
 - **OpenBao UI**: http://localhost:8200 (token: dev-root-token)
 - **LocalStack**: http://localhost:4566 (when profile `localstack` is enabled)
-- **NATS Monitoring**: http://localhost:8222 (when profile `nats` is enabled)
+- **NATS Monitoring**: http://localhost:8225 (when profile `nats` is enabled)
 - **Kafka UI**: http://localhost:8081 (when profile `kafka` is enabled)
 
 ### Database Access
@@ -262,7 +261,8 @@ All services communicate through the `health-network` bridge network:
                           ┌────────┴────────┐
                           │                 │
                     ┌──────────┐      ┌──────────┐
-                    │  Kafka   │      │Zookeeper │
+                    │  Kafka   │      │  Kafka   │
+                    │ (KRaft)  │      │   UI     │
                     └──────────┘      └──────────┘
 ```
 

@@ -45,7 +45,7 @@ impl CreateGroupUseCase {
         }
 
         // Create group
-        let mut group = Group::new(
+        let group = Group::new(
             name.to_string(),
             description,
             organization_id,

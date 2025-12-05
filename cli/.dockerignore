@@ -1,0 +1,69 @@
+# Dependencies
+node_modules/
+**/node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+dist/
+build/
+**/dist/
+**/build/
+*.local
+
+# Rust/Cargo
+**/target/
+**/src-tauri/target/
+Cargo.lock
+*.rs.bk
+
+# TypeScript
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# Cache
+.cache/
+.vite/
+.tanstack/
+**/.vite/
+**/.tanstack/
+**/.cache/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+bun-debug.log*
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Testing
+coverage/
+.nyc_output/
+test-results/
+playwright-report/
+playwright/.cache/
+
+# Git
+.git/
+.gitignore
+
+# Misc
+*.tmp
+*.temp
+.tmp/
+.temp/
+

@@ -1,8 +1,6 @@
 pub mod routes;
 pub mod handlers;
 pub mod middleware;
-
-pub use routes::create_router;
 // Re-export AppState type alias
 pub type AppState = shared::AppState<
     authz_core::auth::LoginUseCase,

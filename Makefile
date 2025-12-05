@@ -1,105 +1,46 @@
-.PHONY: help build up down restart logs clean clean-volumes ps
+.PHONY: help build build-dev up-build-all up-build-dev down down-dev restart restart-dev logs logs-dev ps ps-dev
 
 help: ## Show this help message
 	@echo 'Usage: make [target]'
 	@echo ''
 	@echo 'Available targets:'
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "  %-15s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+	@echo ''
+	@echo 'Note: Service profiles are controlled by ENABLE_* flags in .env file'
+	@echo '      docker-compose will automatically respect these flags'
 
 build: ## Build all Docker images
 	docker-compose build
 
-build-no-cache: ## Build all Docker images without cache
-	docker-compose build --no-cache
-
-up: ## Start all core services
-	docker-compose up -d --force-recreate --remove-orphans
-
-up-all: ## Start all services including optional ones
-	docker-compose --profile client --profile localstack --profile nats --profile kafka up -d --force-recreate --remove-orphans
-
-up-build: ## Build and start all core services
-	docker-compose up -d --build --force-recreate --remove-orphans
+build-dev: ## Build all Docker images in dev mode (skips type checks)
+	docker-compose -f docker-compose.dev.yml build
 
 up-build-all: ## Build and start all services including optional ones
-	docker-compose --profile client --profile localstack --profile nats --profile kafka up -d --build --force-recreate --remove-orphans
+	@./scripts/docker-compose-with-profiles.sh docker-compose.yml up -d --build --force-recreate --remove-orphans
 
-up-client: ## Start with client app
-	docker-compose --profile client up -d
-
-up-localstack: ## Start with LocalStack
-	docker-compose --profile localstack up -d
-
-up-nats: ## Start with NATS
-	docker-compose --profile nats up -d
-
-up-kafka: ## Start with Kafka
-	docker-compose --profile kafka up -d
+up-build-dev: ## Build and start all services in dev mode (skips type checks)
+	@./scripts/docker-compose-with-profiles.sh docker-compose.dev.yml up -d --build --force-recreate --remove-orphans
 
 down: ## Stop all services
 	docker-compose down
 
-down-volumes: ## Stop all services and remove volumes
-	docker-compose down -v
+down-dev: ## Stop all services in dev mode
+	docker-compose -f docker-compose.dev.yml down
 
 restart: ## Restart all services
 	docker-compose restart
 
+restart-dev: ## Restart all services in dev mode
+	docker-compose -f docker-compose.dev.yml restart
+
 logs: ## Show logs from all services
 	docker-compose logs -f
 
-logs-api: ## Show logs from api-service
-	docker-compose logs -f api-service
-
-logs-admin: ## Show logs from admin-ui
-	docker-compose logs -f admin-ui
-
-logs-db: ## Show logs from postgres
-	docker-compose logs -f postgres
+logs-dev: ## Show logs from all services in dev mode
+	docker-compose -f docker-compose.dev.yml logs -f
 
 ps: ## Show running containers
 	docker-compose ps
 
-clean: ## Remove stopped containers and unused images
-	docker-compose down --rmi local --remove-orphans
-
-clean-volumes: ## Remove all volumes (WARNING: This deletes all data!)
-	docker-compose down -v
-	docker volume prune -f
-
-clean-all: clean-volumes ## Remove everything including volumes
-	docker system prune -af --volumes
-
-shell-api: ## Open shell in api-service container
-	docker-compose exec api-service /bin/sh
-
-shell-admin: ## Open shell in admin-ui container
-	docker-compose exec admin-ui /bin/sh
-
-shell-db: ## Open PostgreSQL shell
-	docker-compose exec postgres psql -U auth_user -d auth_db
-
-migrate: ## Run database migrations
-	docker-compose exec api-service ./api-service migrate || echo "Migrations should run automatically on startup"
-
-health: ## Check health status of all services
-	@echo "Checking service health..."
-	@docker-compose ps
-	@echo "\nAPI Service Health:"
-	@curl -s http://localhost:8080/health || echo "❌ API service not responding"
-	@echo "\nAdmin UI Health:"
-	@curl -s http://localhost:5174/health || echo "❌ Admin UI not responding"
-	@echo "\nClient App Health:"
-	@curl -s http://localhost:5175/health || echo "⚠️  Client App not running (use profile 'client')"
-	@echo "\nOpenBao Health:"
-	@curl -s http://localhost:8200/v1/sys/health || echo "❌ OpenBao not responding"
-
-setup: ## Initial setup - create .env from example
-	@if [ ! -f .env ]; then \
-		cp .env.docker.example .env; \
-		echo "Created .env file from .env.docker.example"; \
-		echo "Please review and update .env with your configuration"; \
-	else \
-		echo ".env file already exists"; \
-	fi
-
+ps-dev: ## Show running containers in dev mode
+	docker-compose -f docker-compose.dev.yml ps

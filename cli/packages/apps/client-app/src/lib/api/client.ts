@@ -51,12 +51,13 @@ export class ApiClient {
         signal: config.signal || controller.signal,
       });
 
-      // Make request
+      // Make request with credentials for cookie-based authentication
       const response = await fetch(url, {
         method: config.method || "GET",
         headers: interceptedConfig.headers,
         body: config.body ? JSON.stringify(config.body) : undefined,
         signal: interceptedConfig.signal,
+        credentials: "include", // Include cookies for session-based auth
       });
 
       clearTimeout(timeoutId);

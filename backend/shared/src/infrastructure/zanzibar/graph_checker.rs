@@ -25,6 +25,23 @@ impl GraphPermissionChecker {
     
     /// Check if user has relation on object using graph traversal
     pub fn check(&self, user: &str, relation: &str, object: &str) -> AppResult<bool> {
+        // First, check for wildcard permission (super admin bypass)
+        // Check if user has wildcard: user#*@*
+        if let Some(user_node) = self.graph.get_node(user) {
+            // Check all outgoing edges from user node for wildcard
+            for (target_node, edge) in self.graph.get_outgoing_edges(user_node) {
+                if edge.relation == "*" {
+                    // Check if target is "*" by looking at the entity
+                    if let Some(target_entity) = self.graph.get_entity(target_node) {
+                        if target_entity == "*" && edge.is_valid() {
+                            // Wildcard exists, user has all permissions
+                            return Ok(true);
+                        }
+                    }
+                }
+            }
+        }
+        
         let user_node = self.graph.get_node(user);
         let object_node = self.graph.get_node(object);
         

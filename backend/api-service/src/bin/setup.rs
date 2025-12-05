@@ -74,7 +74,6 @@ async fn main() {
 
     // Initialize repositories
     let setup_repository: Box<dyn SetupRepository> = Box::new(SetupRepositoryImpl::new(pool.clone()));
-    let user_repository = Box::new(UserRepositoryImpl::new(database_service.clone()));
 
     // Check if setup is already completed
     let is_completed = match setup_repository.is_setup_completed().await {
@@ -99,6 +98,53 @@ async fn main() {
             println!("Exiting...");
             process::exit(0);
         }
+        println!();
+    } else {
+        // Clean up any orphaned data from previous failed setup attempts
+        println!("Checking for orphaned data from previous setup attempts...");
+        
+        // Find and delete any users that are super users but setup wasn't completed
+        // (these are likely from failed setup attempts)
+        if let Err(e) = sqlx::query(
+            r#"
+            DELETE FROM users 
+            WHERE is_super_user = true 
+            AND id NOT IN (
+                SELECT setup_completed_by 
+                FROM setup_status 
+                WHERE setup_completed = true 
+                AND setup_completed_by IS NOT NULL
+            )
+            "#
+        )
+        .execute(&pool)
+        .await
+        {
+            eprintln!("Warning: Failed to clean up orphaned users: {}", e);
+        } else {
+            println!("✓ Cleaned up orphaned users (if any)");
+        }
+        
+        // Delete any organizations that don't have any users
+        // (these are likely from failed setup attempts)
+        if let Err(e) = sqlx::query(
+            r#"
+            DELETE FROM organizations 
+            WHERE id NOT IN (
+                SELECT DISTINCT organization_id 
+                FROM users 
+                WHERE organization_id IS NOT NULL
+            )
+            "#
+        )
+        .execute(&pool)
+        .await
+        {
+            eprintln!("Warning: Failed to clean up orphaned organizations: {}", e);
+        } else {
+            println!("✓ Cleaned up orphaned organizations (if any)");
+        }
+        
         println!();
     }
 
@@ -193,6 +239,71 @@ async fn main() {
             process::exit(1);
         });
 
+    // Helper function to rollback everything
+    async fn rollback_all(pool: &sqlx::PgPool, org_id: Option<uuid::Uuid>, user_id: Option<uuid::Uuid>) {
+        println!("\n=== Rolling back all changes ===");
+        let mut errors = Vec::new();
+        
+        // Delete user if it was created
+        if let Some(uid) = user_id {
+            println!("Removing user...");
+            if let Err(e) = sqlx::query("DELETE FROM users WHERE id = $1")
+                .bind(uid)
+                .execute(pool)
+                .await
+            {
+                errors.push(format!("Failed to delete user {}: {}", uid, e));
+                eprintln!("✗ Failed to delete user: {}", e);
+            } else {
+                println!("✓ User removed");
+            }
+        }
+        
+        // Delete organization if it was created
+        if let Some(oid) = org_id {
+            println!("Removing organization...");
+            if let Err(e) = sqlx::query("DELETE FROM organizations WHERE id = $1")
+                .bind(oid)
+                .execute(pool)
+                .await
+            {
+                errors.push(format!("Failed to delete organization {}: {}", oid, e));
+                eprintln!("✗ Failed to delete organization: {}", e);
+            } else {
+                println!("✓ Organization removed");
+            }
+        }
+        
+        // Reset setup status
+        println!("Resetting setup status...");
+        if let Err(e) = sqlx::query(
+            r#"
+            UPDATE setup_status 
+            SET setup_completed = false, 
+                setup_completed_at = NULL, 
+                setup_completed_by = NULL 
+            WHERE setup_completed = true
+            "#
+        )
+        .execute(pool)
+        .await
+        {
+            errors.push(format!("Failed to reset setup status: {}", e));
+            eprintln!("✗ Failed to reset setup status: {}", e);
+        } else {
+            println!("✓ Setup status reset");
+        }
+        
+        if errors.is_empty() {
+            println!("\n✓ All changes rolled back successfully");
+        } else {
+            println!("\n⚠ Some cleanup operations failed. Manual cleanup may be required:");
+            for error in &errors {
+                eprintln!("  - {}", error);
+            }
+        }
+    }
+
     // Create organization
     println!("\nCreating organization...");
     let setup_org_use_case = SetupOrganizationUseCase::new(
@@ -200,13 +311,14 @@ async fn main() {
         Box::new(UserRepositoryImpl::new(database_service.clone())),
     );
 
+    // Track what we create for rollback
     let org_id = match setup_org_use_case
-        .execute(&org_name, &org_slug, org_domain.as_deref())
+        .execute(&org_name, &org_slug, org_domain.as_deref(), false)
         .await
     {
         Ok(id) => {
             println!("✓ Organization created: {} ({})", org_name, org_slug);
-            id
+            Some(id)
         }
         Err(e) => {
             eprintln!("Failed to create organization: {}", e);
@@ -215,6 +327,7 @@ async fn main() {
     };
 
     // Create super admin
+    // If this fails, we need to clean up everything
     println!("Creating super admin user...");
     let create_admin_use_case = CreateSuperAdminUseCase::new(
         Box::new(SetupRepositoryImpl::new(pool.clone())),
@@ -222,10 +335,11 @@ async fn main() {
     );
 
     match create_admin_use_case
-        .execute(&admin_email, &admin_username, &admin_password, Some(org_id))
+        .execute(&admin_email, &admin_username, &admin_password, org_id)
         .await
     {
         Ok(user) => {
+            let _user_id = Some(user.id);
             println!("✓ Super admin created: {} ({})", user.email, user.username);
             println!("\n=== Setup Complete! ===\n");
             println!("Organization: {} ({})", org_name, org_slug);
@@ -235,6 +349,7 @@ async fn main() {
         }
         Err(e) => {
             eprintln!("Failed to create super admin: {}", e);
+            rollback_all(&pool, org_id, None).await;
             process::exit(1);
         }
     }

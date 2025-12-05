@@ -29,7 +29,7 @@ impl AssignRoleUseCase {
         role_id: Uuid,
     ) -> AppResult<()> {
         // Verify user exists
-        let user = self.user_repository
+        let _user = self.user_repository
             .find_by_id(user_id)
             .await?
             .ok_or_else(|| shared::AppError::NotFound(

@@ -3,7 +3,9 @@ use crate::domain::entities::User;
 
 pub struct OidcProvider {
     issuer: String,
+    #[allow(dead_code)]
     client_id: String,
+    #[allow(dead_code)]
     client_secret: String,
 }
 

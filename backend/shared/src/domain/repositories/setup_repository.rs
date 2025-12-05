@@ -19,6 +19,9 @@ pub trait SetupRepository: Send + Sync {
     
     /// Get organization by ID
     async fn get_organization(&self, id: &Uuid) -> AppResult<Option<OrganizationInfo>>;
+    
+    /// Get organization by slug
+    async fn get_organization_by_slug(&self, slug: &str) -> AppResult<Option<OrganizationInfo>>;
 }
 
 #[derive(Debug, Clone)]

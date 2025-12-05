@@ -37,5 +37,17 @@ impl Vault for AzureKeyVault {
             "Azure Key Vault master key rotation not yet implemented".to_string(),
         ))
     }
+
+    async fn store_master_key(&self, _master_key: &[u8]) -> AppResult<()> {
+        Err(crate::shared::AppError::Encryption(
+            "Azure Key Vault master key storage not yet implemented".to_string(),
+        ))
+    }
+
+    async fn get_master_key(&self) -> AppResult<Option<Vec<u8>>> {
+        Err(crate::shared::AppError::Encryption(
+            "Azure Key Vault master key retrieval not yet implemented".to_string(),
+        ))
+    }
 }
 

@@ -10,6 +10,7 @@ use std::sync::Arc;
 
 pub struct CreatePermissionUseCase {
     relationship_repository: Box<dyn RelationshipRepository>,
+    #[allow(dead_code)]
     relationship_store: Arc<RelationshipStore>,
     dek_manager: Arc<DekManager>,
 }
