@@ -33,11 +33,19 @@ ALTER TABLE sessions
 ALTER COLUMN app_device SET NOT NULL;
 
 -- Add constraint to ensure app_type is one of the allowed values
+-- Drop constraint if it exists to make migration idempotent
+ALTER TABLE sessions 
+DROP CONSTRAINT IF EXISTS check_app_type;
+
 ALTER TABLE sessions 
 ADD CONSTRAINT check_app_type 
 CHECK (app_type IN ('admin-ui', 'client-ui', 'api'));
 
 -- Add constraint to ensure app_device is one of the allowed values
+-- Drop constraint if it exists to make migration idempotent
+ALTER TABLE sessions 
+DROP CONSTRAINT IF EXISTS check_app_device;
+
 ALTER TABLE sessions 
 ADD CONSTRAINT check_app_device 
 CHECK (app_device IN ('web', 'mobile', 'desktop', 'tablet'));
