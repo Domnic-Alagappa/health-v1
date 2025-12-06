@@ -2,7 +2,19 @@
 # Build context should be ./cli directory (monorepo root)
 
 # Dev stage (runs vite dev server) - OPTIMIZED: comes first to skip builder in dev mode
-FROM oven/bun:1.1.0-alpine AS runner-dev
+FROM ubuntu:24.04 AS runner-dev
+
+# Install Bun and dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    curl \
+    unzip \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Bun
+RUN curl -fsSL https://bun.sh/install | bash
+ENV PATH="/root/.bun/bin:${PATH}"
 
 WORKDIR /app
 
@@ -27,7 +39,19 @@ WORKDIR /app/packages/apps/client-app
 CMD ["bun", "run", "dev", "--host", "0.0.0.0"]
 
 # Dependencies stage (for production builds)
-FROM oven/bun:1.1.0-alpine AS deps
+FROM ubuntu:24.04 AS deps
+
+# Install Bun and dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    curl \
+    unzip \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Bun
+RUN curl -fsSL https://bun.sh/install | bash
+ENV PATH="/root/.bun/bin:${PATH}"
 
 # Set working directory to monorepo root
 WORKDIR /app
@@ -44,7 +68,19 @@ COPY packages/libs/shared/package.json ./packages/libs/shared/
 RUN bun install --frozen-lockfile || bun install
 
 # Build stage (only for production)
-FROM oven/bun:1.1.0-alpine AS builder
+FROM ubuntu:24.04 AS builder
+
+# Install Bun and dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    curl \
+    unzip \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Bun
+RUN curl -fsSL https://bun.sh/install | bash
+ENV PATH="/root/.bun/bin:${PATH}"
 
 WORKDIR /app
 

@@ -395,11 +395,11 @@ async fn async_main() -> Result<(), String> {
         .with_state(app_state_arc.clone())
         .layer(axum::middleware::from_fn_with_state(
             app_state_arc.clone(),
-            crate::presentation::api::middleware::auth_middleware,
+            crate::presentation::api::middleware::acl_middleware,
         ))
         .layer(axum::middleware::from_fn_with_state(
             app_state_arc.clone(),
-            crate::presentation::api::middleware::acl_middleware,
+            crate::presentation::api::middleware::auth_middleware,
         ));
     
     let app = axum::Router::new()
