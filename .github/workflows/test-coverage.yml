@@ -1,0 +1,80 @@
+name: Test Coverage
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+jobs:
+  coverage:
+    name: Generate Test Coverage
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: auth_user
+          POSTGRES_PASSWORD: auth_password
+          POSTGRES_DB: auth_db_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+      
+      - name: Install cargo-llvm-cov
+        run: cargo install cargo-llvm-cov --locked
+      
+      - name: Run tests with coverage
+        working-directory: ./backend
+        run: |
+          cargo llvm-cov --all-features --workspace --lcov --output-path coverage/lcov.info
+        env:
+          DATABASE_URL: postgresql://auth_user:auth_password@localhost:5432/auth_db_test
+      
+      - name: Generate HTML coverage report
+        working-directory: ./backend
+        run: |
+          mkdir -p coverage/html
+          cargo llvm-cov --all-features --workspace --html --output-dir coverage/html
+        env:
+          DATABASE_URL: postgresql://auth_user:auth_password@localhost:5432/auth_db_test
+      
+      - name: Upload coverage report (LCOV)
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-lcov
+          path: backend/coverage/lcov.info
+          retention-days: 30
+      
+      - name: Upload coverage report (HTML)
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html
+          path: backend/coverage/html
+          retention-days: 30
+      
+      - name: Coverage summary
+        working-directory: ./backend
+        run: |
+          echo "## Coverage Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Coverage reports generated:" >> $GITHUB_STEP_SUMMARY
+          echo "- LCOV: coverage/lcov.info" >> $GITHUB_STEP_SUMMARY
+          echo "- HTML: coverage/html/index.html" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Download the artifacts to view the full coverage report." >> $GITHUB_STEP_SUMMARY

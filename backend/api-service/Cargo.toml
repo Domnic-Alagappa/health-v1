@@ -64,3 +64,12 @@ dialoguer.workspace = true
 # HTTP client
 reqwest.workspace = true
 
+[dev-dependencies]
+# Testing utilities
+tower = { workspace = true }
+tower-http = { workspace = true }
+# Code coverage tool
+cargo-llvm-cov = "0.6"
+# Testcontainers for Docker-based test databases
+testcontainers-modules = { version = "0.14", features = ["postgres"] }
+
