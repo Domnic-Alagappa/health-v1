@@ -109,6 +109,34 @@
     "./i18n/locales": {
       "types": "./dist/i18n/locales.d.ts",
       "default": "./dist/i18n/locales.js"
+    },
+    "./vault": {
+      "types": "./dist/vault/index.d.ts",
+      "default": "./dist/vault/index.js"
+    },
+    "./vault/client": {
+      "types": "./dist/vault/client.d.ts",
+      "default": "./dist/vault/client.js"
+    },
+    "./vault/store": {
+      "types": "./dist/vault/store.d.ts",
+      "default": "./dist/vault/store.js"
+    },
+    "./vault/hooks": {
+      "types": "./dist/vault/hooks.d.ts",
+      "default": "./dist/vault/hooks.js"
+    },
+    "./vault/permissions": {
+      "types": "./dist/vault/permissions.d.ts",
+      "default": "./dist/vault/permissions.js"
+    },
+    "./vault/types": {
+      "types": "./dist/vault/types.d.ts",
+      "default": "./dist/vault/types.js"
+    },
+    "./vault/components": {
+      "types": "./dist/vault/components.d.ts",
+      "default": "./dist/vault/components.js"
     }
   },
   "scripts": {
@@ -116,8 +144,15 @@
     "clean": "rm -rf dist",
     "typecheck": "tsc --noEmit"
   },
+  "dependencies": {
+    "zustand": "^4.5.0"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0"
+  },
   "devDependencies": {
     "@types/node": "^20.0.0",
+    "@types/react": "^18.0.0",
     "tsup": "^8.0.0",
     "typescript": "^5.0.0"
   }

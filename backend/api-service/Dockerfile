@@ -22,17 +22,19 @@ COPY backend/Cargo.toml backend/
 # Copy Cargo configuration for low-memory builds
 COPY backend/.cargo backend/.cargo
 
-# Copy all crate Cargo.toml files
+# Copy all crate Cargo.toml files (all workspace members must be present)
 COPY backend/shared/Cargo.toml backend/shared/
 COPY backend/authz-core/Cargo.toml backend/authz-core/
 COPY backend/admin-service/Cargo.toml backend/admin-service/
 COPY backend/api-service/Cargo.toml backend/api-service/
+COPY backend/rustyvault-service/Cargo.toml backend/rustyvault-service/
 
-# Copy source code for all crates
+# Copy source code for all crates (all workspace members must be present)
 COPY backend/shared/src backend/shared/src
 COPY backend/authz-core/src backend/authz-core/src
 COPY backend/admin-service/src backend/admin-service/src
 COPY backend/api-service/src backend/api-service/src
+COPY backend/rustyvault-service/src backend/rustyvault-service/src
 COPY backend/migrations backend/migrations
 
 # Build the application
@@ -83,6 +85,14 @@ COPY backend/shared/Cargo.toml ./shared/
 COPY backend/authz-core/Cargo.toml ./authz-core/
 COPY backend/admin-service/Cargo.toml ./admin-service/
 COPY backend/api-service/Cargo.toml ./api-service/
+COPY backend/rustyvault-service/Cargo.toml ./rustyvault-service/
+
+# Copy source code for all workspace members (Cargo needs them to validate)
+COPY backend/shared/src ./shared/src
+COPY backend/authz-core/src ./authz-core/src
+COPY backend/admin-service/src ./admin-service/src
+COPY backend/api-service/src ./api-service/src
+COPY backend/rustyvault-service/src ./rustyvault-service/src
 
 # Copy migrations (always needed, even in dev mode)
 COPY backend/migrations ./migrations
@@ -137,53 +147,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 
 # Run the application
 CMD ["./api-service"]
-
-# Test runner stage - for running tests in Docker
-FROM rust:1.91-slim AS test-runner
-
-# Install build and runtime dependencies
-RUN apt-get update && apt-get install -y \
-    pkg-config \
-    libssl-dev \
-    libpq-dev \
-    ca-certificates \
-    curl \
-    git \
-    && rm -rf /var/lib/apt/lists/*
-
-# Set working directory
-WORKDIR /app/backend
-
-# Copy workspace Cargo.toml files
-COPY backend/Cargo.toml ./
-COPY backend/.cargo ./.cargo
-COPY backend/shared/Cargo.toml ./shared/
-COPY backend/authz-core/Cargo.toml ./authz-core/
-COPY backend/admin-service/Cargo.toml ./admin-service/
-COPY backend/api-service/Cargo.toml ./api-service/
-
-# Copy migrations
-COPY backend/migrations ./migrations
-
-# Copy .sqlx directory for offline mode (if it exists)
-# The .sqlx directory contains pre-generated query metadata for SQLX_OFFLINE mode
-# If it doesn't exist in the build context, it will be available via volume mount
-COPY backend/.sqlx ./.sqlx
-
-# Copy source code
-COPY backend/shared/src ./shared/src
-COPY backend/authz-core/src ./authz-core/src
-COPY backend/admin-service/src ./admin-service/src
-COPY backend/api-service/src ./api-service/src
-COPY backend/api-service/tests ./api-service/tests
-
-# Set environment variables
-ENV CARGO_BUILD_JOBS=${CARGO_BUILD_JOBS:-2}
-ENV CARGO_NET_GIT_FETCH_WITH_CLI=true
-ENV RUST_BACKTRACE=1
-ENV SQLX_OFFLINE=true
-
-# Default command runs tests
-# Can be overridden in docker-compose
-CMD ["cargo", "test", "--package", "api-service", "--", "--ignored"]
 

@@ -23,8 +23,11 @@ services:
       - health-network
     restart: unless-stopped
 
-  # OpenBao - Key Management
+  # OpenBao - Key Management (LEGACY - use RustyVault instead)
+  # Only runs if --profile openbao is specified
   openbao:
+    profiles:
+      - openbao
     image: openbao/openbao:latest
     container_name: health-openbao
     cap_add:
@@ -35,7 +38,7 @@ services:
       VAULT_DEV_LISTEN_ADDRESS: 0.0.0.0:8200
       VAULT_DEV_TLS_DISABLE: 1
     ports:
-      - "${VAULT_PORT:-8200}:8200"
+      - "${OPENBAO_PORT:-8202}:8200"
     volumes:
       - openbao_data:/vault/file
       - ./infra/openbao-init:/vault/config:ro
@@ -69,7 +72,7 @@ services:
       SERVER_PORT: ${SERVER_PORT:-8080}
       
       # CORS Configuration (comma-separated list of allowed origins)
-      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5174,http://localhost:5173,http://localhost:5175}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5174,http://localhost:5173,http://localhost:5175,http://localhost:5176}
       
       # Session Configuration
       SESSION_ADMIN_UI_TTL_HOURS: ${SESSION_ADMIN_UI_TTL_HOURS:-8}
@@ -83,13 +86,15 @@ services:
       DATABASE_MAX_CONNECTIONS: ${DATABASE_MAX_CONNECTIONS:-5}
       DATABASE_MIN_CONNECTIONS: ${DATABASE_MIN_CONNECTIONS:-1}
       
-      # Encryption/KMS
-      KMS_PROVIDER: ${KMS_PROVIDER:-hashicorp}
-      VAULT_ADDR: http://openbao:8200
+      # Encryption/KMS - Using RustyVault
+      KMS_PROVIDER: ${KMS_PROVIDER:-rustyvault}
+      VAULT_ADDR: http://rustyvault-service:8200
       VAULT_TOKEN: ${VAULT_TOKEN:-dev-root-token}
       VAULT_MOUNT_PATH: ${VAULT_MOUNT_PATH:-secret}
       VAULT_NAMESPACE: ${VAULT_NAMESPACE:-}
-      ENABLE_HASHICORP_OPENBAO: ${ENABLE_HASHICORP_OPENBAO:-true}
+      ENABLE_RUSTYVAULT: ${ENABLE_RUSTYVAULT:-true}
+      # Master key for encryption - REQUIRED: Set via environment or .env file
+      MASTER_KEY: ${MASTER_KEY:-}
       
       # OIDC/JWT
       OIDC_ISSUER: ${OIDC_ISSUER:-http://localhost:8080}
@@ -112,13 +117,12 @@ services:
       # Service Enable Flags
       ENABLE_POSTGRES: ${ENABLE_POSTGRES:-true}
       ENABLE_OPENBAO_SERVICE: ${ENABLE_OPENBAO_SERVICE:-true}
-      ENABLE_LOCALSTACK: ${ENABLE_LOCALSTACK:-false}
       ENABLE_NATS: ${ENABLE_NATS:-false}
       ENABLE_KAFKA: ${ENABLE_KAFKA:-false}
       ENABLE_SONARQUBE: ${ENABLE_SONARQUBE:-false}
+      ENABLE_RUSTYVAULT_SERVICE: ${ENABLE_RUSTYVAULT_SERVICE:-false}
       
       # Service Connection URLs (internal Docker network)
-      AWS_S3_ENDPOINT: ${AWS_S3_ENDPOINT:-http://localstack:4566}
       NATS_URL: ${NATS_URL:-nats://nats:4222}
       KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS:-kafka:29092}
       
@@ -134,7 +138,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      openbao:
+      rustyvault-service:
         condition: service_started
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
@@ -160,7 +164,6 @@ services:
       VITE_OIDC_CLIENT_ID: ${VITE_OIDC_CLIENT_ID:-default-client}
       VITE_ENABLE_POSTGRES: ${VITE_ENABLE_POSTGRES:-true}
       VITE_ENABLE_OPENBAO_SERVICE: ${VITE_ENABLE_OPENBAO_SERVICE:-true}
-      VITE_ENABLE_LOCALSTACK: ${VITE_ENABLE_LOCALSTACK:-false}
       VITE_ENABLE_NATS: ${VITE_ENABLE_NATS:-false}
       VITE_ENABLE_KAFKA: ${VITE_ENABLE_KAFKA:-false}
     ports:
@@ -203,35 +206,91 @@ services:
       - health-network
     restart: unless-stopped
 
-  # LocalStack - Local AWS Services (S3, KMS, etc.)
-  localstack:
-    image: localstack/localstack:latest
-    container_name: health-localstack
+  # RustyVault Service - Secrets Management & Encryption (replaces OpenBao)
+  rustyvault-service:
+    build:
+      context: .
+      dockerfile: backend/rustyvault-service/Dockerfile
+      args:
+        BUILD_MODE: ${BUILD_MODE:-release}
+        SKIP_CHECKS: ${SKIP_CHECKS:-false}
+        CARGO_BUILD_JOBS: ${CARGO_BUILD_JOBS:-2}
+    container_name: health-rustyvault-service
     environment:
-      SERVICES: ${LOCALSTACK_SERVICES:-s3,kms}
-      DEBUG: ${LOCALSTACK_DEBUG:-1}
-      DATA_DIR: /tmp/localstack/data
-      DOCKER_HOST: unix:///var/run/docker.sock
-      AWS_DEFAULT_REGION: ${AWS_REGION:-us-east-1}
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-test}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-test}
-      SKIP_SSL_CERT_DOWNLOAD: 1
+      # Server
+      VAULT_SERVER_HOST: ${VAULT_SERVER_HOST:-0.0.0.0}
+      VAULT_SERVER_PORT: ${VAULT_SERVER_PORT:-8200}
+      
+      # CORS Configuration
+      VAULT_CORS_ORIGINS: ${VAULT_CORS_ORIGINS:-*}
+      
+      # Database
+      DATABASE_URL: postgresql://${POSTGRES_USER:-auth_user}:${POSTGRES_PASSWORD:-auth_password}@postgres:5432/${POSTGRES_DB:-auth_db}
+      DATABASE_MAX_CONNECTIONS: ${DATABASE_MAX_CONNECTIONS:-5}
+      DATABASE_MIN_CONNECTIONS: ${DATABASE_MIN_CONNECTIONS:-1}
+      
+      # Storage
+      VAULT_STORAGE_BACKEND: ${VAULT_STORAGE_BACKEND:-file}
+      VAULT_STORAGE_PATH: ${VAULT_STORAGE_PATH:-/app/vault-data}
+      
+      # Barrier
+      VAULT_BARRIER_ALGORITHM: ${VAULT_BARRIER_ALGORITHM:-aes-gcm}
+      VAULT_BARRIER_KEY_LENGTH: ${VAULT_BARRIER_KEY_LENGTH:-32}
+      
+      # Seal
+      VAULT_SECRET_SHARES: ${VAULT_SECRET_SHARES:-5}
+      VAULT_SECRET_THRESHOLD: ${VAULT_SECRET_THRESHOLD:-3}
+      
+      # Logging
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      RUST_LOG: ${RUST_LOG:-info}
+      
+      # Deployment
+      ENVIRONMENT: ${DEPLOYMENT_ENV:-development}
+      
+      # Memory optimization
+      TOKIO_WORKER_THREADS: ${TOKIO_WORKER_THREADS:-2}
     ports:
-      - "${LOCALSTACK_PORT:-4566}:4566"
-      - "4510-4559:4510-4559"
+      - "${VAULT_SERVICE_PORT:-8200}:8200"
     volumes:
-      - localstack_data:/var/lib/localstack
-      - "/var/run/docker.sock:/var/run/docker.sock"
+      - rustyvault_data:/app/vault-data
+      - rustyvault_service_data:/app/data
+    depends_on:
+      postgres:
+        condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:4566/_localstack/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      test: ["CMD", "curl", "-f", "http://localhost:8200/v1/sys/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     networks:
       - health-network
     restart: unless-stopped
-    profiles:
-      - localstack
+
+  # RustyVault UI (React Frontend) - Vault Management Dashboard
+  rustyvault-ui:
+    build:
+      context: ./cli
+      dockerfile: packages/apps/rustyvault-ui/Dockerfile
+      args:
+        VITE_API_BASE_URL: ${VAULT_UI_API_BASE_URL:-http://localhost:8200}
+    container_name: health-rustyvault-ui
+    environment:
+      VITE_API_BASE_URL: ${VAULT_UI_API_BASE_URL:-http://localhost:8200}
+    ports:
+      - "${VAULT_UI_PORT:-5176}:80"
+    depends_on:
+      - rustyvault-service
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - health-network
+    restart: unless-stopped
 
   # NATS - Message Broker
   nats:
@@ -390,7 +449,9 @@ volumes:
     driver: local
   api_service_data:
     driver: local
-  localstack_data:
+  rustyvault_data:
+    driver: local
+  rustyvault_service_data:
     driver: local
   kafka_data:
     driver: local

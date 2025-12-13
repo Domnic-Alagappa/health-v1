@@ -77,11 +77,13 @@ pub struct StorageProviderConfig {
     pub gcs: Option<GcsConfig>,
     pub azure_blob: Option<AzureBlobConfig>,
     pub local: Option<LocalStorageConfig>,
+    pub encrypted_local: Option<EncryptedLocalStorageConfig>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum StorageProvider {
     Local,
+    EncryptedLocal,
     S3,
     Gcs,
     AzureBlob,
@@ -117,6 +119,24 @@ pub struct AzureBlobConfig {
 pub struct LocalStorageConfig {
     pub path: String,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EncryptedLocalStorageConfig {
+    pub path: String,
+    /// Enable encryption (default: true)
+    #[serde(default = "default_encryption_enabled")]
+    pub encryption_enabled: bool,
+    /// Enable per-realm DEK isolation (default: true)
+    #[serde(default = "default_realm_isolation")]
+    pub realm_dek_isolation: bool,
+    /// Enable per-service DEK isolation (default: true)
+    #[serde(default = "default_service_isolation")]
+    pub service_dek_isolation: bool,
+}
+
+fn default_encryption_enabled() -> bool { true }
+fn default_realm_isolation() -> bool { true }
+fn default_service_isolation() -> bool { true }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DatabaseProviderConfig {
@@ -264,6 +284,7 @@ impl ProviderConfig {
             "s3" => StorageProvider::S3,
             "gcs" => StorageProvider::Gcs,
             "azure_blob" => StorageProvider::AzureBlob,
+            "encrypted_local" => StorageProvider::EncryptedLocal,
             _ => StorageProvider::Local,
         };
 
@@ -309,12 +330,24 @@ impl ProviderConfig {
             None
         };
 
+        let encrypted_local = if matches!(storage_provider, StorageProvider::EncryptedLocal) {
+            Some(EncryptedLocalStorageConfig {
+                path: env::var("LOCAL_STORAGE_PATH").unwrap_or_else(|_| "./storage".to_string()),
+                encryption_enabled: parse_bool_env("STORAGE_ENCRYPTION_ENABLED", true),
+                realm_dek_isolation: parse_bool_env("ENABLE_REALM_DEK_ISOLATION", true),
+                service_dek_isolation: parse_bool_env("ENABLE_SERVICE_DEK_ISOLATION", true),
+            })
+        } else {
+            None
+        };
+
         let storage = StorageProviderConfig {
             provider: storage_provider,
             s3,
             gcs,
             azure_blob,
             local,
+            encrypted_local,
         };
 
         let database = DatabaseProviderConfig {

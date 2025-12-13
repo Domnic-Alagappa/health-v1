@@ -1,0 +1,31 @@
+:80 {
+    root * /usr/share/caddy
+    encode gzip zstd
+
+    # Security headers
+    header {
+        X-Frame-Options "SAMEORIGIN"
+        X-Content-Type-Options "nosniff"
+        X-XSS-Protection "1; mode=block"
+        Referrer-Policy "strict-origin-when-cross-origin"
+    }
+
+    # Health check endpoint
+    respond /health 200 {
+        body "healthy"
+        close
+    }
+
+    # Static assets with caching
+    handle /assets/* {
+        file_server
+        header Cache-Control "public, max-age=31536000, immutable"
+    }
+
+    # SPA routing - serve index.html for all routes
+    handle {
+        try_files {path} {path}/ /index.html
+        file_server
+    }
+}
+

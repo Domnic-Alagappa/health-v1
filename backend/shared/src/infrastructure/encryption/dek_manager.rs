@@ -49,6 +49,57 @@ impl DekManager {
         }
     }
 
+    // ==========================================
+    // Realm and Service DEK Isolation Methods
+    // ==========================================
+
+    /// Get DEK for a specific realm
+    /// Each realm gets its own isolated DEK for cryptographic separation
+    pub async fn get_realm_dek(&self, realm_id: &str, realm_uuid: Uuid) -> AppResult<Vec<u8>> {
+        let entity_type = format!("realm/{}", realm_id);
+        self.get_or_create_dek(realm_uuid, &entity_type).await
+    }
+
+    /// Get DEK for a specific service
+    /// Each service gets its own isolated DEK for cryptographic separation
+    pub async fn get_service_dek(&self, service_id: &str, service_uuid: Uuid) -> AppResult<Vec<u8>> {
+        let entity_type = format!("service/{}", service_id);
+        self.get_or_create_dek(service_uuid, &entity_type).await
+    }
+
+    /// Get DEK scoped to both realm and entity type
+    /// For fine-grained isolation within a realm
+    pub async fn get_scoped_dek(
+        &self,
+        realm_id: &str,
+        entity_id: Uuid,
+        entity_type: &str,
+    ) -> AppResult<Vec<u8>> {
+        let scoped_type = format!("realm/{}/{}", realm_id, entity_type);
+        self.get_or_create_dek(entity_id, &scoped_type).await
+    }
+
+    /// Get DEK for a global scope (system-wide data)
+    pub async fn get_global_dek(&self, scope_name: &str, scope_uuid: Uuid) -> AppResult<Vec<u8>> {
+        let entity_type = format!("global/{}", scope_name);
+        self.get_or_create_dek(scope_uuid, &entity_type).await
+    }
+
+    /// Get or create a DEK for an entity
+    /// If DEK doesn't exist, creates a new one
+    pub async fn get_or_create_dek(&self, entity_id: Uuid, entity_type: &str) -> AppResult<Vec<u8>> {
+        // Try to get existing DEK
+        if let Some(dek) = self.get_dek(entity_id, entity_type).await? {
+            return Ok(dek);
+        }
+
+        // Generate new DEK if not exists
+        self.generate_dek(entity_id, entity_type).await
+    }
+
+    // Note: DEK rotation should use the DekRotation service which handles
+    // the full workflow including re-encrypting data. See dek_rotation.rs
+
     /// Encrypt data using entity's DEK
     pub async fn encrypt(&self, entity_id: Uuid, entity_type: &str, data: &[u8]) -> AppResult<(Vec<u8>, Vec<u8>)> {
         let dek = self.get_dek(entity_id, entity_type).await?

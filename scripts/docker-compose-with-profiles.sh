@@ -29,6 +29,10 @@ if [ -f .env ]; then
     if grep -qiE "^[[:space:]]*ENABLE_SONARQUBE[[:space:]]*=[[:space:]]*true" .env 2>/dev/null; then
         PROFILES="$PROFILES sonarqube"
     fi
+    
+    if grep -qiE "^[[:space:]]*ENABLE_RUSTYVAULT_SERVICE[[:space:]]*=[[:space:]]*true" .env 2>/dev/null; then
+        PROFILES="$PROFILES rustyvault"
+    fi
 fi
 
 # Build --profile flags

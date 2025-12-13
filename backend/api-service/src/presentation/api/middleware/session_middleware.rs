@@ -15,14 +15,6 @@ const SESSION_TOKEN_COOKIE_HEADER: &str = "Cookie";
 const APP_TYPE_HEADER: &str = "X-App-Type";
 const APP_DEVICE_HEADER: &str = "X-App-Device";
 
-/// Wrapper type for app_type to enable type-safe storage in request extensions
-#[derive(Clone, Debug)]
-pub struct AppType(pub String);
-
-/// Wrapper type for app_device to enable type-safe storage in request extensions
-#[derive(Clone, Debug)]
-pub struct AppDevice(pub String);
-
 /// Extract IP address from request, handling proxy headers
 fn extract_ip_address(headers: &HeaderMap) -> Option<IpAddr> {
     // Try X-Forwarded-For first (first IP if multiple)
@@ -179,11 +171,6 @@ pub async fn session_middleware(
     let app_type = extract_app_type(&headers);
     let app_device = extract_app_device(&headers);
 
-    // Store app_type and app_device in request extensions for use in other middleware
-    // Set these BEFORE session creation so they're available even if session creation fails
-    request.extensions_mut().insert(AppType(app_type.clone()));
-    request.extensions_mut().insert(AppDevice(app_device.clone()));
-
     // Get or create session with app type and device
     let session = match state
         .session_service
@@ -194,10 +181,13 @@ pub async fn session_middleware(
         Err(e) => {
             tracing::error!("Failed to create/get session: {}", e);
             // Continue without session - request will still be processed
-            // Note: app_type and app_device extensions are already set above
             return next.run(request).await;
         }
     };
+
+    // Store app_type and app_device in request extensions for use in other middleware
+    request.extensions_mut().insert(app_type.clone());
+    request.extensions_mut().insert(app_device.clone());
 
     // Update session activity (non-blocking, fire and forget)
     let session_id = session.id;
@@ -259,11 +249,11 @@ pub fn get_session_id(request: &Request) -> Option<Uuid> {
 
 /// Extract app type from request extensions
 pub fn get_app_type(request: &Request) -> Option<String> {
-    request.extensions().get::<AppType>().map(|app_type| app_type.0.clone())
+    request.extensions().get::<String>().cloned()
 }
 
 /// Extract app device from request extensions
 pub fn get_app_device(request: &Request) -> Option<String> {
-    request.extensions().get::<AppDevice>().map(|app_device| app_device.0.clone())
+    request.extensions().get::<String>().cloned()
 }
 

@@ -1,6 +1,7 @@
 /**
  * AccessDenied Component
  * Unified access denied component for all scenarios
+ * Supports both health-v1 permissions and vault ACL denials
  */
 
 import { Box } from "@/components/ui/box";
@@ -8,7 +9,7 @@ import { Card } from "@/components/ui/card";
 import { Stack } from "@/components/ui/stack";
 import { usePermissions } from "@/hooks/security/usePermissions";
 import type { Permission } from "@health-v1/shared/constants/permissions";
-import { AlertCircle, Lock } from "lucide-react";
+import { AlertCircle, Lock, Shield } from "lucide-react";
 
 interface AccessDeniedProps {
   type: "route" | "tab" | "component" | "api";
@@ -16,6 +17,8 @@ interface AccessDeniedProps {
   requiredPermissions: Permission[];
   currentPermissions?: string[];
   onRequestAccess?: () => void;
+  /** Vault path if access was denied due to vault ACL */
+  vaultPath?: string;
 }
 
 export function AccessDenied({
@@ -24,6 +27,7 @@ export function AccessDenied({
   requiredPermissions,
   currentPermissions,
   onRequestAccess,
+  vaultPath,
 }: AccessDeniedProps) {
   const { permissions, role } = usePermissions();
   const displayPermissions = currentPermissions || permissions;
@@ -65,6 +69,21 @@ export function AccessDenied({
             ))}
           </Stack>
         </Stack>
+
+        {vaultPath && (
+          <Stack spacing="xs" className="w-full">
+            <Box className="text-sm font-medium flex items-center gap-2">
+              <Shield className="h-4 w-4" />
+              Vault Access Required:
+            </Box>
+            <Box className="text-sm text-muted-foreground font-mono bg-muted/50 px-2 py-1 rounded">
+              {vaultPath}
+            </Box>
+            <Box className="text-xs text-muted-foreground">
+              Contact your administrator to update your vault policy.
+            </Box>
+          </Stack>
+        )}
 
         {role && (
           <Stack spacing="xs" className="w-full">

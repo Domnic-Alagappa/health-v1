@@ -1,0 +1,78 @@
+[package]
+name = "rustyvault-service"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[[bin]]
+name = "rustyvault-service"
+path = "src/main.rs"
+
+[dependencies]
+# Health-v1 shared infrastructure
+shared = { path = "../shared" }
+
+# Web framework
+axum.workspace = true
+tower.workspace = true
+tower-http.workspace = true
+
+# Database
+sqlx.workspace = true
+
+# Serialization
+serde.workspace = true
+serde_json.workspace = true
+
+# Async
+tokio.workspace = true
+async-trait.workspace = true
+
+# Configuration
+config.workspace = true
+dotenv.workspace = true
+
+# Logging
+tracing.workspace = true
+tracing-subscriber.workspace = true
+
+# Error handling
+anyhow.workspace = true
+thiserror.workspace = true
+
+# UUID
+uuid.workspace = true
+
+# Time
+chrono.workspace = true
+
+# Password hashing
+bcrypt.workspace = true
+
+# RustyVault-specific dependencies
+zeroize = { version = "1.7", features = ["zeroize_derive"] }
+arc-swap = "1"
+radix_trie = "0.2"
+dashmap = "6.1"
+blake3 = "1.8"
+base64.workspace = true
+hex.workspace = true
+
+# Encryption (for barrier)
+aes-gcm = { version = "0.10", features = ["aes"] }
+ring.workspace = true
+pbkdf2.workspace = true
+rand = "0.8"
+sha2.workspace = true
+
+# HCL config support
+hcl-rs = "0.18"
+
+# Additional utilities
+url = "2.5"
+regex = "1.11"
+strum = { version = "0.25", features = ["derive"] }
+enum-map = "2.6"
+lru.workspace = true
+
+
