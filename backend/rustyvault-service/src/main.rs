@@ -71,24 +71,9 @@ async fn async_main() -> Result<(), String> {
         .map_err(|e| format!("Database health check failed: {}", e))?;
     info!("Database health check passed");
     
-    // Run migrations
-    info!("Running database migrations...");
-    let migrations_path = if std::path::Path::new("./migrations").exists() {
-        std::path::Path::new("./migrations")
-    } else if std::path::Path::new("../migrations").exists() {
-        std::path::Path::new("../migrations")
-    } else {
-        std::path::Path::new("./migrations")
-    };
-    info!("Using migrations path: {:?}", migrations_path);
-    let migrator = sqlx::migrate::Migrator::new(migrations_path)
-        .await
-        .map_err(|e| format!("Failed to initialize migrator: {}", e))?;
-    migrator
-        .run(&pool)
-        .await
-        .map_err(|e| format!("Failed to run migrations: {}", e))?;
-    info!("Database migrations completed");
+    // Note: Migrations are handled by api-service which shares the same database.
+    // rustyvault-service expects the database schema to already be set up.
+    info!("Skipping migrations (handled by api-service)");
 
     // Initialize physical storage for barrier data
     let storage_path = settings.storage.path

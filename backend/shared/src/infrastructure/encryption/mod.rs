@@ -9,6 +9,7 @@ pub mod relationship_encryption;
 pub mod service_encryption;
 
 pub use vault::Vault;
+pub use vault_impl::{RustyVaultClient, CreateTokenRequest, TokenAuth, TokenEntry};
 pub use dek_manager::DekManager;
 pub use master_key::MasterKey;
 pub use field_encryption::FieldEncryption;

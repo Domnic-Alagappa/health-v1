@@ -1,5 +1,6 @@
 .PHONY: help build build-dev up-build-all up-build-dev down down-dev restart restart-dev logs logs-dev ps ps-dev \
-	sonar-up sonar-down sonar-logs sonar-status sonar-scan-backend sonar-scan-admin-ui sonar-scan-client-app sonar-scan-all
+	sonar-up sonar-down sonar-logs sonar-status sonar-scan-backend sonar-scan-admin-ui sonar-scan-client-app sonar-scan-all sonar-setup \
+	build-backend-local up-with-local-build setup-admin-local
 
 help: ## Show this help message
 	@echo 'Usage: make [target]'

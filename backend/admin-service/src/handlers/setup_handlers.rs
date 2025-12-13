@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use uuid::Uuid;
 use tracing;
+use shared::infrastructure::encryption::RustyVaultClient;
 
 // Type aliases for convenience - these match the concrete types used in api-service
 type ConcreteAppState = shared::AppState<
@@ -35,12 +36,25 @@ pub struct RelationshipInfo {
 }
 
 #[derive(Debug, Serialize)]
+pub struct VaultTokenInfo {
+    pub token: String,
+    pub policies: Vec<String>,
+    pub accessor: String,
+    pub lease_duration: i64,
+    pub renewable: bool,
+}
+
+#[derive(Debug, Serialize)]
 pub struct SetupResponse {
     pub success: bool,
     pub message: String,
     pub organization_id: Uuid,
     pub admin_user_id: Uuid,
     pub relationships_created: Vec<RelationshipInfo>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub vault_token: Option<VaultTokenInfo>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub vault_policy: Option<String>,
 }
 
 /// Initialize the system (one-time setup)
@@ -403,20 +417,62 @@ pub async fn initialize_setup(
         );
     }
 
+    // Create RustyVault policy and token for super admin
+    let (vault_policy, vault_token) = match create_vault_admin_access(admin_user.id, org_id).await {
+        Ok((policy, token)) => (Some(policy), Some(token)),
+        Err(e) => {
+            // Log warning but don't fail setup - vault integration is optional
+            tracing::warn!("Failed to create vault access for super admin: {}. Vault integration may not be configured.", e);
+            (None, None)
+        }
+    };
+
     (
         StatusCode::OK,
         Json(SetupResponse {
             success: true,
             message: format!(
-                "Setup completed successfully. {} relationships created and verified.",
-                relationships_created.len()
+                "Setup completed successfully. {} relationships created and verified.{}",
+                relationships_created.len(),
+                if vault_policy.is_some() { " Vault access configured." } else { "" }
             ),
             organization_id: org_id,
             admin_user_id: admin_user.id,
             relationships_created,
+            vault_token,
+            vault_policy,
         }),
     )
         .into_response()
+}
+
+/// Create RustyVault policy and token for super admin
+async fn create_vault_admin_access(
+    user_id: Uuid,
+    org_id: Uuid,
+) -> Result<(String, VaultTokenInfo), shared::AppError> {
+    // Try to create RustyVault client from environment
+    let vault_client = RustyVaultClient::from_env()?;
+    
+    tracing::info!("Creating RustyVault super admin policy for org: {}", org_id);
+    
+    // Create the super admin policy
+    let policy_name = vault_client.create_super_admin_policy(org_id).await?;
+    tracing::info!("✓ Created vault policy: {}", policy_name);
+    
+    // Create a token for the super admin with the policy
+    let token_auth = vault_client.create_super_admin_token(user_id, org_id, &policy_name).await?;
+    tracing::info!("✓ Created vault token for super admin user: {}", user_id);
+    
+    let vault_token = VaultTokenInfo {
+        token: token_auth.client_token,
+        policies: token_auth.policies,
+        accessor: token_auth.accessor,
+        lease_duration: token_auth.lease_duration,
+        renewable: token_auth.renewable,
+    };
+    
+    Ok((policy_name, vault_token))
 }
 
 /// Check setup status

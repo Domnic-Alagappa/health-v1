@@ -185,7 +185,7 @@ impl ProviderConfig {
         // First enabled provider in order becomes active (mutually exclusive)
         let (kms_provider, hashicorp, aws, gcp, azure) = if enable_hashicorp {
             let config = Some(HashiCorpConfig {
-                addr: env::var("VAULT_ADDR").unwrap_or_else(|_| "http://localhost:8200".to_string()),
+                addr: env::var("VAULT_ADDR").unwrap_or_else(|_| "http://localhost:8201".to_string()),
                 token: env::var("VAULT_TOKEN").unwrap_or_else(|_| "".to_string()),
                 mount_path: env::var("VAULT_MOUNT_PATH").unwrap_or_else(|_| "secret".to_string()),
             });
@@ -227,7 +227,7 @@ impl ProviderConfig {
 
             let hashicorp = if matches!(kms_provider, KmsProvider::HashiCorp) {
                 Some(HashiCorpConfig {
-                    addr: env::var("VAULT_ADDR").unwrap_or_else(|_| "http://localhost:8200".to_string()),
+                    addr: env::var("VAULT_ADDR").unwrap_or_else(|_| "http://localhost:8201".to_string()),
                     token: env::var("VAULT_TOKEN").unwrap_or_else(|_| "".to_string()),
                     mount_path: env::var("VAULT_MOUNT_PATH").unwrap_or_else(|_| "secret".to_string()),
                 })

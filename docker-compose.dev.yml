@@ -36,36 +36,6 @@ services:
       - health-network
     restart: unless-stopped
 
-  # OpenBao - Key Management (LEGACY - use RustyVault instead)
-  # Only runs if --profile openbao is specified
-  openbao:
-    profiles:
-      - openbao
-    image: openbao/openbao:latest
-    container_name: health-openbao
-    cap_add:
-      - IPC_LOCK
-    environment:
-      VAULT_DEV_ROOT_TOKEN_ID: ${VAULT_TOKEN:-dev-root-token}
-      VAULT_ADDR: http://0.0.0.0:8200
-      VAULT_DEV_LISTEN_ADDRESS: 0.0.0.0:8200
-      VAULT_DEV_TLS_DISABLE: 1
-    ports:
-      - "${OPENBAO_PORT:-8202}:8200"
-    volumes:
-      - openbao_data:/vault/file
-      - ./infra/openbao-init:/vault/config:ro
-    command: server -dev -dev-root-token-id=${VAULT_TOKEN:-dev-root-token} -dev-listen-address=0.0.0.0:8200
-    healthcheck:
-      test: ["CMD-SHELL", "sleep 2 && wget --quiet --tries=1 --spider http://127.0.0.1:8200/v1/sys/health || exit 1"]
-      interval: 10s
-      timeout: 10s
-      retries: 5
-      start_period: 40s
-    networks:
-      - health-network
-    restart: unless-stopped
-
   # API Service (Rust Backend) - Dev mode with checks skipped
   api-service:
     build:
@@ -99,7 +69,7 @@ services:
       
       # Encryption/KMS - Using RustyVault
       KMS_PROVIDER: ${KMS_PROVIDER:-rustyvault}
-      VAULT_ADDR: http://rustyvault-service:8200
+      VAULT_ADDR: http://rustyvault-service:8201
       VAULT_TOKEN: ${VAULT_TOKEN:-dev-root-token}
       VAULT_MOUNT_PATH: ${VAULT_MOUNT_PATH:-secret}
       VAULT_NAMESPACE: ${VAULT_NAMESPACE:-}
@@ -131,11 +101,10 @@ services:
       
       # Service Enable Flags
       ENABLE_POSTGRES: ${ENABLE_POSTGRES:-true}
-      ENABLE_OPENBAO_SERVICE: ${ENABLE_OPENBAO_SERVICE:-true}
       ENABLE_NATS: ${ENABLE_NATS:-false}
       ENABLE_KAFKA: ${ENABLE_KAFKA:-false}
       ENABLE_SONARQUBE: ${ENABLE_SONARQUBE:-false}
-      ENABLE_RUSTYVAULT_SERVICE: ${ENABLE_RUSTYVAULT_SERVICE:-false}
+      ENABLE_RUSTYVAULT_SERVICE: ${ENABLE_RUSTYVAULT_SERVICE:-true}
       
       # Service Connection URLs (internal Docker network)
       NATS_URL: ${NATS_URL:-nats://nats:4222}
@@ -202,7 +171,6 @@ services:
       VITE_OIDC_ISSUER: ${VITE_OIDC_ISSUER:-http://localhost:8080}
       VITE_OIDC_CLIENT_ID: ${VITE_OIDC_CLIENT_ID:-default-client}
       VITE_ENABLE_POSTGRES: ${VITE_ENABLE_POSTGRES:-true}
-      VITE_ENABLE_OPENBAO_SERVICE: ${VITE_ENABLE_OPENBAO_SERVICE:-true}
       VITE_ENABLE_NATS: ${VITE_ENABLE_NATS:-false}
       VITE_ENABLE_KAFKA: ${VITE_ENABLE_KAFKA:-false}
     volumes:
@@ -318,7 +286,7 @@ services:
       TOKIO_WORKER_THREADS: ${TOKIO_WORKER_THREADS:-2}
       CARGO_BUILD_JOBS: ${CARGO_BUILD_JOBS:-2}
     ports:
-      - "${VAULT_SERVICE_PORT:-8201}:8200"
+      - "${VAULT_SERVICE_PORT:-8201}:8201"
     volumes:
       - rustyvault_data:/app/vault-data
       - rustyvault_service_data:/app/data
@@ -346,7 +314,7 @@ services:
       postgres:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8200/v1/sys/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8201/v1/sys/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -363,12 +331,12 @@ services:
       target: runner-dev
       args:
         BUILD_MODE: dev
-        VITE_API_BASE_URL: ${VAULT_UI_API_BASE_URL:-http://localhost:8201}
+        VITE_API_BASE_URL: ${VAULT_UI_API_BASE_URL:-http://rustyvault-service:8201}
         SKIP_TYPE_CHECK: "true"
     container_name: health-rustyvault-ui
     environment:
       # Vite configuration
-      VITE_API_BASE_URL: ${VAULT_UI_API_BASE_URL:-http://localhost:8200}
+      VITE_API_BASE_URL: ${VAULT_UI_API_BASE_URL:-http://rustyvault-service:8201}
     volumes:
       # Mount source code for hot reload in dev mode
       - ./cli/packages/apps/rustyvault-ui:/app/packages/apps/rustyvault-ui
@@ -546,8 +514,6 @@ volumes:
   postgres_data:
     driver: local
   postgres_sonar_data:
-    driver: local
-  openbao_data:
     driver: local
   api_service_data:
     driver: local

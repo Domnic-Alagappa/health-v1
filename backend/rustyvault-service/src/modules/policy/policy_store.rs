@@ -77,21 +77,31 @@ impl PolicyStore {
         let entry_json = serde_json::to_value(&entry)
             .map_err(|e| VaultError::Vault(format!("failed to serialize policy: {}", e)))?;
 
+        // Ensure raw policy is never empty (required for legacy 'policy' column which is NOT NULL)
+        let raw_policy = if policy.raw.is_empty() {
+            format!("{{\"name\": \"{}\", \"path\": {{}}}}", policy.name)
+        } else {
+            policy.raw.clone()
+        };
+
         // Upsert into database
+        // Note: 'policy' column is for backwards compatibility with base migration
         sqlx::query(
             r#"
-            INSERT INTO vault_policies (name, policy_type, raw_policy, parsed_policy)
-            VALUES ($1, $2, $3, $4)
+            INSERT INTO vault_policies (name, policy, policy_type, raw_policy, parsed_policy)
+            VALUES ($1, $2, $3, $4, $5)
             ON CONFLICT (name) DO UPDATE SET
-                policy_type = $2,
-                raw_policy = $3,
-                parsed_policy = $4,
+                policy = $2,
+                policy_type = $3,
+                raw_policy = $4,
+                parsed_policy = $5,
                 updated_at = NOW()
             "#,
         )
         .bind(&policy.name)
+        .bind(&raw_policy) // Use raw policy content for the legacy 'policy' column
         .bind(policy.policy_type.to_string())
-        .bind(&policy.raw)
+        .bind(&raw_policy)
         .bind(&entry_json)
         .execute(&self.pool)
         .await

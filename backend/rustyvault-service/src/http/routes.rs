@@ -54,7 +54,7 @@ pub fn create_router(state: Arc<AppState>) -> Router {
             }
         }))
         // UserPass login doesn't require auth
-        .route("/v1/auth/userpass/login/:username", axum::routing::post({
+        .route("/v1/auth/userpass/login/{username}", axum::routing::post({
             let state = state_clone.clone();
             move |path: axum::extract::Path<String>, payload: axum::extract::Json<serde_json::Value>| {
                 let state = state.clone();
@@ -82,7 +82,7 @@ pub fn create_router(state: Arc<AppState>) -> Router {
         // ============================================================
         // Secrets routes
         // ============================================================
-        .route("/v1/secret/*path", axum::routing::get({
+        .route("/v1/secret/{*path}", axum::routing::get({
             let state = state_clone2.clone();
             move |path: axum::extract::Path<String>| {
                 let state = state.clone();
@@ -92,7 +92,7 @@ pub fn create_router(state: Arc<AppState>) -> Router {
                 }
             }
         }))
-        .route("/v1/secret/*path", axum::routing::post({
+        .route("/v1/secret/{*path}", axum::routing::post({
             let state = state_clone2.clone();
             move |path: axum::extract::Path<String>, payload: axum::extract::Json<serde_json::Value>| {
                 let state = state.clone();
@@ -102,7 +102,7 @@ pub fn create_router(state: Arc<AppState>) -> Router {
                 }
             }
         }))
-        .route("/v1/secret/*path", axum::routing::delete({
+        .route("/v1/secret/{*path}", axum::routing::delete({
             let state = state_clone2.clone();
             move |path: axum::extract::Path<String>| {
                 let state = state.clone();
@@ -125,7 +125,7 @@ pub fn create_router(state: Arc<AppState>) -> Router {
                 }
             }
         }))
-        .route("/v1/sys/policies/acl/:name", axum::routing::get({
+        .route("/v1/sys/policies/acl/{name}", axum::routing::get({
             let state = state_clone2.clone();
             move |path: axum::extract::Path<String>| {
                 let state = state.clone();
@@ -135,7 +135,7 @@ pub fn create_router(state: Arc<AppState>) -> Router {
                 }
             }
         }))
-        .route("/v1/sys/policies/acl/:name", axum::routing::post({
+        .route("/v1/sys/policies/acl/{name}", axum::routing::post({
             let state = state_clone2.clone();
             move |path: axum::extract::Path<String>, payload: axum::extract::Json<serde_json::Value>| {
                 let state = state.clone();
@@ -145,7 +145,7 @@ pub fn create_router(state: Arc<AppState>) -> Router {
                 }
             }
         }))
-        .route("/v1/sys/policies/acl/:name", axum::routing::delete({
+        .route("/v1/sys/policies/acl/{name}", axum::routing::delete({
             let state = state_clone2.clone();
             move |path: axum::extract::Path<String>| {
                 let state = state.clone();
@@ -245,7 +245,7 @@ pub fn create_router(state: Arc<AppState>) -> Router {
                 }
             }
         }))
-        .route("/v1/auth/userpass/users/:username", axum::routing::post({
+        .route("/v1/auth/userpass/users/{username}", axum::routing::post({
             let state = state_clone2.clone();
             move |path: axum::extract::Path<String>, payload: axum::extract::Json<serde_json::Value>| {
                 let state = state.clone();
@@ -255,7 +255,7 @@ pub fn create_router(state: Arc<AppState>) -> Router {
                 }
             }
         }))
-        .route("/v1/auth/userpass/users/:username", axum::routing::get({
+        .route("/v1/auth/userpass/users/{username}", axum::routing::get({
             let state = state_clone2.clone();
             move |path: axum::extract::Path<String>| {
                 let state = state.clone();
@@ -265,7 +265,7 @@ pub fn create_router(state: Arc<AppState>) -> Router {
                 }
             }
         }))
-        .route("/v1/auth/userpass/users/:username", axum::routing::delete({
+        .route("/v1/auth/userpass/users/{username}", axum::routing::delete({
             let state = state_clone2.clone();
             move |path: axum::extract::Path<String>| {
                 let state = state.clone();

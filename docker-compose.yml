@@ -23,36 +23,6 @@ services:
       - health-network
     restart: unless-stopped
 
-  # OpenBao - Key Management (LEGACY - use RustyVault instead)
-  # Only runs if --profile openbao is specified
-  openbao:
-    profiles:
-      - openbao
-    image: openbao/openbao:latest
-    container_name: health-openbao
-    cap_add:
-      - IPC_LOCK
-    environment:
-      VAULT_DEV_ROOT_TOKEN_ID: ${VAULT_TOKEN:-dev-root-token}
-      VAULT_ADDR: http://0.0.0.0:8200
-      VAULT_DEV_LISTEN_ADDRESS: 0.0.0.0:8200
-      VAULT_DEV_TLS_DISABLE: 1
-    ports:
-      - "${OPENBAO_PORT:-8202}:8200"
-    volumes:
-      - openbao_data:/vault/file
-      - ./infra/openbao-init:/vault/config:ro
-    command: server -dev -dev-root-token-id=${VAULT_TOKEN:-dev-root-token} -dev-listen-address=0.0.0.0:8200
-    healthcheck:
-      test: ["CMD-SHELL", "sleep 2 && wget --quiet --tries=1 --spider http://127.0.0.1:8200/v1/sys/health || exit 1"]
-      interval: 10s
-      timeout: 10s
-      retries: 5
-      start_period: 40s
-    networks:
-      - health-network
-    restart: unless-stopped
-
   # API Service (Rust Backend)
   api-service:
     build:
@@ -116,11 +86,10 @@ services:
       
       # Service Enable Flags
       ENABLE_POSTGRES: ${ENABLE_POSTGRES:-true}
-      ENABLE_OPENBAO_SERVICE: ${ENABLE_OPENBAO_SERVICE:-true}
       ENABLE_NATS: ${ENABLE_NATS:-false}
       ENABLE_KAFKA: ${ENABLE_KAFKA:-false}
       ENABLE_SONARQUBE: ${ENABLE_SONARQUBE:-false}
-      ENABLE_RUSTYVAULT_SERVICE: ${ENABLE_RUSTYVAULT_SERVICE:-false}
+      ENABLE_RUSTYVAULT_SERVICE: ${ENABLE_RUSTYVAULT_SERVICE:-true}
       
       # Service Connection URLs (internal Docker network)
       NATS_URL: ${NATS_URL:-nats://nats:4222}
@@ -163,7 +132,6 @@ services:
       VITE_OIDC_ISSUER: ${VITE_OIDC_ISSUER:-http://localhost:8080}
       VITE_OIDC_CLIENT_ID: ${VITE_OIDC_CLIENT_ID:-default-client}
       VITE_ENABLE_POSTGRES: ${VITE_ENABLE_POSTGRES:-true}
-      VITE_ENABLE_OPENBAO_SERVICE: ${VITE_ENABLE_OPENBAO_SERVICE:-true}
       VITE_ENABLE_NATS: ${VITE_ENABLE_NATS:-false}
       VITE_ENABLE_KAFKA: ${VITE_ENABLE_KAFKA:-false}
     ports:
@@ -274,10 +242,10 @@ services:
       context: ./cli
       dockerfile: packages/apps/rustyvault-ui/Dockerfile
       args:
-        VITE_API_BASE_URL: ${VAULT_UI_API_BASE_URL:-http://localhost:8200}
+        VITE_API_BASE_URL: ${VAULT_UI_API_BASE_URL:-http://rustyvault-service:8200}
     container_name: health-rustyvault-ui
     environment:
-      VITE_API_BASE_URL: ${VAULT_UI_API_BASE_URL:-http://localhost:8200}
+      VITE_API_BASE_URL: ${VAULT_UI_API_BASE_URL:-http://rustyvault-service:8200}
     ports:
       - "${VAULT_UI_PORT:-5176}:80"
     depends_on:
@@ -444,8 +412,6 @@ volumes:
   postgres_data:
     driver: local
   postgres_sonar_data:
-    driver: local
-  openbao_data:
     driver: local
   api_service_data:
     driver: local

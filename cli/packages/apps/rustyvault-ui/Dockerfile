@@ -113,7 +113,7 @@ RUN if [ "$BUILD_MODE" = "production" ]; then \
 WORKDIR /app/packages/apps/rustyvault-ui
 
 # Build the application with environment variables
-ARG VITE_API_BASE_URL=http://localhost:8200
+ARG VITE_API_BASE_URL=http://localhost:8201
 ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 
 # In dev mode, just prepare (no build), in production, build

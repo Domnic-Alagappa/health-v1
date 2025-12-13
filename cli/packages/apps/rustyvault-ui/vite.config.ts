@@ -14,7 +14,7 @@ export default defineConfig({
     host: process.env.VITE_HOST || "localhost",
     proxy: {
       "/v1": {
-        target: process.env.VITE_API_BASE_URL || "http://127.0.0.1:8200",
+        target: process.env.VITE_API_BASE_URL || "http://127.0.0.1:8201",
         changeOrigin: true,
       },
     },

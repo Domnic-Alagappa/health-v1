@@ -8,7 +8,7 @@ use shared::infrastructure::repositories::{
     SetupRepositoryImpl, UserRepositoryImpl, RelationshipRepositoryImpl,
 };
 use shared::infrastructure::zanzibar::RelationshipStore;
-use shared::infrastructure::encryption::{MasterKey, DekManager};
+use shared::infrastructure::encryption::{MasterKey, DekManager, RustyVaultClient};
 use shared::config::providers::ProviderConfig;
 use shared::infrastructure::providers::create_kms_provider;
 use shared::domain::repositories::SetupRepository;
@@ -16,6 +16,58 @@ use admin_service::use_cases::setup::{
     SetupOrganizationUseCase, CreateSuperAdminUseCase,
 };
 use chrono::Utc;
+use uuid::Uuid;
+use sqlx::PgPool;
+
+/// Rollback all changes if setup fails
+async fn rollback_all(pool: &PgPool, org_id: Option<Uuid>, user_id: Option<Uuid>) {
+    println!("\n=== Rolling back changes due to failure ===");
+    let mut errors = Vec::new();
+    
+    // Delete user if created
+    if let Some(uid) = user_id {
+        match sqlx::query("DELETE FROM users WHERE id = $1")
+            .bind(uid)
+            .execute(pool)
+            .await
+        {
+            Ok(_) => println!("✓ Rolled back user: {}", uid),
+            Err(e) => errors.push(format!("Failed to rollback user: {}", e)),
+        }
+    }
+    
+    // Delete organization if created
+    if let Some(oid) = org_id {
+        // First delete related records
+        let _ = sqlx::query("DELETE FROM relationships WHERE subject LIKE $1 OR object LIKE $1")
+            .bind(format!("%{}%", oid))
+            .execute(pool)
+            .await;
+            
+        match sqlx::query("DELETE FROM organizations WHERE id = $1")
+            .bind(oid)
+            .execute(pool)
+            .await
+        {
+            Ok(_) => println!("✓ Rolled back organization: {}", oid),
+            Err(e) => errors.push(format!("Failed to rollback organization: {}", e)),
+        }
+    }
+    
+    // Reset setup status
+    let _ = sqlx::query("UPDATE setup_status SET setup_completed = false")
+        .execute(pool)
+        .await;
+    
+    if !errors.is_empty() {
+        eprintln!("\n⚠ Some rollback operations failed:");
+        for err in errors {
+            eprintln!("  - {}", err);
+        }
+    }
+    
+    println!("=== Rollback complete ===\n");
+}
 
 #[tokio::main]
 async fn main() {
@@ -446,6 +498,7 @@ async fn main() {
         }
         Err(e) => {
             eprintln!("Failed to create super admin: {}", e);
+            rollback_all(&pool, Some(org_id), None).await;
             process::exit(1);
         }
     };
@@ -456,6 +509,8 @@ async fn main() {
         Ok(_) => println!("✓ Organization DEK generated"),
         Err(e) => {
             eprintln!("Failed to generate organization DEK: {}", e);
+            eprintln!("⚠ Note: Make sure VAULT_ADDR is set correctly (e.g., http://localhost:8201 or http://rustyvault-service:8200 in Docker)");
+            rollback_all(&pool, Some(org_id), Some(admin_user.id)).await;
             process::exit(1);
         }
     }
@@ -464,6 +519,7 @@ async fn main() {
         Ok(_) => println!("✓ User DEK generated"),
         Err(e) => {
             eprintln!("Failed to generate user DEK: {}", e);
+            rollback_all(&pool, Some(org_id), Some(admin_user.id)).await;
             process::exit(1);
         }
     }
@@ -479,12 +535,14 @@ async fn main() {
     // Organization relationships
     if let Err(e) = relationship_store.add(&user_str, "owner", &org_str).await {
         eprintln!("Failed to create owner relationship: {}", e);
+        rollback_all(&pool, Some(org_id), Some(admin_user.id)).await;
         process::exit(1);
     }
     println!("✓ Created owner relationship");
 
     if let Err(e) = relationship_store.add(&user_str, "member", &org_str).await {
         eprintln!("Failed to create member relationship: {}", e);
+        rollback_all(&pool, Some(org_id), Some(admin_user.id)).await;
         process::exit(1);
     }
     println!("✓ Created member relationship");
@@ -492,6 +550,7 @@ async fn main() {
     // Admin role relationship
     if let Err(e) = relationship_store.add(&user_str, "has_role", "role:admin").await {
         eprintln!("Failed to create admin role relationship: {}", e);
+        rollback_all(&pool, Some(org_id), Some(admin_user.id)).await;
         process::exit(1);
     }
     println!("✓ Created admin role relationship");
@@ -501,6 +560,7 @@ async fn main() {
         let app_str = format!("app:{}", app);
         if let Err(e) = relationship_store.add(&user_str, "can_access", &app_str).await {
             eprintln!("Failed to create {} access: {}", app, e);
+            rollback_all(&pool, Some(org_id), Some(admin_user.id)).await;
             process::exit(1);
         }
         println!("✓ Created {} access", app);
@@ -561,10 +621,54 @@ async fn main() {
         }
     }
 
+    // Create RustyVault policy and token for super admin
+    println!("\nSetting up RustyVault access...");
+    let vault_token_info = match RustyVaultClient::from_env() {
+        Ok(vault_client) => {
+            // Create super admin policy
+            match vault_client.create_super_admin_policy(org_id).await {
+                Ok(policy_name) => {
+                    println!("✓ Created vault policy: {}", policy_name);
+                    
+                    // Create token for super admin
+                    match vault_client.create_super_admin_token(admin_user.id, org_id, &policy_name).await {
+                        Ok(token_auth) => {
+                            println!("✓ Created vault token for super admin");
+                            Some((policy_name, token_auth.client_token, token_auth.accessor))
+                        }
+                        Err(e) => {
+                            eprintln!("⚠ Warning: Failed to create vault token: {}", e);
+                            None
+                        }
+                    }
+                }
+                Err(e) => {
+                    eprintln!("⚠ Warning: Failed to create vault policy: {}", e);
+                    None
+                }
+            }
+        }
+        Err(_) => {
+            println!("⚠ Skipping vault setup (VAULT_TOKEN not configured)");
+            None
+        }
+    };
+
     // Save credentials to file
     println!("\nSaving credentials to file...");
     let admin_ui_url = std::env::var("ADMIN_UI_URL")
         .unwrap_or_else(|_| format!("http://{}:{}", settings.server.host, 3000));
+
+    let vault_section = if let Some((policy_name, token, accessor)) = &vault_token_info {
+        format!(r#"
+RustyVault Access:
+  Policy: {}
+  Token: {}
+  Accessor: {}
+"#, policy_name, token, accessor)
+    } else {
+        String::new()
+    };
 
     let credentials_content = format!(
         r#"=== Health V1 Admin Credentials ===
@@ -580,13 +684,14 @@ Super Admin Credentials:
   User ID: {}
 
 Access URL: {}
-
+{}
 IMPORTANT: Keep this file secure. Delete after first login and password change.
 "#,
         Utc::now().to_rfc3339(),
         org_name_value, org_slug_value, org_id,
         admin_email, admin_username, admin_password, admin_user.id,
-        admin_ui_url
+        admin_ui_url,
+        vault_section
     );
 
     match fs::write(&output_file, credentials_content) {
