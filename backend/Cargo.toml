@@ -80,7 +80,7 @@ dialoguer = "0.11"
 petgraph = "0.8"
 
 # LRU Cache
-lru = "0.12"
+lru = "0.16"
 
 [profile.dev]
 # Reduce memory usage during development builds
