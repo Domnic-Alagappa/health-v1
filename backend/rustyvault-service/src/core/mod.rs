@@ -4,5 +4,5 @@
 
 pub mod vault_core;
 
-pub use vault_core::{VaultCore, CoreState, SealConfig, InitResult};
+pub use vault_core::{VaultCore, SealConfig};
 

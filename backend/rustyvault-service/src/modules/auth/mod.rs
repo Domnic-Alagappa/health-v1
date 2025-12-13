@@ -11,8 +11,8 @@ pub mod userpass;
 
 // Re-export commonly used types
 pub use token::{
-    CreateTokenRequest, CreateTokenResponse, TokenEntry, TokenStore,
+    CreateTokenRequest, TokenEntry, TokenStore,
 };
 pub use userpass::{
-    CreateUserRequest, LoginRequest, LoginResponse, UserEntry, UserPassBackend, UserResponse,
+    CreateUserRequest, UserPassBackend,
 };

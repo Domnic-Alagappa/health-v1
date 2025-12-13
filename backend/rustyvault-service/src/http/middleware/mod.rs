@@ -2,5 +2,5 @@
 
 pub mod auth_middleware;
 
-pub use auth_middleware::{auth_middleware, extract_token, AuthInfo};
+pub use auth_middleware::auth_middleware;
 

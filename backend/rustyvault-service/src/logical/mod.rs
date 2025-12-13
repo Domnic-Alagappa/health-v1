@@ -8,6 +8,6 @@ pub mod response;
 pub mod backend;
 
 pub use request::{Request, Operation};
-pub use response::{Response, ResponseAuth, Auth};
+pub use response::{Response, ResponseAuth};
 pub use backend::Backend;
 
