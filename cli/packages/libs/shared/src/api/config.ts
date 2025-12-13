@@ -17,8 +17,9 @@ export const API_CONFIG = {
 /**
  * Paths that should NOT have the API prefix automatically added
  * These are typically system-level endpoints or routes that don't use the /api prefix on backend
+ * Includes both unversioned (/auth/*) and versioned (/v1/auth/*) routes
  */
-const EXCLUDED_PATHS = ["/health", "/auth"];
+const EXCLUDED_PATHS = ["/health", "/auth", "/v1/auth"];
 
 /**
  * Check if a path should have the API prefix added
@@ -30,6 +31,7 @@ function shouldAddApiPrefix(path: string): boolean {
   }
   
   // If path is in excluded list, don't add prefix
+  // Check for exact match or if path starts with excluded path followed by /
   if (EXCLUDED_PATHS.some(excluded => path === excluded || path.startsWith(`${excluded}/`))) {
     return false;
   }

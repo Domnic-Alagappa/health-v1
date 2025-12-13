@@ -35,6 +35,7 @@ getApiUrl("/setup/status")  // Returns: "http://localhost:8080/api/setup/status"
 // Excluded paths don't get prefix
 getApiUrl("/health")         // Returns: "http://localhost:8080/health"
 getApiUrl("/auth/login")     // Returns: "http://localhost:8080/auth/login"
+getApiUrl("/v1/auth/login")  // Returns: "http://localhost:8080/v1/auth/login"
 
 // Routes already starting with /api are left as-is
 getApiUrl("/api/admin/users") // Returns: "http://localhost:8080/api/admin/users"
@@ -68,12 +69,17 @@ export const API_ROUTES = {
 
 The following paths are excluded from automatic prefix (they match backend routes exactly):
 
-- `/health` - Health check
-- `/auth/*` - All authentication endpoints:
+- `/health` - Health check (unversioned)
+- `/auth/*` - All authentication endpoints (unversioned, for backward compatibility):
   - `/auth/login`
   - `/auth/logout`
   - `/auth/token`
   - `/auth/userinfo`
+- `/v1/auth/*` - All versioned authentication endpoints:
+  - `/v1/auth/login`
+  - `/v1/auth/logout`
+  - `/v1/auth/token`
+  - `/v1/auth/userinfo`
 
 If you need to exclude additional paths, update the `EXCLUDED_PATHS` array in `config.ts`.
 
@@ -114,11 +120,12 @@ When migrating existing routes:
 
 The backend routes are structured as:
 
-- **Without `/api` prefix**: `/health`, `/auth/*`
+- **Without `/api` prefix**: `/health`, `/auth/*`, `/v1/auth/*`
 - **With `/api` prefix**: `/api/setup/*`, `/api/services/*`, `/api/admin/*`, `/api/users/*`, etc.
+- **Versioned routes**: `/v1/setup/*`, `/v1/users/*`, `/v1/admin/*`, etc. (get `/api` prefix added)
 
 The automatic prefix system handles this by:
-- Adding `/api` to routes that need it
-- Keeping `/health` and `/auth/*` without prefix (excluded paths)
+- Adding `/api` to routes that need it (e.g., `/v1/users` → `/api/v1/users`)
+- Keeping `/health`, `/auth/*`, and `/v1/auth/*` without prefix (excluded paths)
 - Not doubling prefixes for routes that already start with `/api`
 

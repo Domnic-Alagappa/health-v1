@@ -3,6 +3,7 @@
  * Relationship-based permission checking and management
  */
 
+import { API_ROUTES } from "@health-v1/shared/api/routes";
 import { apiClient } from "./client";
 import type { ApiResponse } from "./types";
 
@@ -60,7 +61,7 @@ export async function checkPermission(
   relation: string,
   resourceId: string
 ): Promise<boolean> {
-  const response = await apiClient.post<CheckPermissionResponse>("/relationships/check", {
+  const response = await apiClient.post<CheckPermissionResponse>(API_ROUTES.ADMIN.RELATIONSHIPS.CHECK, {
     userId,
     relation,
     resourceId,
@@ -79,7 +80,7 @@ export async function checkPermission(
 export async function batchCheckPermissions(
   checks: Array<{ userId: string; relation: string; resourceId: string }>
 ): Promise<boolean[]> {
-  const response = await apiClient.post<BatchCheckResponse>("/relationships/batch-check", {
+  const response = await apiClient.post<BatchCheckResponse>(API_ROUTES.ADMIN.RELATIONSHIPS.BATCH_CHECK, {
     checks,
   } as BatchCheckRequest);
 
@@ -94,7 +95,7 @@ export async function batchCheckPermissions(
  * Get all relationships for a user
  */
 export async function getUserRelationships(userId: string): Promise<Relationship[]> {
-  const response = await apiClient.get<ListRelationshipsResponse>(`/relationships/user/${userId}`);
+  const response = await apiClient.get<ListRelationshipsResponse>(API_ROUTES.ADMIN.RELATIONSHIPS.USER(userId));
 
   if (response.error) {
     throw new Error(response.error.message);
@@ -111,7 +112,7 @@ export async function createRelationship(
   relation: string,
   resourceId: string
 ): Promise<Relationship> {
-  const response = await apiClient.post<Relationship>("/relationships", {
+  const response = await apiClient.post<Relationship>(API_ROUTES.ADMIN.RELATIONSHIPS.CREATE, {
     userId,
     relation,
     resourceId,
@@ -132,7 +133,7 @@ export async function createRelationship(
  * Delete a relationship
  */
 export async function deleteRelationship(relationshipId: string): Promise<void> {
-  const response = await apiClient.delete(`/relationships/${relationshipId}`);
+  const response = await apiClient.delete(API_ROUTES.ADMIN.RELATIONSHIPS.DELETE(relationshipId));
 
   if (response.error) {
     throw new Error(response.error.message);

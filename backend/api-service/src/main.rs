@@ -5,20 +5,7 @@ use std::sync::Arc;
 use tracing::info;
 
 fn main() -> Result<(), String> {
-    // Configure Tokio runtime for low-memory systems
-    let tokio_worker_threads: usize = std::env::var("TOKIO_WORKER_THREADS")
-        .unwrap_or_else(|_| "2".to_string())
-        .parse()
-        .unwrap_or(2);
-    
-    let rt = tokio::runtime::Builder::new_multi_thread()
-        .worker_threads(tokio_worker_threads)
-        .max_blocking_threads(2)
-        .thread_stack_size(256 * 1024) // 256KB stack size
-        .enable_all()
-        .build()
-        .map_err(|e| format!("Failed to create Tokio runtime: {}", e))?;
-    
+    let rt = shared::infrastructure::runtime::create_runtime()?;
     rt.block_on(async_main())
 }
 
@@ -46,10 +33,8 @@ async fn async_main() -> Result<(), String> {
     // Initialize database connection using database service
     info!("Connecting to database...");
     use std::time::Duration;
-    let pool = shared::infrastructure::database::create_pool_with_options(
-        &settings.database.url,
-        settings.database.max_connections,
-        settings.database.min_connections,
+    let pool = shared::infrastructure::database::create_pool_from_config(
+        &settings.database,
         Duration::from_secs(10),
     )
     .await
@@ -94,25 +79,13 @@ async fn async_main() -> Result<(), String> {
     // Initialize repositories (we'll create instances as needed for use cases)
     // Note: Each use case gets its own repository instance sharing the same pool
 
-    // Initialize token manager (create multiple instances for different use cases)
-    let token_manager_for_state = shared::infrastructure::oidc::TokenManager::new(
+    // Initialize token manager (single instance shared across all use cases)
+    let token_manager = shared::infrastructure::oidc::TokenManager::new(
         &settings.oidc.jwt_secret,
         settings.oidc.issuer.clone(),
         settings.oidc.jwt_expiration,
     );
-    let token_manager_arc = Arc::new(token_manager_for_state);
-    
-    let token_manager_clone = authz_core::oidc::TokenManager::new(
-        &settings.oidc.jwt_secret,
-        settings.oidc.issuer.clone(),
-        settings.oidc.jwt_expiration,
-    );
-    
-    let token_manager_clone2 = authz_core::oidc::TokenManager::new(
-        &settings.oidc.jwt_secret,
-        settings.oidc.issuer.clone(),
-        settings.oidc.jwt_expiration,
-    );
+    let token_manager_arc = Arc::new(token_manager.clone());
 
     // Initialize Zanzibar services (needed for RoleRepository)
     let relationship_store = Arc::new(shared::infrastructure::zanzibar::RelationshipStore::new(
@@ -141,13 +114,13 @@ async fn async_main() -> Result<(), String> {
             permission_repository.clone(),
         )),
         Box::new(shared::infrastructure::repositories::PermissionRepositoryImpl::new(pool.clone())),
-        token_manager_clone,
+        token_manager.clone(),
     ));
 
     let refresh_token_use_case = Arc::new(authz_core::auth::RefreshTokenUseCase::new(
         Box::new(shared::infrastructure::repositories::UserRepositoryImpl::new(database_service.clone())),
         Box::new(shared::infrastructure::repositories::RefreshTokenRepositoryImpl::new(pool.clone())),
-        token_manager_clone2,
+        token_manager.clone(),
     ));
 
     let logout_use_case = Arc::new(authz_core::auth::LogoutUseCase::new(
@@ -342,56 +315,57 @@ async fn async_main() -> Result<(), String> {
     let app_state_arc = Arc::new(app_state);
     
     // Create public routes (no auth required)
+    // All routes use /v1/ prefix for versioning (except /health)
     let public_routes = axum::Router::new()
-        .route("/health", axum::routing::get(|| async { "OK" }))
-        .route("/auth/login", axum::routing::post(crate::presentation::api::handlers::login))
-        .route("/setup/status", axum::routing::get(admin_service::handlers::check_setup_status))
-        .route("/api/setup/status", axum::routing::get(admin_service::handlers::check_setup_status))
-        .route("/setup/initialize", axum::routing::post(admin_service::handlers::initialize_setup))
-        .route("/api/setup/initialize", axum::routing::post(admin_service::handlers::initialize_setup))
-        .route("/services/status", axum::routing::get(crate::presentation::api::handlers::get_service_status))
-        .route("/api/services/status", axum::routing::get(crate::presentation::api::handlers::get_service_status))
+        .route("/health", axum::routing::get(|| async { "OK" })) // Health check stays unversioned
+        .route("/v1/auth/login", axum::routing::post(crate::presentation::api::handlers::login))
+        .route("/v1/setup/status", axum::routing::get(admin_service::handlers::check_setup_status))
+        .route("/v1/setup/initialize", axum::routing::post(admin_service::handlers::initialize_setup))
+        .route("/v1/services/status", axum::routing::get(crate::presentation::api::handlers::get_service_status))
         .with_state(app_state_arc.clone());
     
     // Create protected routes with middleware
+    // Versioned routes with /v1/ prefix
     let protected_routes = axum::Router::new()
-        .route("/auth/logout", axum::routing::post(crate::presentation::api::handlers::logout))
-        .route("/auth/token", axum::routing::post(crate::presentation::api::handlers::refresh_token))
-        .route("/auth/userinfo", axum::routing::get(crate::presentation::api::handlers::userinfo))
-        .route("/users", axum::routing::post(admin_service::handlers::create_user))
-        .route("/users/{id}", axum::routing::get(admin_service::handlers::get_user))
-        .route("/users/{id}", axum::routing::post(admin_service::handlers::update_user))
-        .route("/users/{id}", axum::routing::delete(admin_service::handlers::delete_user))
+        // Auth routes
+        .route("/v1/auth/logout", axum::routing::post(crate::presentation::api::handlers::logout))
+        .route("/v1/auth/token", axum::routing::post(crate::presentation::api::handlers::refresh_token))
+        .route("/v1/auth/userinfo", axum::routing::get(crate::presentation::api::handlers::userinfo))
+        // User routes
+        .route("/v1/users", axum::routing::post(admin_service::handlers::create_user))
+        .route("/v1/users/{id}", axum::routing::get(admin_service::handlers::get_user))
+        .route("/v1/users/{id}", axum::routing::post(admin_service::handlers::update_user))
+        .route("/v1/users/{id}", axum::routing::delete(admin_service::handlers::delete_user))
         // Permission check routes
-        .route("/api/admin/permissions/check", axum::routing::post(admin_service::handlers::check_permission))
-        .route("/api/admin/permissions/check-batch", axum::routing::post(admin_service::handlers::check_permissions_batch))
-        .route("/api/admin/permissions/user/{id}", axum::routing::get(admin_service::handlers::get_user_permissions))
-        .route("/api/admin/permissions/user/{id}/pages", axum::routing::get(admin_service::handlers::get_user_pages))
-        .route("/api/admin/permissions/user/{id}/buttons/{page}", axum::routing::get(admin_service::handlers::get_user_buttons))
-        .route("/api/admin/permissions/user/{id}/fields/{page}", axum::routing::get(admin_service::handlers::get_user_fields))
+        .route("/v1/admin/permissions/check", axum::routing::post(admin_service::handlers::check_permission))
+        .route("/v1/admin/permissions/check-batch", axum::routing::post(admin_service::handlers::check_permissions_batch))
+        .route("/v1/admin/permissions/user/{id}", axum::routing::get(admin_service::handlers::get_user_permissions))
+        .route("/v1/admin/permissions/user/{id}/pages", axum::routing::get(admin_service::handlers::get_user_pages))
+        .route("/v1/admin/permissions/user/{id}/buttons/{page}", axum::routing::get(admin_service::handlers::get_user_buttons))
+        .route("/v1/admin/permissions/user/{id}/fields/{page}", axum::routing::get(admin_service::handlers::get_user_fields))
         // Permission assignment routes
-        .route("/api/admin/permissions/assign", axum::routing::post(admin_service::handlers::assign_permission))
-        .route("/api/admin/permissions/assign-batch", axum::routing::post(admin_service::handlers::assign_permissions_batch))
-        .route("/api/admin/permissions/revoke", axum::routing::delete(admin_service::handlers::revoke_permission))
+        .route("/v1/admin/permissions/assign", axum::routing::post(admin_service::handlers::assign_permission))
+        .route("/v1/admin/permissions/assign-batch", axum::routing::post(admin_service::handlers::assign_permissions_batch))
+        .route("/v1/admin/permissions/revoke", axum::routing::delete(admin_service::handlers::revoke_permission))
         // UI Entity routes
-        .route("/api/admin/ui/pages", axum::routing::post(admin_service::handlers::register_page))
-        .route("/api/admin/ui/pages", axum::routing::get(admin_service::handlers::list_pages))
-        .route("/api/admin/ui/pages/{id}/buttons", axum::routing::get(admin_service::handlers::list_buttons_for_page))
-        .route("/api/admin/ui/pages/{id}/fields", axum::routing::get(admin_service::handlers::list_fields_for_page))
-        .route("/api/admin/ui/buttons", axum::routing::post(admin_service::handlers::register_button))
-        .route("/api/admin/ui/fields", axum::routing::post(admin_service::handlers::register_field))
-        .route("/api/admin/ui/apis", axum::routing::post(admin_service::handlers::register_api))
-        .route("/api/admin/ui/apis", axum::routing::get(admin_service::handlers::list_apis))
+        .route("/v1/admin/ui/pages", axum::routing::post(admin_service::handlers::register_page))
+        .route("/v1/admin/ui/pages", axum::routing::get(admin_service::handlers::list_pages))
+        .route("/v1/admin/ui/pages/{id}/buttons", axum::routing::get(admin_service::handlers::list_buttons_for_page))
+        .route("/v1/admin/ui/pages/{id}/fields", axum::routing::get(admin_service::handlers::list_fields_for_page))
+        .route("/v1/admin/ui/buttons", axum::routing::post(admin_service::handlers::register_button))
+        .route("/v1/admin/ui/fields", axum::routing::post(admin_service::handlers::register_field))
+        .route("/v1/admin/ui/apis", axum::routing::post(admin_service::handlers::register_api))
+        .route("/v1/admin/ui/apis", axum::routing::get(admin_service::handlers::list_apis))
         // Groups routes
-        .route("/api/admin/groups", axum::routing::get(admin_service::handlers::list_groups))
-        .route("/api/admin/groups", axum::routing::post(admin_service::handlers::create_group))
-        .route("/api/admin/groups/{id}", axum::routing::get(admin_service::handlers::get_group))
-        .route("/api/admin/groups/{id}", axum::routing::delete(admin_service::handlers::delete_group))
-        .route("/api/admin/groups/{group_id}/users/{user_id}", axum::routing::post(admin_service::handlers::add_user_to_group))
-        .route("/api/admin/groups/{group_id}/users/{user_id}", axum::routing::delete(admin_service::handlers::remove_user_from_group))
-        .route("/api/admin/groups/{group_id}/roles/{role_id}", axum::routing::post(admin_service::handlers::assign_role_to_group))
+        .route("/v1/admin/groups", axum::routing::get(admin_service::handlers::list_groups))
+        .route("/v1/admin/groups", axum::routing::post(admin_service::handlers::create_group))
+        .route("/v1/admin/groups/{id}", axum::routing::get(admin_service::handlers::get_group))
+        .route("/v1/admin/groups/{id}", axum::routing::delete(admin_service::handlers::delete_group))
+        .route("/v1/admin/groups/{group_id}/users/{user_id}", axum::routing::post(admin_service::handlers::add_user_to_group))
+        .route("/v1/admin/groups/{group_id}/users/{user_id}", axum::routing::delete(admin_service::handlers::remove_user_from_group))
+        .route("/v1/admin/groups/{group_id}/roles/{role_id}", axum::routing::post(admin_service::handlers::assign_role_to_group))
         // Dashboard routes
-        .route("/api/admin/dashboard/stats", axum::routing::get(admin_service::handlers::get_dashboard_stats))
+        .route("/v1/admin/dashboard/stats", axum::routing::get(admin_service::handlers::get_dashboard_stats))
         .with_state(app_state_arc.clone())
         .layer(axum::middleware::from_fn_with_state(
             app_state_arc.clone(),

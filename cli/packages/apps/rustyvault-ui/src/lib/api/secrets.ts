@@ -1,4 +1,5 @@
 import { apiClient } from './client';
+import { VAULT_ROUTES } from './routes';
 
 export interface SecretData {
   [key: string]: any;
@@ -31,9 +32,7 @@ export interface SecretListResponse {
 
 export const secretsApi = {
   read: async (path: string): Promise<SecretResponse> => {
-    // Backend uses /v1/secret/{path} for KV v1
-    const url = `/secret/${path}`;
-    const response = await apiClient.get<{ data: SecretData }>(url);
+    const response = await apiClient.get<{ data: SecretData }>(VAULT_ROUTES.SECRETS.READ(path));
     return {
       data: response.data || {},
       metadata: {
@@ -48,16 +47,12 @@ export const secretsApi = {
   },
 
   write: async (path: string, data: SecretData): Promise<void> => {
-    // Backend uses /v1/secret/{path} for KV v1
-    const url = `/secret/${path}`;
-    await apiClient.post(url, data);
+    await apiClient.post(VAULT_ROUTES.SECRETS.WRITE(path), data);
   },
 
   list: async (path: string = ''): Promise<string[]> => {
-    // Backend uses /v1/secret/{path}/ for listing (trailing slash)
-    const url = path ? `/secret/${path}/` : '/secret/';
     try {
-      const response = await apiClient.get<SecretListResponse>(url);
+      const response = await apiClient.get<SecretListResponse>(VAULT_ROUTES.SECRETS.LIST(path));
       return response.keys || [];
     } catch (error) {
       // If list fails, return empty array
@@ -66,9 +61,7 @@ export const secretsApi = {
   },
 
   delete: async (path: string): Promise<void> => {
-    // Backend uses /v1/secret/{path} for deletion
-    const url = `/secret/${path}`;
-    await apiClient.delete(url);
+    await apiClient.delete(VAULT_ROUTES.SECRETS.DELETE(path));
   },
 };
 

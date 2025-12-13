@@ -82,8 +82,12 @@ class ApiClient {
   }
 
   async post<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
-    const response = await this.client.post<ApiResponse<T>>(url, data, config);
-    return response.data.data || response.data;
+    const response = await this.client.post<ApiResponse<T> | T>(url, data, config);
+    // Handle both wrapped and unwrapped responses
+    if (response.data && typeof response.data === 'object' && 'data' in response.data) {
+      return (response.data as ApiResponse<T>).data || (response.data as T);
+    }
+    return response.data as T;
   }
 
   async put<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {

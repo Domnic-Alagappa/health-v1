@@ -19,8 +19,8 @@ export const OIDC_CONFIG = {
       : "http://localhost:5173",
   SCOPES: ["openid", "profile", "email", "offline_access"] as const,
   RESPONSE_TYPE: "code" as const,
-  TOKEN_ENDPOINT: "/auth/token",
-  USERINFO_ENDPOINT: "/auth/userinfo",
+  TOKEN_ENDPOINT: "/v1/auth/token",
+  USERINFO_ENDPOINT: "/v1/auth/userinfo",
   DISCOVERY_ENDPOINT: "/.well-known/openid-configuration",
 } as const;
 

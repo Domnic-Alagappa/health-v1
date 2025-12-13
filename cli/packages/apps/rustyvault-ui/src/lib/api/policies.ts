@@ -1,4 +1,5 @@
 import { apiClient } from './client';
+import { VAULT_ROUTES } from './routes';
 
 export interface Policy {
   name: string;
@@ -25,35 +26,35 @@ export const policiesApi = {
    * List all ACL policies
    */
   list: async (): Promise<PolicyListResponse> => {
-    return apiClient.get<PolicyListResponse>('/sys/policies/acl');
+    return apiClient.get<PolicyListResponse>(VAULT_ROUTES.POLICIES.LIST);
   },
 
   /**
    * Read a specific policy
    */
   read: async (name: string): Promise<Policy> => {
-    return apiClient.get<Policy>(`/sys/policies/acl/${name}`);
+    return apiClient.get<Policy>(VAULT_ROUTES.POLICIES.GET(name));
   },
 
   /**
    * Create or update a policy
    */
   write: async (name: string, policy: string): Promise<void> => {
-    await apiClient.post(`/sys/policies/acl/${name}`, { policy });
+    await apiClient.post(VAULT_ROUTES.POLICIES.CREATE(name), { policy });
   },
 
   /**
    * Delete a policy
    */
   delete: async (name: string): Promise<void> => {
-    await apiClient.delete(`/sys/policies/acl/${name}`);
+    await apiClient.delete(VAULT_ROUTES.POLICIES.DELETE(name));
   },
 
   /**
    * Check capabilities for a path
    */
   checkCapabilities: async (path: string, policies?: string[]): Promise<CapabilitiesResponse> => {
-    return apiClient.post<CapabilitiesResponse>('/sys/capabilities', { path, policies });
+    return apiClient.post<CapabilitiesResponse>(VAULT_ROUTES.POLICIES.CAPABILITIES, { path, policies });
   },
 };
 

@@ -3,7 +3,7 @@
  * Handles all permission-related API calls for Zanzibar-based access control
  */
 
-import { apiRequest } from "./client";
+import { API_ROUTES, apiRequest } from "./client";
 import type { ApiResponse } from "./types";
 
 export interface CheckPermissionRequest {
@@ -79,7 +79,7 @@ export async function checkPermission(
   relation: string,
   object: string
 ): Promise<CheckPermissionResponse> {
-  return apiRequest<CheckPermissionResponse>("/api/admin/permissions/check", {
+  return apiRequest<CheckPermissionResponse>(API_ROUTES.ADMIN.PERMISSIONS.CHECK, {
     method: "POST",
     body: JSON.stringify({
       user: userId,
@@ -96,7 +96,7 @@ export async function checkPermissionsBatch(
   checks: Array<[string, string, string]>
 ): Promise<BatchCheckPermissionResponse> {
   return apiRequest<BatchCheckPermissionResponse>(
-    "/api/admin/permissions/check-batch",
+    API_ROUTES.ADMIN.PERMISSIONS.CHECK_BATCH,
     {
       method: "POST",
       body: JSON.stringify({ checks }),
@@ -111,7 +111,7 @@ export async function getUserPermissions(
   userId: string
 ): Promise<UserPermissionsResponse> {
   return apiRequest<UserPermissionsResponse>(
-    `/api/admin/permissions/user/${userId}`
+    API_ROUTES.ADMIN.PERMISSIONS.USER(userId)
   );
 }
 
@@ -120,7 +120,7 @@ export async function getUserPermissions(
  */
 export async function getUserPages(userId: string): Promise<UserPagesResponse> {
   return apiRequest<UserPagesResponse>(
-    `/api/admin/permissions/user/${userId}/pages`
+    API_ROUTES.ADMIN.PERMISSIONS.USER_PAGES(userId)
   );
 }
 
@@ -132,7 +132,7 @@ export async function getUserButtons(
   pageName: string
 ): Promise<UserButtonsResponse> {
   return apiRequest<UserButtonsResponse>(
-    `/api/admin/permissions/user/${userId}/buttons/${pageName}`
+    API_ROUTES.ADMIN.PERMISSIONS.USER_BUTTONS(userId, pageName)
   );
 }
 
@@ -144,7 +144,7 @@ export async function getUserFields(
   pageName: string
 ): Promise<UserFieldsResponse> {
   return apiRequest<UserFieldsResponse>(
-    `/api/admin/permissions/user/${userId}/fields/${pageName}`
+    API_ROUTES.ADMIN.PERMISSIONS.USER_FIELDS(userId, pageName)
   );
 }
 
@@ -154,7 +154,7 @@ export async function getUserFields(
 export async function assignPermission(
   request: AssignPermissionRequest
 ): Promise<ApiResponse<{ success: boolean; message: string }>> {
-  return apiRequest("/api/admin/permissions/assign", {
+  return apiRequest(API_ROUTES.ADMIN.PERMISSIONS.ASSIGN, {
     method: "POST",
     body: JSON.stringify(request),
   });
@@ -173,7 +173,7 @@ export async function assignPermissionsBatch(
     errors?: string[];
   }>
 > {
-  return apiRequest("/api/admin/permissions/assign-batch", {
+  return apiRequest(API_ROUTES.ADMIN.PERMISSIONS.ASSIGN_BATCH, {
     method: "POST",
     body: JSON.stringify(request),
   });
@@ -185,7 +185,7 @@ export async function assignPermissionsBatch(
 export async function revokePermission(
   request: RevokePermissionRequest
 ): Promise<ApiResponse<{ success: boolean; message: string }>> {
-  return apiRequest("/api/admin/permissions/revoke", {
+  return apiRequest(API_ROUTES.ADMIN.PERMISSIONS.REVOKE, {
     method: "DELETE",
     body: JSON.stringify(request),
   });
@@ -208,6 +208,6 @@ export async function listAllRelationships(): Promise<
     }>;
   }>
 > {
-  return apiRequest("/api/admin/relationships");
+  return apiRequest(API_ROUTES.ADMIN.RELATIONSHIPS.LIST);
 }
 

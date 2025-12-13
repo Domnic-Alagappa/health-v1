@@ -3,7 +3,7 @@
  * Handles registration and management of UI entities (pages, buttons, fields, APIs)
  */
 
-import { apiRequest } from "./client";
+import { API_ROUTES, apiRequest } from "./client";
 import type { ApiResponse } from "./types";
 
 export interface UiPage {
@@ -72,7 +72,7 @@ export interface RegisterApiRequest {
 export async function registerPage(
   request: RegisterPageRequest
 ): Promise<UiPage> {
-  return apiRequest<UiPage>("/api/admin/ui/pages", {
+  return apiRequest<UiPage>(API_ROUTES.ADMIN.UI.PAGES, {
     method: "POST",
     body: JSON.stringify(request),
   });
@@ -82,7 +82,7 @@ export async function registerPage(
  * List all registered pages
  */
 export async function listPages(): Promise<ApiResponse<{ pages: UiPage[] }>> {
-  return apiRequest("/api/admin/ui/pages");
+  return apiRequest(API_ROUTES.ADMIN.UI.PAGES);
 }
 
 /**
@@ -91,7 +91,7 @@ export async function listPages(): Promise<ApiResponse<{ pages: UiPage[] }>> {
 export async function registerButton(
   request: RegisterButtonRequest
 ): Promise<UiButton> {
-  return apiRequest<UiButton>("/api/admin/ui/buttons", {
+  return apiRequest<UiButton>(API_ROUTES.ADMIN.UI.BUTTONS, {
     method: "POST",
     body: JSON.stringify(request),
   });
@@ -103,7 +103,7 @@ export async function registerButton(
 export async function listButtonsForPage(
   pageId: string
 ): Promise<ApiResponse<{ buttons: UiButton[] }>> {
-  return apiRequest(`/api/admin/ui/pages/${pageId}/buttons`);
+  return apiRequest(API_ROUTES.ADMIN.UI.PAGES_BUTTONS(pageId));
 }
 
 /**
@@ -112,7 +112,7 @@ export async function listButtonsForPage(
 export async function registerField(
   request: RegisterFieldRequest
 ): Promise<UiField> {
-  return apiRequest<UiField>("/api/admin/ui/fields", {
+  return apiRequest<UiField>(API_ROUTES.ADMIN.UI.FIELDS, {
     method: "POST",
     body: JSON.stringify(request),
   });
@@ -124,7 +124,7 @@ export async function registerField(
 export async function listFieldsForPage(
   pageId: string
 ): Promise<ApiResponse<{ fields: UiField[] }>> {
-  return apiRequest(`/api/admin/ui/pages/${pageId}/fields`);
+  return apiRequest(API_ROUTES.ADMIN.UI.PAGES_FIELDS(pageId));
 }
 
 /**
@@ -133,7 +133,7 @@ export async function listFieldsForPage(
 export async function registerApi(
   request: RegisterApiRequest
 ): Promise<UiApiEndpoint> {
-  return apiRequest<UiApiEndpoint>("/api/admin/ui/apis", {
+  return apiRequest<UiApiEndpoint>(API_ROUTES.ADMIN.UI.APIS, {
     method: "POST",
     body: JSON.stringify(request),
   });
@@ -143,6 +143,6 @@ export async function registerApi(
  * List all registered API endpoints
  */
 export async function listApis(): Promise<ApiResponse<{ apis: UiApiEndpoint[] }>> {
-  return apiRequest("/api/admin/ui/apis");
+  return apiRequest(API_ROUTES.ADMIN.UI.APIS);
 }
 

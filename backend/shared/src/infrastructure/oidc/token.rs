@@ -18,6 +18,7 @@ pub struct Claims {
     pub permissions: Option<Vec<String>>,
 }
 
+#[derive(Clone)]
 pub struct TokenManager {
     encoding_key: EncodingKey,
     decoding_key: DecodingKey,

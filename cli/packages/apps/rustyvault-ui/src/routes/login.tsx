@@ -19,7 +19,8 @@ export function LoginPage() {
   useEffect(() => {
     if (isAuthenticated) {
       const redirectTo = new URLSearchParams(window.location.search).get('redirect') || '/';
-      navigate({ to: redirectTo as '/' });
+      // Use replace to avoid adding to history
+      navigate({ to: redirectTo as '/', replace: true });
     }
   }, [isAuthenticated, navigate]);
 
@@ -33,23 +34,39 @@ export function LoginPage() {
           setError('Token is required');
           return;
         }
-        await login(token);
+        await login(token.trim());
       } else if (loginMethod === 'userpass') {
         if (!username.trim() || !password.trim()) {
           setError('Username and password are required');
           return;
         }
-        await loginWithUserpass(username, password);
+        await loginWithUserpass(username.trim(), password);
       } else if (loginMethod === 'approle') {
         if (!roleId.trim() || !secretId.trim()) {
           setError('Role ID and Secret ID are required');
           return;
         }
-        await loginWithAppRole(roleId, secretId);
+        await loginWithAppRole(roleId.trim(), secretId.trim());
       }
-      // Navigation will happen via useEffect when isAuthenticated becomes true
+      
+      // Navigation: Zustand updates are synchronous, but React needs a tick to re-render
+      // Check both the hook value and getState() to be safe
       const redirectTo = new URLSearchParams(window.location.search).get('redirect') || '/';
-      navigate({ to: redirectTo as '/' });
+      
+      // Try immediate navigation (Zustand state is updated synchronously)
+      const authState = useAuthStore.getState();
+      if (authState.isAuthenticated) {
+        navigate({ to: redirectTo as '/', replace: true });
+        return; // Exit early if navigation succeeds
+      }
+      
+      // Fallback: Use requestAnimationFrame to ensure React has processed the state update
+      requestAnimationFrame(() => {
+        const currentState = useAuthStore.getState();
+        if (currentState.isAuthenticated) {
+          navigate({ to: redirectTo as '/', replace: true });
+        }
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Authentication failed');
     }

@@ -2,7 +2,7 @@
  * Roles API Client
  */
 
-import { apiRequest } from "./client";
+import { API_ROUTES, apiRequest } from "./client";
 import type { ApiResponse } from "./types";
 
 export interface Role {
@@ -31,14 +31,14 @@ export interface AssignRoleRequest {
  * List all roles
  */
 export async function listRoles(): Promise<ApiResponse<{ roles: Role[] }> | ApiResponse<Role[]>> {
-  return apiRequest("/api/admin/roles");
+  return apiRequest(API_ROUTES.ADMIN.ROLES.LIST);
 }
 
 /**
  * Get role by ID
  */
 export async function getRole(roleId: string): Promise<ApiResponse<Role>> {
-  return apiRequest(`/api/admin/roles/${roleId}`);
+  return apiRequest(API_ROUTES.ADMIN.ROLES.GET(roleId));
 }
 
 /**
@@ -47,7 +47,7 @@ export async function getRole(roleId: string): Promise<ApiResponse<Role>> {
 export async function createRole(
   request: CreateRoleRequest
 ): Promise<ApiResponse<Role>> {
-  return apiRequest("/api/admin/roles", {
+  return apiRequest(API_ROUTES.ADMIN.ROLES.CREATE, {
     method: "POST",
     body: JSON.stringify(request),
   });
@@ -60,7 +60,7 @@ export async function updateRole(
   roleId: string,
   request: UpdateRoleRequest
 ): Promise<ApiResponse<Role>> {
-  return apiRequest(`/api/admin/roles/${roleId}`, {
+  return apiRequest(API_ROUTES.ADMIN.ROLES.UPDATE(roleId), {
     method: "PUT",
     body: JSON.stringify(request),
   });
@@ -70,7 +70,7 @@ export async function updateRole(
  * Delete a role
  */
 export async function deleteRole(roleId: string): Promise<ApiResponse<void>> {
-  return apiRequest(`/api/admin/roles/${roleId}`, {
+  return apiRequest(API_ROUTES.ADMIN.ROLES.DELETE(roleId), {
     method: "DELETE",
   });
 }
@@ -81,7 +81,7 @@ export async function deleteRole(roleId: string): Promise<ApiResponse<void>> {
 export async function assignRoleToUser(
   request: AssignRoleRequest
 ): Promise<ApiResponse<{ success: boolean; message: string }>> {
-  return apiRequest("/api/admin/roles/assign", {
+  return apiRequest(API_ROUTES.ADMIN.ROLES.ASSIGN, {
     method: "POST",
     body: JSON.stringify(request),
   });

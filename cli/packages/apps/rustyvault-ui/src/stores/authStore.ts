@@ -81,18 +81,30 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       // Validate token by looking it up
       const response = await authApi.lookupToken(token);
       const policies = response.data?.policies || [];
+      
+      // Set token and authentication state
+      saveTokenToStorage(token);
+      savePoliciesToStorage(policies);
+      
       set({ 
         accessToken: token, 
         policies,
         isAuthenticated: true, 
         isLoading: false,
         capabilitiesCache: {},
+        error: null,
       });
-      saveTokenToStorage(token);
-      savePoliciesToStorage(policies);
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Invalid token';
-      set({ error: message, isLoading: false, isAuthenticated: false });
+      set({ 
+        error: message, 
+        isLoading: false, 
+        isAuthenticated: false,
+        accessToken: null,
+        policies: [],
+      });
+      saveTokenToStorage(null);
+      savePoliciesToStorage([]);
       throw error;
     }
   },

@@ -3,7 +3,7 @@
  * Handles DEK and master key management
  */
 
-import { apiRequest } from "./client";
+import { API_ROUTES, apiRequest } from "./client";
 import type { ApiResponse } from "./types";
 
 export interface DekStatus {
@@ -53,14 +53,14 @@ export interface EncryptionStats {
  * Get DEK status for a user
  */
 export async function getDekStatus(userId: string): Promise<DekStatus> {
-  return apiRequest<DekStatus>(`/api/admin/encryption/deks/${userId}/status`);
+  return apiRequest<DekStatus>(API_ROUTES.ADMIN.ENCRYPTION.DEK_STATUS(userId));
 }
 
 /**
  * List all DEK statuses
  */
 export async function listDekStatuses(): Promise<ApiResponse<{ deks: DekStatus[] }>> {
-  return apiRequest("/api/admin/encryption/deks");
+  return apiRequest(API_ROUTES.ADMIN.ENCRYPTION.DEKS);
 }
 
 /**
@@ -69,7 +69,7 @@ export async function listDekStatuses(): Promise<ApiResponse<{ deks: DekStatus[]
 export async function rotateUserDek(
   request: RotateDekRequest
 ): Promise<RotateDekResponse> {
-  return apiRequest<RotateDekResponse>("/api/admin/encryption/deks/rotate", {
+  return apiRequest<RotateDekResponse>(API_ROUTES.ADMIN.ENCRYPTION.DEK_ROTATE, {
     method: "POST",
     body: JSON.stringify(request),
   });
@@ -79,14 +79,14 @@ export async function rotateUserDek(
  * Get master key status
  */
 export async function getMasterKeyStatus(): Promise<MasterKeyStatus> {
-  return apiRequest<MasterKeyStatus>("/api/admin/encryption/master-key/status");
+  return apiRequest<MasterKeyStatus>(API_ROUTES.ADMIN.ENCRYPTION.MASTER_KEY_STATUS);
 }
 
 /**
  * Rotate master key
  */
 export async function rotateMasterKey(): Promise<RotateMasterKeyResponse> {
-  return apiRequest<RotateMasterKeyResponse>("/api/admin/encryption/master-key/rotate", {
+  return apiRequest<RotateMasterKeyResponse>(API_ROUTES.ADMIN.ENCRYPTION.MASTER_KEY_ROTATE, {
     method: "POST",
   });
 }
@@ -95,6 +95,6 @@ export async function rotateMasterKey(): Promise<RotateMasterKeyResponse> {
  * Get encryption statistics
  */
 export async function getEncryptionStats(): Promise<EncryptionStats> {
-  return apiRequest<EncryptionStats>("/api/admin/encryption/stats");
+  return apiRequest<EncryptionStats>(API_ROUTES.ADMIN.ENCRYPTION.STATS);
 }
 

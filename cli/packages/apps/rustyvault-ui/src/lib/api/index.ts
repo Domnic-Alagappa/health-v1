@@ -1,4 +1,5 @@
 export * from './client';
+export * from './routes';
 export * from './secrets';
 export * from './realms';
 export * from './auth';

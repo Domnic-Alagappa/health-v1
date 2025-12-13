@@ -1,4 +1,5 @@
 import { apiClient } from './client';
+import { VAULT_ROUTES } from './routes';
 
 export interface SealStatus {
   sealed: boolean;
@@ -73,47 +74,47 @@ export interface InitResponse {
 
 export const systemApi = {
   getSealStatus: async (): Promise<SealStatus> => {
-    return apiClient.get<SealStatus>('/sys/seal-status');
+    return apiClient.get<SealStatus>(VAULT_ROUTES.SYS.SEAL_STATUS);
   },
 
   unseal: async (key: string, reset: boolean = false): Promise<UnsealResponse> => {
-    return apiClient.post<UnsealResponse>('/sys/unseal', { key, reset });
+    return apiClient.post<UnsealResponse>(VAULT_ROUTES.SYS.UNSEAL, { key, reset });
   },
 
   seal: async (): Promise<void> => {
-    await apiClient.post('/sys/seal');
+    await apiClient.post(VAULT_ROUTES.SYS.SEAL);
   },
 
   listMounts: async (): Promise<MountsResponse> => {
-    return apiClient.get<MountsResponse>('/sys/mounts');
+    return apiClient.get<MountsResponse>(VAULT_ROUTES.SYS.MOUNTS);
   },
 
   enableMount: async (path: string, mount: Partial<Mount>): Promise<void> => {
-    await apiClient.post(`/sys/mounts/${path}`, mount);
+    await apiClient.post(VAULT_ROUTES.SYS.MOUNT(path), mount);
   },
 
   disableMount: async (path: string): Promise<void> => {
-    await apiClient.delete(`/sys/mounts/${path}`);
+    await apiClient.delete(VAULT_ROUTES.SYS.MOUNT(path));
   },
 
   listAuthMethods: async (): Promise<AuthMethodsResponse> => {
-    return apiClient.get<AuthMethodsResponse>('/sys/auth');
+    return apiClient.get<AuthMethodsResponse>(VAULT_ROUTES.SYS.AUTH);
   },
 
   enableAuthMethod: async (path: string, authMethod: Partial<AuthMethod>): Promise<void> => {
-    await apiClient.post(`/sys/auth/${path}`, authMethod);
+    await apiClient.post(VAULT_ROUTES.SYS.AUTH_METHOD(path), authMethod);
   },
 
   disableAuthMethod: async (path: string): Promise<void> => {
-    await apiClient.delete(`/sys/auth/${path}`);
+    await apiClient.delete(VAULT_ROUTES.SYS.AUTH_METHOD(path));
   },
 
   init: async (request: InitRequest): Promise<InitResponse> => {
-    return apiClient.post<InitResponse>('/sys/init', request);
+    return apiClient.post<InitResponse>(VAULT_ROUTES.SYS.INIT, request);
   },
 
   getHealth: async (): Promise<SealStatus> => {
-    return apiClient.get<SealStatus>('/sys/health');
+    return apiClient.get<SealStatus>(VAULT_ROUTES.SYS.HEALTH);
   },
 };
 

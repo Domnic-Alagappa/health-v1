@@ -2,7 +2,7 @@
  * Dashboard API
  */
 
-import { apiRequest } from "./client";
+import { API_ROUTES, apiRequest } from "./client";
 
 export interface DashboardStatsResponse {
   organizations_count: number;
@@ -14,7 +14,7 @@ export interface DashboardStatsResponse {
  * Get dashboard statistics
  */
 export async function getDashboardStats(): Promise<DashboardStatsResponse> {
-  return apiRequest<DashboardStatsResponse>("/api/admin/dashboard/stats", {
+  return apiRequest<DashboardStatsResponse>(API_ROUTES.ADMIN.DASHBOARD.STATS, {
     method: "GET",
   });
 }

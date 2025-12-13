@@ -13,20 +13,7 @@ use std::sync::Arc;
 use tracing::info;
 
 fn main() -> Result<(), String> {
-    // Configure Tokio runtime
-    let tokio_worker_threads: usize = std::env::var("TOKIO_WORKER_THREADS")
-        .unwrap_or_else(|_| "2".to_string())
-        .parse()
-        .unwrap_or(2);
-    
-    let rt = tokio::runtime::Builder::new_multi_thread()
-        .worker_threads(tokio_worker_threads)
-        .max_blocking_threads(2)
-        .thread_stack_size(256 * 1024)
-        .enable_all()
-        .build()
-        .map_err(|e| format!("Failed to create Tokio runtime: {}", e))?;
-    
+    let rt = shared::infrastructure::runtime::create_runtime()?;
     rt.block_on(async_main())
 }
 

@@ -1,4 +1,5 @@
 import { apiClient } from './client';
+import { VAULT_ROUTES } from './routes';
 
 export interface TokenInfo {
   id: string;
@@ -47,49 +48,49 @@ export const tokensApi = {
    * Create a new token
    */
   create: async (request: CreateTokenRequest): Promise<CreateTokenResponse> => {
-    return apiClient.post<CreateTokenResponse>('/auth/token/create', request);
+    return apiClient.post<CreateTokenResponse>(VAULT_ROUTES.AUTH.TOKEN_CREATE, request);
   },
 
   /**
    * Lookup a token
    */
   lookup: async (token: string): Promise<{ data: TokenInfo }> => {
-    return apiClient.post<{ data: TokenInfo }>('/auth/token/lookup', { token });
+    return apiClient.post<{ data: TokenInfo }>(VAULT_ROUTES.AUTH.TOKEN_LOOKUP, { token });
   },
 
   /**
    * Lookup the current token (self)
    */
   lookupSelf: async (): Promise<{ data: TokenInfo }> => {
-    return apiClient.get<{ data: TokenInfo }>('/auth/token/lookup-self');
+    return apiClient.get<{ data: TokenInfo }>(VAULT_ROUTES.AUTH.TOKEN_LOOKUP_SELF);
   },
 
   /**
    * Renew a token
    */
   renew: async (token: string, increment?: number): Promise<RenewTokenResponse> => {
-    return apiClient.post<RenewTokenResponse>('/auth/token/renew', { token, increment });
+    return apiClient.post<RenewTokenResponse>(VAULT_ROUTES.AUTH.TOKEN_RENEW, { token, increment });
   },
 
   /**
    * Renew the current token (self)
    */
   renewSelf: async (increment?: number): Promise<RenewTokenResponse> => {
-    return apiClient.post<RenewTokenResponse>('/auth/token/renew-self', increment ? { increment } : {});
+    return apiClient.post<RenewTokenResponse>(VAULT_ROUTES.AUTH.TOKEN_RENEW_SELF, increment ? { increment } : {});
   },
 
   /**
    * Revoke a token
    */
   revoke: async (token: string): Promise<void> => {
-    await apiClient.post('/auth/token/revoke', { token });
+    await apiClient.post(VAULT_ROUTES.AUTH.TOKEN_REVOKE, { token });
   },
 
   /**
    * Revoke the current token (self)
    */
   revokeSelf: async (): Promise<void> => {
-    await apiClient.post('/auth/token/revoke-self', {});
+    await apiClient.post(VAULT_ROUTES.AUTH.TOKEN_REVOKE_SELF, {});
   },
 };
 

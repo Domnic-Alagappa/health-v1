@@ -1,4 +1,5 @@
 import { apiClient } from './client';
+import { VAULT_ROUTES } from './routes';
 
 export interface Realm {
   id: string;
@@ -14,24 +15,24 @@ export interface RealmListResponse {
 
 export const realmsApi = {
   list: async (): Promise<string[]> => {
-    const response = await apiClient.get<RealmListResponse>('/sys/realm');
+    const response = await apiClient.get<RealmListResponse>(VAULT_ROUTES.REALMS.LIST);
     return response.keys || [];
   },
 
   get: async (realmId: string): Promise<Realm> => {
-    return apiClient.get<Realm>(`/sys/realm/${realmId}`);
+    return apiClient.get<Realm>(VAULT_ROUTES.REALMS.GET(realmId));
   },
 
   create: async (realm: Realm): Promise<void> => {
-    await apiClient.post(`/sys/realm/${realm.id}`, realm);
+    await apiClient.post(VAULT_ROUTES.REALMS.CREATE(realm.id), realm);
   },
 
   update: async (realmId: string, realm: Partial<Realm>): Promise<void> => {
-    await apiClient.put(`/sys/realm/${realmId}`, { ...realm, id: realmId });
+    await apiClient.put(VAULT_ROUTES.REALMS.UPDATE(realmId), { ...realm, id: realmId });
   },
 
   delete: async (realmId: string): Promise<void> => {
-    await apiClient.delete(`/sys/realm/${realmId}`);
+    await apiClient.delete(VAULT_ROUTES.REALMS.DELETE(realmId));
   },
 };
 

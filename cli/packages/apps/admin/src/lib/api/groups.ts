@@ -2,7 +2,7 @@
  * Groups API Client
  */
 
-import { apiRequest } from "./client";
+import { API_ROUTES, apiRequest } from "./client";
 import type { ApiResponse } from "./types";
 
 export interface Group {
@@ -28,14 +28,14 @@ export interface UpdateGroupRequest {
  * List all groups
  */
 export async function listGroups(): Promise<ApiResponse<{ groups: Group[] }>> {
-  return apiRequest("/api/admin/groups");
+  return apiRequest(API_ROUTES.ADMIN.GROUPS.LIST);
 }
 
 /**
  * Get group by ID
  */
 export async function getGroup(groupId: string): Promise<Group> {
-  const response = await apiRequest<Group>(`/api/admin/groups/${groupId}`);
+  const response = await apiRequest<Group>(API_ROUTES.ADMIN.GROUPS.GET(groupId));
   return response;
 }
 
@@ -45,7 +45,7 @@ export async function getGroup(groupId: string): Promise<Group> {
 export async function createGroup(
   request: CreateGroupRequest
 ): Promise<Group> {
-  return apiRequest<Group>("/api/admin/groups", {
+  return apiRequest<Group>(API_ROUTES.ADMIN.GROUPS.CREATE, {
     method: "POST",
     body: JSON.stringify(request),
   });
@@ -58,7 +58,7 @@ export async function updateGroup(
   groupId: string,
   request: UpdateGroupRequest
 ): Promise<Group> {
-  return apiRequest<Group>(`/api/admin/groups/${groupId}`, {
+  return apiRequest<Group>(API_ROUTES.ADMIN.GROUPS.UPDATE(groupId), {
     method: "PUT",
     body: JSON.stringify(request),
   });
@@ -68,7 +68,7 @@ export async function updateGroup(
  * Delete a group
  */
 export async function deleteGroup(groupId: string): Promise<void> {
-  await apiRequest(`/api/admin/groups/${groupId}`, {
+  await apiRequest(API_ROUTES.ADMIN.GROUPS.DELETE(groupId), {
     method: "DELETE",
   });
 }
@@ -80,7 +80,7 @@ export async function addUserToGroup(
   groupId: string,
   userId: string
 ): Promise<ApiResponse<{ success: boolean; message: string }>> {
-  return apiRequest(`/api/admin/groups/${groupId}/users/${userId}`, {
+  return apiRequest(API_ROUTES.ADMIN.GROUPS.ADD_USER(groupId, userId), {
     method: "POST",
   });
 }
@@ -92,7 +92,7 @@ export async function removeUserFromGroup(
   groupId: string,
   userId: string
 ): Promise<ApiResponse<{ success: boolean; message: string }>> {
-  return apiRequest(`/api/admin/groups/${groupId}/users/${userId}`, {
+  return apiRequest(API_ROUTES.ADMIN.GROUPS.REMOVE_USER(groupId, userId), {
     method: "DELETE",
   });
 }
@@ -104,7 +104,7 @@ export async function assignRoleToGroup(
   groupId: string,
   roleId: string
 ): Promise<ApiResponse<{ success: boolean; message: string }>> {
-  return apiRequest(`/api/admin/groups/${groupId}/roles/${roleId}`, {
+  return apiRequest(API_ROUTES.ADMIN.GROUPS.ASSIGN_ROLE(groupId, roleId), {
     method: "POST",
   });
 }

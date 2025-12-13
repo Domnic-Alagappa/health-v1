@@ -95,3 +95,18 @@ pub async fn create_pool_with_options(
         .map_err(|e| crate::shared::AppError::Database(e))
 }
 
+/// Create a database pool from DatabaseConfig settings
+/// This is a convenience function that extracts values from the config struct
+pub async fn create_pool_from_config(
+    config: &crate::config::DatabaseConfig,
+    connect_timeout: Duration,
+) -> AppResult<PgPool> {
+    create_pool_with_options(
+        &config.url,
+        config.max_connections,
+        config.min_connections,
+        connect_timeout,
+    )
+    .await
+}
+
