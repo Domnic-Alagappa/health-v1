@@ -11,7 +11,6 @@ mod shamir;
 use std::net::SocketAddr;
 use std::sync::Arc;
 use tracing::info;
-use tracing_subscriber;
 
 fn main() -> Result<(), String> {
     // Configure Tokio runtime
@@ -42,11 +41,11 @@ async fn async_main() -> Result<(), String> {
             format!("Failed to load configuration: {}", e)
         })?;
 
-    // Initialize logger using tracing_subscriber directly
-    tracing_subscriber::fmt()
-        .with_max_level(tracing::Level::INFO)
-        .with_target(true)
-        .init();
+    // Initialize logger with settings and deployment config (single point of control for dev mode)
+    shared::infrastructure::logging::init_from_settings_with_deployment(
+        &settings.logging,
+        &settings.deployment,
+    );
 
     info!("Starting rustyvault-service on {}:{}", settings.server.host, settings.server.port);
 

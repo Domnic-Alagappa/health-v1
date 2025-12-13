@@ -9,8 +9,8 @@ pub struct VaultSettings {
     // From health-v1
     pub server: ServerConfig,
     pub database: DatabaseConfig,
-    pub logging: LoggingConfig,
-    pub deployment: DeploymentConfig,
+    pub logging: shared::config::settings::LoggingConfig,
+    pub deployment: shared::config::DeploymentConfig,
 
     // RustyVault specific
     pub barrier: BarrierConfig,
@@ -31,17 +31,6 @@ pub struct DatabaseConfig {
     pub url: String,
     pub max_connections: u32,
     pub min_connections: u32,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct LoggingConfig {
-    pub level: String,
-    pub rust_log: String,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct DeploymentConfig {
-    pub environment: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -96,14 +85,16 @@ impl VaultSettings {
                 .unwrap_or(2),
         };
 
-        let logging = LoggingConfig {
+        let logging = shared::config::settings::LoggingConfig {
             level: env::var("LOG_LEVEL").unwrap_or_else(|_| "info".to_string()),
             rust_log: env::var("RUST_LOG").unwrap_or_else(|_| "info".to_string()),
         };
 
-        let deployment = DeploymentConfig {
-            environment: env::var("ENVIRONMENT").unwrap_or_else(|_| "development".to_string()),
-        };
+        let deployment = shared::config::DeploymentConfig::from_env()
+            .map_err(|e| config::ConfigError::Foreign(Box::new(std::io::Error::new(
+                std::io::ErrorKind::InvalidData,
+                format!("Failed to load deployment config: {}", e)
+            ))))?;
 
         let barrier = BarrierConfig {
             algorithm: env::var("VAULT_BARRIER_ALGORITHM").unwrap_or_else(|_| "aes-gcm".to_string()),
