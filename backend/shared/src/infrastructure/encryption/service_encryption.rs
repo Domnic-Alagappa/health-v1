@@ -5,7 +5,6 @@
 
 use super::DekManager;
 use crate::shared::{AppError, AppResult};
-use age::secrecy::SecretString;
 use std::io::{Read, Write};
 use std::sync::Arc;
 use uuid::Uuid;
@@ -111,7 +110,8 @@ impl ServiceEncryption {
 
     /// Encrypt data using age with the provided DEK
     fn encrypt_with_dek(&self, dek: &[u8], data: &[u8]) -> AppResult<Vec<u8>> {
-        let passphrase = SecretString::new(hex::encode(dek));
+        let passphrase_str = hex::encode(dek);
+        let passphrase = age::secrecy::SecretString::from(passphrase_str);
         let encryptor = age::Encryptor::with_user_passphrase(passphrase);
 
         let mut encrypted = vec![];
@@ -132,21 +132,19 @@ impl ServiceEncryption {
 
     /// Decrypt data using age with the provided DEK
     fn decrypt_with_dek(&self, dek: &[u8], encrypted: &[u8]) -> AppResult<Vec<u8>> {
-        let passphrase = SecretString::new(hex::encode(dek));
-        let decryptor = match age::Decryptor::new(encrypted) {
-            Ok(age::Decryptor::Passphrase(d)) => d,
-            Ok(_) => return Err(AppError::Encryption("Unexpected age recipient type".into())),
-            Err(e) => {
-                return Err(AppError::Encryption(format!(
-                    "Failed to create age decryptor: {}",
-                    e
-                )))
-            }
-        };
+        let passphrase_str = hex::encode(dek);
+        let passphrase = age::secrecy::SecretString::from(passphrase_str);
+        
+        // Create identity from passphrase for decryption
+        let identity = age::scrypt::Identity::new(passphrase);
+        
+        // Create decryptor
+        let decryptor = age::Decryptor::new(encrypted)
+            .map_err(|e| AppError::Encryption(format!("Failed to create age decryptor: {}", e)))?;
 
         let mut decrypted = vec![];
         let mut reader = decryptor
-            .decrypt(&passphrase, None)
+            .decrypt(std::iter::once(&identity as &dyn age::Identity))
             .map_err(|e| AppError::Encryption(format!("Failed to decrypt: {}", e)))?;
 
         reader

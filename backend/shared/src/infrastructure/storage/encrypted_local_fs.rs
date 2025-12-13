@@ -7,13 +7,15 @@
 use crate::infrastructure::encryption::DekManager;
 use crate::infrastructure::storage::storage_trait::Storage;
 use crate::shared::{AppError, AppResult};
-use age::secrecy::SecretString;
 use async_trait::async_trait;
 use std::io::{Read, Write};
 use std::path::PathBuf;
 use std::sync::Arc;
 use tokio::fs;
 use uuid::Uuid;
+
+// Use age's secrecy types
+use age::secrecy::ExposeSecret;
 
 /// Scope for encrypted storage - determines which DEK to use
 #[derive(Debug, Clone)]
@@ -165,7 +167,8 @@ impl EncryptedLocalFsStorage {
     /// Encrypt data using age with the scope's DEK
     fn encrypt_with_dek(&self, dek: &[u8], data: &[u8]) -> AppResult<Vec<u8>> {
         // Convert DEK to hex string for age passphrase
-        let passphrase = SecretString::new(hex::encode(dek));
+        let passphrase_str = hex::encode(dek);
+        let passphrase = age::secrecy::SecretString::from(passphrase_str);
         let encryptor = age::Encryptor::with_user_passphrase(passphrase);
 
         let mut encrypted = vec![];
@@ -187,16 +190,19 @@ impl EncryptedLocalFsStorage {
     /// Decrypt data using age with the scope's DEK
     fn decrypt_with_dek(&self, dek: &[u8], encrypted: &[u8]) -> AppResult<Vec<u8>> {
         // Convert DEK to hex string for age passphrase
-        let passphrase = SecretString::new(hex::encode(dek));
-        let decryptor = match age::Decryptor::new(encrypted) {
-            Ok(age::Decryptor::Passphrase(d)) => d,
-            Ok(_) => return Err(AppError::Encryption("Unexpected age recipient type".into())),
-            Err(e) => return Err(AppError::Encryption(format!("Failed to create age decryptor: {}", e))),
-        };
+        let passphrase_str = hex::encode(dek);
+        let passphrase = age::secrecy::SecretString::from(passphrase_str);
+        
+        // Create identity from passphrase for decryption
+        let identity = age::scrypt::Identity::new(passphrase);
+        
+        // Create decryptor
+        let decryptor = age::Decryptor::new(encrypted)
+            .map_err(|e| AppError::Encryption(format!("Failed to create age decryptor: {}", e)))?;
 
         let mut decrypted = vec![];
         let mut reader = decryptor
-            .decrypt(&passphrase, None)
+            .decrypt(std::iter::once(&identity as &dyn age::Identity))
             .map_err(|e| AppError::Encryption(format!("Failed to decrypt: {}", e)))?;
 
         reader
