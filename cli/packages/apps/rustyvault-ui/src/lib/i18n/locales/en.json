@@ -1,0 +1,86 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "submit": "Submit",
+    "close": "Close",
+    "open": "Open",
+    "edit": "Edit",
+    "search": "Search",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "logout": "Logout"
+  },
+  "login": {
+    "title": "RustyVault",
+    "subtitle": "Sign in to continue",
+    "methods": {
+      "token": "Token",
+      "userpass": "Username/Password",
+      "approle": "AppRole"
+    },
+    "fields": {
+      "token": "Token",
+      "username": "Username",
+      "password": "Password",
+      "roleId": "Role ID",
+      "secretId": "Secret ID"
+    },
+    "placeholders": {
+      "token": "Enter your token",
+      "username": "Username",
+      "password": "Password",
+      "roleId": "Role ID",
+      "secretId": "Secret ID"
+    },
+    "errors": {
+      "tokenRequired": "Token is required",
+      "usernamePasswordRequired": "Username and password are required",
+      "roleIdSecretIdRequired": "Role ID and Secret ID are required",
+      "authenticationFailed": "Authentication failed",
+      "vaultSealed": "The vault is sealed and must be unsealed before authentication. Please contact an administrator to unseal the vault.",
+      "barrierSealed": "The vault is sealed and must be unsealed before authentication. Please contact an administrator to unseal the vault."
+    },
+    "actions": {
+      "signIn": "Sign In",
+      "signingIn": "Signing in..."
+    }
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "secrets": "Secrets",
+    "policies": "Policies",
+    "tokens": "Tokens",
+    "users": "Users",
+    "realms": "Realms",
+    "system": "System",
+    "sections": {
+      "secrets": "Secrets",
+      "accessControl": "Access Control",
+      "authentication": "Authentication",
+      "multiTenancy": "Multi-tenancy",
+      "administration": "Administration"
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Overview of RustyVault system status",
+    "sealStatus": "Seal Status",
+    "sealed": "Sealed",
+    "unsealed": "Unsealed",
+    "realms": "Realms",
+    "activeRealms": "Active realms",
+    "mounts": "Mounts",
+    "configuredMounts": "Configured mounts",
+    "secrets": "Secrets",
+    "totalSecrets": "Total secrets",
+    "systemStatus": "System Status",
+    "version": "Version",
+    "quickActions": "Quick Actions",
+    "quickActionsDescription": "Manage your secrets, realms, and system configuration from the navigation menu.",
+    "progress": "Progress",
+    "unableToLoadStatus": "Unable to load system status"
+  }
+}

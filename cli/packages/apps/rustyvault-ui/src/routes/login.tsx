@@ -3,8 +3,10 @@ import { useState, useEffect } from 'react';
 import { useAuthStore } from '@/stores/authStore';
 import { Button, Input, Card, CardContent, CardDescription, CardHeader, CardTitle, Stack, Label } from '@health-v1/ui-components';
 import { AlertCircle, Loader2 } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 export function LoginPage() {
+  const { t } = useTranslation();
   const [loginMethod, setLoginMethod] = useState<'token' | 'userpass' | 'approle'>('token');
   const [token, setToken] = useState('');
   const [username, setUsername] = useState('');
@@ -31,19 +33,19 @@ export function LoginPage() {
     try {
       if (loginMethod === 'token') {
         if (!token.trim()) {
-          setError('Token is required');
+          setError(t('login.errors.tokenRequired'));
           return;
         }
         await login(token.trim());
       } else if (loginMethod === 'userpass') {
         if (!username.trim() || !password.trim()) {
-          setError('Username and password are required');
+          setError(t('login.errors.usernamePasswordRequired'));
           return;
         }
         await loginWithUserpass(username.trim(), password);
       } else if (loginMethod === 'approle') {
         if (!roleId.trim() || !secretId.trim()) {
-          setError('Role ID and Secret ID are required');
+          setError(t('login.errors.roleIdSecretIdRequired'));
           return;
         }
         await loginWithAppRole(roleId.trim(), secretId.trim());
@@ -68,7 +70,16 @@ export function LoginPage() {
         }
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Authentication failed');
+      const errorMessage = err instanceof Error ? err.message : t('login.errors.authenticationFailed');
+      
+      // Check if the error is about the vault being sealed
+      if (errorMessage.toLowerCase().includes('barrier is sealed') || 
+          errorMessage.toLowerCase().includes('vault is sealed') ||
+          errorMessage.toLowerCase().includes('vault error: barrier is sealed')) {
+        setError(t('login.errors.vaultSealed'));
+      } else {
+        setError(errorMessage);
+      }
     }
   };
 
@@ -76,8 +87,8 @@ export function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted/20 p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center">RustyVault</CardTitle>
-          <CardDescription className="text-center">Sign in to continue</CardDescription>
+          <CardTitle className="text-2xl font-bold text-center">{t('login.title')}</CardTitle>
+          <CardDescription className="text-center">{t('login.subtitle')}</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -92,7 +103,7 @@ export function LoginPage() {
                   }`}
                   onClick={() => setLoginMethod('token')}
                 >
-                  Token
+                  {t('login.methods.token')}
                 </button>
                 <button
                   type="button"
@@ -103,7 +114,7 @@ export function LoginPage() {
                   }`}
                   onClick={() => setLoginMethod('userpass')}
                 >
-                  Username/Password
+                  {t('login.methods.userpass')}
                 </button>
                 <button
                   type="button"
@@ -114,17 +125,17 @@ export function LoginPage() {
                   }`}
                   onClick={() => setLoginMethod('approle')}
                 >
-                  AppRole
+                  {t('login.methods.approle')}
                 </button>
               </div>
 
               {loginMethod === 'token' && (
                 <div className="space-y-2">
-                  <Label htmlFor="token">Token</Label>
+                  <Label htmlFor="token">{t('login.fields.token')}</Label>
                   <Input
                     id="token"
                     type="password"
-                    placeholder="Enter your token"
+                    placeholder={t('login.placeholders.token')}
                     value={token}
                     onChange={(e) => setToken(e.target.value)}
                     disabled={isLoading}
@@ -137,11 +148,11 @@ export function LoginPage() {
               {loginMethod === 'userpass' && (
                 <Stack spacing="md">
                   <div className="space-y-2">
-                    <Label htmlFor="username">Username</Label>
+                    <Label htmlFor="username">{t('login.fields.username')}</Label>
                     <Input
                       id="username"
                       type="text"
-                      placeholder="Username"
+                      placeholder={t('login.placeholders.username')}
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
                       disabled={isLoading}
@@ -150,11 +161,11 @@ export function LoginPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="password">Password</Label>
+                    <Label htmlFor="password">{t('login.fields.password')}</Label>
                     <Input
                       id="password"
                       type="password"
-                      placeholder="Password"
+                      placeholder={t('login.placeholders.password')}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       disabled={isLoading}
@@ -167,11 +178,11 @@ export function LoginPage() {
               {loginMethod === 'approle' && (
                 <Stack spacing="md">
                   <div className="space-y-2">
-                    <Label htmlFor="roleId">Role ID</Label>
+                    <Label htmlFor="roleId">{t('login.fields.roleId')}</Label>
                     <Input
                       id="roleId"
                       type="text"
-                      placeholder="Role ID"
+                      placeholder={t('login.placeholders.roleId')}
                       value={roleId}
                       onChange={(e) => setRoleId(e.target.value)}
                       disabled={isLoading}
@@ -180,11 +191,11 @@ export function LoginPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="secretId">Secret ID</Label>
+                    <Label htmlFor="secretId">{t('login.fields.secretId')}</Label>
                     <Input
                       id="secretId"
                       type="password"
-                      placeholder="Secret ID"
+                      placeholder={t('login.placeholders.secretId')}
                       value={secretId}
                       onChange={(e) => setSecretId(e.target.value)}
                       disabled={isLoading}
@@ -208,10 +219,10 @@ export function LoginPage() {
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Signing in...
+                    {t('login.actions.signingIn')}
                   </>
                 ) : (
-                  'Sign In'
+                  t('login.actions.signIn')
                 )}
               </Button>
             </Stack>

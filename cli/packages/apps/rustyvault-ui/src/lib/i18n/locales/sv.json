@@ -1,0 +1,8 @@
+{
+  "login": {
+    "errors": {
+      "vaultSealed": "Valvet är förseglat och måste öppnas före autentisering. Vänligen kontakta en administratör för att öppna valvet.",
+      "barrierSealed": "Valvet är förseglat och måste öppnas före autentisering. Vänligen kontakta en administratör för att öppna valvet."
+    }
+  }
+}

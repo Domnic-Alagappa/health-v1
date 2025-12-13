@@ -1,0 +1,84 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "submit": "Submit",
+    "close": "Close",
+    "open": "Open",
+    "edit": "Edit",
+    "search": "Search",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  },
+  "login": {
+    "title": "Admin Login",
+    "subtitle": "Sign in to access the admin panel",
+    "fields": {
+      "email": "Email",
+      "password": "Password"
+    },
+    "placeholders": {
+      "email": "admin@example.com",
+      "password": "Enter your password"
+    },
+    "errors": {
+      "emailPasswordRequired": "Email and password are required",
+      "invalidEmail": "Please enter a valid email address",
+      "loginFailed": "Login failed"
+    },
+    "actions": {
+      "signIn": "Sign In",
+      "signingIn": "Signing in..."
+    }
+  },
+  "navigation": {
+    "adminPanel": "Admin Panel",
+    "dashboard": "Dashboard",
+    "users": "Users",
+    "organizations": "Organizations",
+    "permissions": "Permissions",
+    "zanzibarRelationships": "Zanzibar Relationships",
+    "roles": "Roles",
+    "groups": "Groups",
+    "uiEntities": "UI Entities",
+    "encryption": "Encryption",
+    "dekManagement": "DEK Management",
+    "masterKey": "Master Key",
+    "services": "Services"
+  },
+  "dashboard": {
+    "title": "Admin Dashboard",
+    "subtitle": "Overview of system status and configuration",
+    "systemStatus": "System Status",
+    "organizations": "Organizations",
+    "totalOrganizations": "Total organizations",
+    "users": "Users",
+    "totalUsers": "Total users",
+    "permissions": "Permissions",
+    "activePermissions": "Active permissions",
+    "serviceStatus": "Service Status",
+    "serviceStatusDescription": "Current status of infrastructure services",
+    "overallStatus": "Overall Status",
+    "operational": "Operational",
+    "degraded": "Degraded",
+    "down": "Down",
+    "disabled": "Disabled",
+    "unknown": "Unknown",
+    "servicesOperational": "{{operational}} of {{total}} services operational",
+    "lastChecked": "Last checked: {{date}}",
+    "loadingServiceStatus": "Loading service status...",
+    "unableToLoadServiceStatus": "Unable to load service status",
+    "setupStatus": "Setup Status",
+    "setupStatusDescription": "Initial setup completion status",
+    "setupStatusLabel": "Setup Status",
+    "completed": "Completed",
+    "notCompleted": "Not Completed",
+    "completedAt": "Completed at: {{date}}",
+    "completedBy": "Completed by: {{user}}",
+    "setupNotCompletedMessage": "Please complete the initial setup to begin using the system.",
+    "checkingSetupStatus": "Checking setup status...",
+    "unableToLoadSetupStatus": "Unable to load setup status"
+  }
+}
